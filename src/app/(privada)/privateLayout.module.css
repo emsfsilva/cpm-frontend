@@ -1,0 +1,1248 @@
+/* Layout principal */
+.layoutContainer {
+  display: flex;
+  height: 100vh;
+  position: relative;
+  color: rgb(1, 1, 1);
+}
+
+/* Imagem de fundo */
+.imgbackground {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  position: absolute;
+  content: '';
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('../../../public/assets/images/logo.png');
+  background-size: 40%; /* Ajuste o tamanho da imagem */
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.1;
+  z-index: -1;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 200px;
+  background-color: #0f4761;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+  z-index: 10; /* Ajustando para que a sidebar fique abaixo da header */
+}
+
+/* Sidebar visível */
+.sidebar.visible {
+  left: 0%;
+}
+
+/* Logo na sidebar */
+.sidebarLogo {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 10px;
+}
+
+/* Imagem do usuário abaixo da logo */
+.userImage {
+  margin-top: 10px;
+  width: 80px;
+  height: 80px;
+  align-items: center;
+  overflow: hidden;
+  margin-bottom: 25px;
+}
+
+.divUserImagePerfil {
+  display: flex;
+  flex-direction: column;  /* Coloca os elementos (imagem e texto) em uma coluna */
+  justify-content: center; /* Centraliza verticalmente */
+  align-items: center;     /* Centraliza horizontalmente */
+  width: 100%;             /* Opcional: Ajuste conforme necessário */
+  height: 100%;            /* Opcional: Ajuste conforme necessário */
+  margin-bottom: 30px;
+}
+
+.userInfoPerfil {
+  margin-top: 10px; /* Espaço entre a imagem e o texto */
+  text-align: center; /* Garante que o texto na div fique centralizado */
+}
+
+.userNamePerfil {
+  font-size: 18px;
+  font-weight: bold;
+  font-family: fangsong;
+  color: #686868; /* Ajuste conforme a cor desejada */
+}
+
+.userFuncaoPerfil {
+  font-size: 18px;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #8d8d8d; /* Ajuste conforme a cor desejada */
+}
+
+.userFuncaoComunicacao {
+  font-size: 14px;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #8d8d8d; /* Ajuste conforme a cor desejada */
+}
+
+
+/* Navegação do menu */
+.nav {
+  width: 100%;
+}
+
+.nav ul {
+  list-style: none;
+  padding: 0;
+}
+
+.navItem {
+  text-decoration: none;
+  color: white;
+  display: block;
+  padding: 10px;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  border-bottom: 1px solid white;
+}
+
+.navItem:hover {
+  background-color: #ffffff1f;
+}
+
+.navIcon {
+  width: 18px;
+  height: 18px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.navIconComunicacaoList {
+  width: 18px;
+  height: 18px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.navIconResposta {
+  width: 18px;
+  height: 18px;
+  color: #101111;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+/* Submenu */
+.submenu {
+  list-style: none;
+  padding: 0;
+  padding-left: 20px;
+}
+
+.submenuItem {
+  text-decoration: none;
+  color: white;
+  font-size: 16px;
+  border-radius: 4px;
+  margin-left: 5%;
+  transition: background-color 0.3s ease;
+}
+
+.submenuItem:hover {
+  background-color: #ffffffa7;
+}
+
+/* Conteúdo principal */
+.mainContent {
+  flex: 1;
+  width: 100%;
+}
+
+/* Barra de navegação superior (Header) */
+.header {
+  background-color: #0a2f41;
+  color: #333;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  position: fixed;
+  top: 0;
+  left: 200px;
+  width: calc(100% - 200px); /* Ajusta a largura do header */
+  z-index: 1; /* A header agora ficará acima da sidebar */
+  height: 60px;
+  box-sizing: border-box;
+  padding-left: 20px;
+}
+
+
+/* Informações do usuário na header */
+.userInfo {
+  display: flex;
+  justify-content: flex-end; /* Alinha o conteúdo à direita */
+  align-items: center; /* Garante que o texto fique verticalmente centralizado */
+  color: rgb(255, 255, 255); /* Cor do texto */
+  font-size: 16px; /* Tamanho da fonte */
+  padding-right: 20px; /* Ajusta o espaço da borda direita, se necessário */
+}
+
+.userInfo span {
+  font-weight: 500; /* Peso da fonte */
+}
+
+
+/* Tabela de usuário */
+.userTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.userTable th,
+.userTable td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.userTable th {
+  background-color: #f4f4f4;
+}
+
+/* Conteúdo da página (ajustado à direita da sidebar) */
+.conteudoPagina {
+  flex-grow: 1; /* Faz com que o conteúdo ocupe o restante da tela */
+  margin-top: 50px;
+  margin-left: 200px; /* Deixa a margem da sidebar à esquerda */
+  padding: 20px; /* Espaçamento dentro do conteúdo */
+  overflow-x: hidden; /* Impede que o conteúdo ultrapasse à direita */
+  box-sizing: border-box; /* Inclui padding e borda no cálculo da largura */
+  max-width: 100vw; /* Garante que a largura máxima da div não ultrapasse a tela */
+}
+
+.tabelaUsuarios {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.tabelaUsuarios th, .tabelaUsuarios td {
+  padding: 10px;
+  text-align: left; /* Alinha os outros dados à esquerda */
+}
+
+.tabelaUsuarios th {
+  background-color: #f2f2f2;
+}
+
+.tabelaUsuarios tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.tabelaUsuarios tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Estilos para a imagem */
+.userImageList {
+  width: 30px;
+  height: 30px;
+  object-fit: cover; /* Garante que a imagem não distorça e preencha a área definida */
+  border-radius: 50%; /* Deixa a imagem arredondada */
+}
+.usertableCom td{
+  text-align: center;
+  padding: 0;
+}
+.motivotableCom td{
+  text-align: left;
+  padding: 0;
+}
+
+/* Centraliza a imagem dentro da célula */
+.tabelaUsuarios td img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Estilo para a coluna de Ações */
+.acoesColuna {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.acoesColuna button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #333;
+  padding: 5px;
+}
+
+.acoesColuna button:hover {
+  color: #007bff;
+}
+
+.tituloConteudoPrincipal {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px; /* Espaço entre o título e a tabela */
+}
+
+/* Estilo do dropdown */
+.dropdown {
+  width: 150px;
+  position: absolute;
+  top: 60px; /* Ajuste conforme a altura do header */
+  right: 0px;
+  background-color: #0f4761;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 100; /* Garante que o dropdown ficará acima de outros elementos */
+  padding: 10px 0;
+}
+
+.dropdown ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dropdown li {
+  padding: 10px 20px;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown li a {
+  text-decoration: none;
+  color: #fff9f9;
+  font-size: 16px;
+  display: block;
+}
+
+.dropdown li:hover {
+  background-color: #ffffffa7;
+}
+
+.dropdown li a:hover {
+  color: #007bff;
+}
+
+/* Classe para a mudança de cor do nome do usuário ao passar o mouse */
+.userName:hover {
+  color: #007bff;
+}
+
+.profileDetails ul {
+  padding: 0;
+  list-style: none;
+}
+
+.profileDetails li {
+  color: rgb(68, 67, 67); /* Cor do texto */
+  margin-bottom: 10px; /* Espaço entre os itens */
+  font-size: 14px; /* Tamanho da fonte */
+  display: flex; /* Alinha ícone e texto horizontalmente */
+  align-items: center; /* Alinha o ícone e o texto verticalmente */
+  padding-bottom: 10px; /* Espaçamento entre o conteúdo e a linha */
+  border-bottom: 1px solid rgb(194, 190, 190); /* Linha abaixo de cada item */
+}
+
+.profileDetails li i {
+  margin-right: 10px; /* Espaço entre o ícone e o texto */
+  color: rgb(0, 0, 0); /* Cor do ícone */
+}
+
+.profileDetails li .rightIcon {
+  margin-left: auto; /* Alinha o ícone à direita */
+  font-size: 18px; /* Tamanho do ícone */
+  color: black; /* Cor do ícone à direita */
+}
+
+.profileDetails li .rightTexto {
+  margin-left: auto; /* Alinha o ícone à direita */
+  font-size: 12px; /* Tamanho do ícone */
+  color: black; /* Cor do ícone à direita */
+
+}
+/* PAGINA COMUNICAÇÃO cad e ver,  */
+
+
+
+
+
+.comunicacaoAlunoList ul {
+  padding: 0;
+  list-style: none;
+}
+
+.comunicacaoAlunoList li {
+  color: rgb(68, 67, 67); /* Cor do texto */
+  margin-bottom: 5px; /* Espaço entre os itens */
+  font-size: 8px; /* Tamanho da fonte */
+  display: flex; /* Alinha ícone e texto horizontalmente */
+  align-items: center; /* Alinha o ícone e o texto verticalmente */
+  padding-bottom: 5px; /* Espaçamento entre o conteúdo e a linha */
+  border-bottom: 1px solid rgb(194, 190, 190); /* Linha abaixo de cada item */
+}
+
+.comunicacaoAlunoList li i {
+  margin-right: 5px; /* Espaço entre o ícone e o texto */
+  color: green; /* Cor do ícone */
+}
+
+.comunicacaoAlunoList li .rightIcon {
+  margin-left: auto; /* Alinha o ícone à direita */
+  font-size: 12px; /* Tamanho do ícone */
+  color: black; /* Cor do ícone à direita */
+}
+
+.comunicacaoAlunoList li .rightTexto {
+  margin-left: auto; /* Alinha o ícone à direita */
+  font-size: 10px; /* Tamanho do ícone */
+  color: black; /* Cor do ícone à direita */
+
+}
+
+
+
+
+
+
+
+/* Conteúdo da página (ajustado à direita da sidebar) */
+.comunicacaoPagina {
+  flex-grow: 1; /* Faz com que o conteúdo ocupe o restante da tela */
+  padding: 20px; /* era 20px Espaçamento dentro do conteúdo */
+  overflow-x: hidden; /* Impede que o conteúdo ultrapasse à direita */
+  overflow-y: auto; /* Adiciona scroll vertical quando necessário */
+  box-sizing: border-box; /* Inclui padding e borda no cálculo da largura */
+  border: 1px solid;
+  border-color: #bfbbbb;
+  background-color: #ffffff;
+  max-width: 100vw; /* Garante que a largura máxima da div não ultrapasse a tela */
+}
+
+.navTituloListar {
+  flex-grow: 1; /* Faz com que o conteúdo ocupe o restante da tela */
+  height: 100px;
+  display: flex;
+  box-sizing: border-box; /* Inclui padding e borda no cálculo da largura */
+  background-color: #ffffff;
+  max-width: 100vw; /* Garante que a largura máxima da div não ultrapasse a tela */
+  margin-bottom: 15px;
+}
+
+.tituloListar {
+  font-size: x-large;
+  margin-bottom: 10px;
+  border-bottom: 1px solid;
+  border-color: #bfbbbb;
+}
+
+
+.itensTituloListar {
+  flex-grow: 1; /* Faz com que o conteúdo ocupe o restante da tela */
+  height: 70px;
+  width: 20%;
+  margin: 15px;
+  border-right: 3px solid;
+  border-color: #7b7878;
+  box-sizing: border-box; /* Inclui padding e borda no cálculo da largura */
+  max-width: 100vw; /* Garante que a largura máxima da div não ultrapasse a tela */
+}
+
+.priTituloItemListar {
+  font-size: 12px;
+  color: #4b4a4a;
+}
+
+.segTituloItemListar {
+  font-size: 20px;
+  margin-top: 5px;
+  color: #4b4a4a;
+  display: flex;
+}
+
+.terTituloItemListar {
+  font-size: 12px;
+  color: #4b4a4a;
+}
+
+
+/* Alunos | Turma... */
+.tituloComunicacao {
+  display: flex;
+  justify-content: space-between; /* Garante que os itens fiquem nas extremidades */
+  align-items: center; /* Alinha os itens verticalmente no centro */
+  margin-top: 1px;
+  margin-bottom: 20px;
+  max-width: 100vw; /* Garante que a largura máxima da div não ultrapasse a tela */
+  box-sizing: border-box; /* Inclui padding e borda no cálculo da largura */
+}
+
+.aluno_turma {
+  text-align: left;
+}
+
+.andamento {
+  text-align: right;
+}
+
+.divUserAlunoComunicacao {
+  display: flex;
+  width: 100%;      
+  align-items: center; /* Alinha os itens verticalmente no centro */
+  border: 1px solid;
+  padding: 10px;
+  border-color: #bfbbbb;
+}
+
+.divImageAlunoComunicacao {
+  display: flex;
+  flex-direction: column; /* Coloca os itens (nome e função) em coluna */
+  margin-left: 20px;
+  align-items: center;
+  width: 33%;
+}
+
+.userInfoAlunoComunicacao {
+  display: flex;
+  flex-direction: column; /* Coloca os itens (nome e função) em coluna */
+  font-size: 20px;
+  width: 33%;
+}
+
+.userComportAlunoComunicacao {
+  display: flex;
+  font-size: 80px;
+  margin-left: 20px;
+}
+
+.comportComunicacao {
+  flex-direction: column; /* Coloca os itens (nome e função) em coluna */
+  align-items: center;
+  display: flex;
+  width: 33%;
+}
+
+.userNameAlunoComunicacao {
+  font-size: 22px;
+  font-weight: bold;
+  font-family: fangsong;
+  color: #686868; /* Ajuste conforme a cor desejada */
+}
+
+.userFuncaoAlunoComunicacao {
+  font-size: 16px; /* Ajuste o tamanho conforme necessário */
+  color: #686868; /* Ajuste a cor conforme desejado */
+  margin-top: 5px; /* Espaço entre o nome e a função */
+}
+
+.navIconResp1Comunicacao {
+  width: 25px;
+  height: 25px;
+  color: #199f2b;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.navIconResp2Comunicacao {
+  width: 25px;
+  height: 25px;
+  color: #199f2b;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.divResp1Comunicacao{;
+  margin-top: 10px;
+}
+
+.spanResp1Comunicacao{;
+  margin-bottom: 10px;
+}
+
+
+/* Cadatrar Comunicação */
+.comunicacaoDetails ul {
+  padding: 0;
+  list-style: none;
+}
+
+.comunicacaoDetails li {
+  color: rgb(68, 67, 67); /* Cor do texto */
+  margin-bottom: 2px; /* Espaço entre os itens */
+  font-size: 16px; /* Tamanho da fonte */
+  display: flex; /* Alinha ícone e texto horizontalmente */
+  align-items: center; /* Alinha o ícone e o texto verticalmente */
+  padding-bottom: 5px; /* Espaçamento entre o conteúdo e a linha */
+  margin-left: 20px;
+}
+
+.comunicacaoDetails li i {
+  margin-right: 10px; /* Espaço entre o ícone e o texto */
+  color: green; /* Cor do ícone */
+}
+
+.inputComunicacaoDetails {
+  margin-right: 10px; /* Espaço entre o ícone e o texto */
+  width: 20px;
+  height: 20px;
+}
+
+.enquadramento {
+  width: 80%;
+  margin-bottom: 10px;
+}
+
+.inputRespostaCheck {
+
+  margin-right: 10px;
+  margin-left: 40px;
+  font-size: 12px;
+  width: 250px;
+  height: 20px;
+  color: #e90808;
+
+}
+
+.labelEnquadramento {
+
+  margin-right: 5px;
+  margin-left: 45px;
+  width: 100%;
+  height: 40px;
+  font-size: 12px;
+  color: #e90808;
+
+}
+
+.inputRespostaH1 {
+  font-size: 18px;
+  color: #979494;
+}
+
+.inputComunicacaoTextarea {
+  padding: 10px;
+  width: 100%;
+  height: 150px;
+  background-color: #d3d2d2;
+}
+
+.areadetextocomunicacao {
+  width: 100%;
+}
+
+.inputRespostaTextarea {
+  padding: 10px;
+  width: 100%;
+  height: 200px;
+  border: 1px solid;
+  border-color: #c1bfbf;
+}
+.inputEnquadramento {
+  padding: 10px;
+  width: 100%;
+  border: 1px solid;
+  border-color: #c1bfbf;
+  margin-bottom: 10px;
+}
+
+.inputEnquadramentoTextarea {
+  padding: 10px;
+  width: 100%;
+  height: 80px;
+  border: 1px solid;
+  border-color: #c1bfbf;
+}
+
+/*Contador do text area*/
+.charCounter {
+  font-size: 12px;
+  color: #666;
+  text-align: right;
+  margin-top: 4px;
+}
+
+
+
+.comunicacaoSalvarButton {
+  width: 100%;
+  height: 50px;
+  font-size: 25px; /* Tamanho da fonte */
+  color: rgb(255, 255, 255); /* Cor do texto */
+  background-color: #199f2b;
+  margin-bottom: 5px;
+}
+.comunicacaoCancelarButton {
+  width: 100%;
+  height: 50px;
+  font-size: 25px; /* Tamanho da fonte */
+  color: rgb(255, 255, 255); /* Cor do texto */
+  background-color: #c30808;
+}
+
+.comunicacaoResp {
+  width: 100%;
+  height: 30px;
+  font-size: 15px; /* Tamanho da fonte */
+  color: rgb(255, 255, 255); /* Cor do texto */
+  background-color: #0f4761;
+  margin-bottom: 5px;
+}
+
+
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modalContent {
+  background: #fff;
+  padding: 20px 30px;
+  border-radius: 8px;
+  max-width: 600px;
+  width: 90%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.modalActions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.enviarRespBtn {
+  width: 100%;
+  height: 30px;
+  font-size: 15px; /* Tamanho da fonte */
+  color: rgb(255, 255, 255); /* Cor do texto */
+  background-color: #129109;
+  margin-bottom: 5px;
+}
+
+.cancelarBtn {
+  width: 100%;
+  height: 30px;
+  font-size: 15px; /* Tamanho da fonte */
+  color: rgb(255, 255, 255); /* Cor do texto */
+  background-color: #909597;
+  margin-bottom: 5px;
+}
+
+
+.navLogoHeader {
+  display: none;
+}
+
+.sidebarIconOnly {
+  display: none;
+}
+
+
+
+.tabelaComunicacao td {
+  vertical-align: middle; /* Alinha o conteúdo verticalmente no meio */
+  padding-bottom: 8px; /* Ajuste da distância inferior */
+}
+
+.tabelaComunicacao td img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.tabelaComunicacao td {
+  margin: 0;
+  padding-bottom: 4px;
+  font-size: 12px;
+}
+
+.pComunicacao {
+  text-align: center; /* Centraliza o texto */
+  font-size: 12px;
+  margin: 4px 0;
+}
+
+.tabelaComunicacao td p strong {
+  font-weight: bold; /* Aplica o negrito */
+}
+
+
+.tabelaComunicacao {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  table-layout: fixed;
+}
+
+.tabelaComunicacao th, .tabelaComunicacao td {
+  padding: 5px;
+  text-align: left; /* Alinha os outros dados à esquerda */
+}
+
+.tabelaComunicacao th {
+  background-color: #f2f2f2;
+}
+
+.tabelaComunicacao tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.tabelaComunicacao tr:hover {
+  background-color: #f1f1f1;
+}
+
+.tabelaComunicacao {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+}
+
+.tabelaComunicacao thead {
+  background-color: #1153ae;
+  color:#4947ba;
+}
+
+.navIconComunicacaoHeader {
+  width: 18px;
+  height: 18px;
+  margin-left: 5px;
+  color: #4753ba;
+  margin-right: 5px;
+}
+.thComunicacaoHeader {
+  width: 20px;
+}
+
+.thComunicacaoHeaderBotoes {
+  width: 10px;
+}
+
+.thComunicacaoHeaderAlunoListar {
+  width: 90%;
+}
+
+.thComunicacaoHeaderBotoesAlunoListar {
+  width: 10%;
+  text-align: center; /* Centraliza os ícones de ação */
+}
+
+.centralizaricons {
+  text-align: center;
+  width: 100%;
+
+}
+
+.navIconComunicacaoStatus {
+  color: #4753ba;
+  font-size: 20px;
+  text-align: justify;
+
+}
+
+.menuBotoesComunicacaoVer {
+  display: flex;
+  text-align: center;
+  width: 400px;
+  height: 35px;
+  font-family: Arial, sans-serif;
+  border-radius: 10px;
+  background-color: #ffffff;
+  margin-top: 1px;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+
+.botoesComunicacaoVer {
+  font-size: 10px;
+  width: 80px;
+  padding: 5px;
+  height: 30px;
+  font-family: Arial, sans-serif;
+  margin-top: 1px;
+  margin-bottom: 1px;
+}
+
+.menuIconsComunicacaoVer {
+  font-size: 20px;
+  text-align: justify;
+
+}
+
+.menuIconsComunicacaoVer:hover {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+}
+
+.botaoAtivo {
+  background-color: #eeeded;
+  border-radius: 12px;
+  border: 1px solid #d8d8d8;
+}
+
+
+.textoComunicacaoNotificarAluno {
+  color: #1e76d5;
+}
+
+.textoComunicacaoEnviarCmtCia {
+  color: #11ba2d;
+}
+
+.textoComunicacaoArquivar {
+  color: #dd8110;
+}
+
+.textoComunicacaoExcluir {
+  color: #e20c0c;
+}
+
+.textoComunicacaoPublicar {
+  color: #b40ce2;
+}
+
+.tituloTabelaListar {
+  font-size: 30px;
+  color: #fffcfc;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  border-radius: 20px;
+  background-color: #0f4761;
+  margin-bottom: 5px;
+}
+
+.botaoVerComunicacao {
+  font-size: 18px;
+  color: #fffcfc;
+  text-align: center;
+  width: 200px;
+  height: 30px;
+  font-family: Arial, sans-serif;
+  border-radius: 20px;
+  background-color: #0f4761;
+  margin-top: 1px;
+  margin-bottom: 1px;
+}
+
+.botaoArquivarComunicacao {
+  font-size: 18px;
+  color: #fffcfc;
+  text-align: center;
+  width: 200px;
+  height: 30px;
+  font-family: Arial, sans-serif;
+  border-radius: 20px;
+  background-color: #ee5109;
+  margin-top: 1px;
+  margin-bottom: 1px;
+}
+
+.botaoNotificarAluno {
+  font-size: 18px;
+  color: #fffcfc;
+  text-align: center;
+  width: 200px;
+  height: 30px;
+  font-family: Arial, sans-serif;
+  border-radius: 20px;
+  background-color: #1aad2b;
+  margin-top: 1px;
+  margin-bottom: 1px;
+}
+
+.botaoEnviarCmt {
+  font-size: 18px;
+  color: #fffcfc;
+  text-align: center;
+  width: 200px;
+  height: 30px;
+  font-family: Arial, sans-serif;
+  border-radius: 20px;
+  background-color: #aa1fc2;
+  margin-top: 1px;
+  margin-bottom: 1px;
+}
+
+
+.tabelaComunicacao th,
+.tabelaComunicacao td {
+  padding: 12px 16px;
+  text-align: left;
+  border: 1px solid #d2d4d7;
+  vertical-align: top;
+}
+
+.tabelaComunicacao tr:hover {
+  background-color: #e2e1f4;
+}
+
+/*fim tabela listar comunicação*/
+
+.inputBuscar {
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  width: 100%;
+  border-radius: 20px;
+  color: #ccc;
+  border: 1px solid;
+}
+
+.comunicacaoAlunoListImg {
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  margin-right: 5px;
+
+  /* Centralizando o ícone */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.comunicacaoAlunoListImg i {
+  color: white;        /* cor branca */
+  font-size: 18px;     /* aumenta o tamanho do ícone, ajuste como quiser */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Estilos específicos para mobile */
+@media (max-width: 768px) {
+
+  .imgbackground {
+    display: none; /* Esconde o menu completo na sidebar em telas pequenas */
+  }
+
+  /* Imagem de fundo em Celular */
+  .imgbackgroundMedia {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    position: absolute;
+    content: '';
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('../../../public/assets/images/logo.png');
+    background-size: 80%; /* Ajuste o tamanho da imagem */
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.1;
+    z-index: -1;
+  }
+  .sidebar {
+    left: -200px; /* Esconde a sidebar */
+  }
+
+  .sidebar.visible {
+    left: 0;
+  }
+
+  .sidebarLogo {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 10px;
+  }
+
+  .userImage {
+    margin-top: 10px;
+    width: 50px;
+    height: 50px;
+    margin-bottom: 15px;
+  }
+
+  .mainContent {
+    margin-left: 0; /* Ajusta a margem */
+  }
+
+  .header {
+    left: 0; /* Ajusta o header para ocupar toda a largura */
+    width: 100%; /* O header ocupa toda a largura da tela */
+  }
+  /* Informações do usuário na header */
+  .userInfo {
+    display: flex;
+    justify-content: space-between; /* Alinha o conteúdo à direita */
+    align-items: center; /* Garante que o texto fique verticalmente centralizado */
+    color: rgb(255, 255, 255); /* Cor do texto */
+    font-size: 16px; /* Tamanho da fonte */
+    padding-right: 20px; /* Ajusta o espaço da borda direita, se necessário */
+    width: 100%;
+  }
+  
+  .userInfo span {
+    font-weight: 500; /* Peso da fonte */
+  }
+
+  .nav {
+    display: none; /* Esconde o menu completo na sidebar em telas pequenas */
+  }
+
+  /* Estilos para a imagem */
+  .userImageList {
+    width: 20px;
+    height: 20px;
+    object-fit: cover; /* Garante que a imagem não distorça e preencha a área definida */
+    border-radius: 50%; /* Deixa a imagem arredondada */
+  }
+
+  /* Footer fixo com ícones da sidebar */
+  .sidebarIconOnly {
+    display: flex;
+    justify-content: space-around; /* Distribui os ícones uniformemente */
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #0f4761;
+    padding: 5px 0;
+    z-index: 5;
+  }
+
+  .sidebarIconOnly a {
+    text-decoration: none;
+    color: white;
+    display: block;
+    padding: 5px;
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .sidebarIconOnly .navIcon {
+    margin: 0;
+    width: 20px;
+    height: 15px;
+  }
+
+  .navIconHeader {
+    margin-left: 10px;
+    width: 2px;
+    height: 10px;
+  }
+  .navLogoHeader {
+    display: flex;
+    flex-direction: column; /* Organiza os itens verticalmente */
+    align-items: center; /* Centraliza os itens horizontalmente */
+    justify-content: center; /* Garante que o conteúdo ocupe o centro vertical */
+    margin-left: 0;
+  }
+  
+  .navLogoHeader img {
+    margin-bottom: 0px; /* Espaçamento entre a imagem e o texto */
+  }
+  
+  .navLogoHeader span {
+    font-size: 16px; /* Ajuste o tamanho da fonte do texto, se necessário */
+  }
+  
+
+  /* Alinhamento dos ícones no Footer */
+  .sidebarIconOnly a:hover {
+    background-color: #ffffff30;
+  }
+
+  .conteudoPagina {
+    flex-grow: 1; /* Faz com que o conteúdo ocupe o restante da tela */
+    margin-top: 50px;
+    margin-left: 0; /* Deixa a margem da sidebar à esquerda */
+    padding: 20px; /* Espaçamento dentro do conteúdo */
+    overflow-y: auto; /* Adiciona scroll vertical quando necessário */
+    box-sizing: border-box; /* Inclui padding e borda no cálculo da largura */
+    max-width: 100vw; /* Garante que a largura máxima da div não ultrapasse a tela */
+    max-height: 90vh; /* Limita a altura da div à altura da tela */
+  }
+
+  .tituloComunicacao {
+    flex-grow: 1; /* Faz com que o conteúdo ocupe o restante da tela */
+    margin-top: 1px;
+    margin-bottom: 20px;
+    justify-content: space-around;
+    display: flex;
+    box-sizing: border-box; /* Inclui padding e borda no cálculo da largura */
+    max-width: 100vw; /* Garante que a largura máxima da div não ultrapasse a tela */
+  }
+
+  /* Estilo para a coluna de Ações */
+
+
+  .acoesColuna button {
+    font-size: 8px;
+    padding: 2px;
+  }
+
+  .acoesColuna button:hover {
+    color: #007bff;
+  }
+
+
+  .tabelaUsuarios {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .tabelaUsuarios th,
+  .tabelaUsuarios td {
+    font-size: 8px; /* Ajuste o tamanho da fonte do texto, se necessário */
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .searchContainer {
+    margin: 20px 0;
+  }
+  
+  .searchInput {
+    padding: 8px;
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+}
+
+
+
+
+
