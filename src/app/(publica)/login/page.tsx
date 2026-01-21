@@ -1,88 +1,279 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import styles from './login.module.css'; // Importando os estilos do módulo CSS
-import Image from 'next/image'; // Importando o componente Image
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import styles from "./login.module.css";
+import Image from "next/image";
+
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import dynamic from "next/dynamic";
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [seduc, setSeduc] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showModal, setShowModal] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    console.log('Enviando requisição de login...');
-
-    const response = await fetch('http://localhost:8081/api/auth', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    });
-
-    const responseText = await response.text();
-    console.log('Resposta bruta do servidor:', responseText);
+    setErrorMessage("");
 
     try {
-      const data = JSON.parse(responseText);
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ seduc, password }),
+      });
 
-      console.log('Resposta JSON da API:', data);
+      const data = await response.json();
 
-      if (response.ok && data.accessToken) {
-        // Salva o token no cookie
-        document.cookie = `accessToken=${data.accessToken}; path=/`;
-
-        // Redireciona para o dashboard
-        console.log('Login bem-sucedido, redirecionando...');
-        router.push('/');
+      if (response.ok) {
+        router.push("/dashboard");
       } else {
-        setErrorMessage('Email ou senha inválidos');
+        setErrorMessage(data?.error || "Erro ao fazer login");
       }
     } catch (error) {
-      console.error('Erro ao processar a resposta JSON:', error);
-      setErrorMessage('Erro na requisição');
+      console.error("Erro ao enviar login:", error);
+      setErrorMessage("Erro na requisição de login");
     }
   };
 
+  const Slider = dynamic(() => import("react-slick"), {
+    ssr: false,
+  });
+
+  const images = [
+    "/assets/images/site/carrossel/carrossel_foto_01.jpg",
+    "/assets/images/site/carrossel/carrossel_foto_02.png",
+    "/assets/images/site/carrossel/carrossel_foto_03.png",
+    "/assets/images/site/carrossel/carrossel_foto_04.png",
+    "/assets/images/site/carrossel/carrossel_foto_05.png",
+  ];
+
   return (
-    <div className={styles.container}>
-      <div className={styles.imageContainer}>
-        <Image
-          src="/assets/images/logo.png" // Caminho da imagem
-          alt="Logo"
-          width={200} // Largura da imagem (ajuste conforme necessário)
-          height={200} // Altura da imagem (ajuste conforme necessário)
-          className={styles.logo}
-        />
+    <div>
+      <div
+        style={{ width: "100%", height: "30px", backgroundColor: "#141a28" }}
+      ></div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          marginTop: "10px",
+          marginBottom: "10px",
+        }}
+      >
+        <div>
+          <Image
+            src="/assets/images/logo.png"
+            alt="Logo"
+            width={90}
+            height={90}
+            className={styles.imglogo}
+          />
+        </div>
+
+        <div style={{ marginLeft: "10px" }}>
+          <h1 className={styles.textoDesktop}>
+            COLÉGIO DA POLÍCIA MILITAR - CPM
+          </h1>
+          <h1 className={styles.textoMobile}>CPM - PE</h1>
+        </div>
       </div>
-      <form onSubmit={handleSubmit} className={styles.formContainer}>
-        <div className={styles.inputGroup}>
-          <label>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className={styles.input}
-          />
+
+      <div className={styles.divBotao}>
+        <button className={styles.botao} onClick={() => setShowModal(true)}>
+          Login
+        </button>
+        <button className={styles.botao}>Fale Conosco</button>
+      </div>
+
+      <div style={{ width: "100%", overflow: "hidden" }}>
+        <Slider
+          dots={true}
+          infinite={true}
+          speed={500}
+          slidesToShow={1}
+          slidesToScroll={1}
+          autoplay={true}
+          autoplaySpeed={4000}
+          arrows={false}
+        >
+          {images.map((src, index) => (
+            <div key={index}>
+              <div className={styles.carouselAspect}>
+                <Image
+                  src={src}
+                  alt={`Carrossel ${index + 1}`}
+                  fill
+                  style={{ objectFit: "cover" }}
+                  sizes="100vw"
+                  priority={index === 0}
+                />
+              </div>
+            </div>
+          ))}
+        </Slider>
+      </div>
+
+      <div className={styles.divTextoCpm}>
+        <div className={styles.divTextoCpmSecundario}>
+          <div
+            style={{
+              borderLeft: "3px solid #304486",
+            }}
+          >
+            <h1 className={styles.h1Cpm}>O CPM EM CADA FASE DO SEU FILHO</h1>
+          </div>
         </div>
-        <div className={styles.inputGroup}>
-          <label>Senha</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className={styles.input}
-          />
+
+        <div className={styles.divSlidPrincipal}>
+          <div className={styles.divItemSlid}>
+            <div style={{ height: "60%" }}>
+              <Image
+                src="/assets/images/site/slide/slide_foto_01.jpg"
+                alt="Logo"
+                width={800}
+                height={880}
+              />
+            </div>
+            <div
+              style={{ background: "#6984d4", height: "40%" }}
+              className={styles.divTextoSlid}
+            >
+              EDUCAÇÃO <br></br>INFANTIL
+            </div>
+          </div>
+
+          <div className={styles.divItemSlid}>
+            <div style={{ height: "60%" }}>
+              <Image
+                src="/assets/images/site/slide/slide_foto_02.jpg"
+                alt="Logo"
+                width={800}
+                height={880}
+              />
+            </div>
+            <div
+              style={{ background: "#5976d3", height: "40%" }}
+              className={styles.divTextoSlid}
+            >
+              ENSINO <br></br>FUNDAMENTAL 1
+            </div>
+          </div>
+
+          <div className={styles.divItemSlid}>
+            <div style={{ height: "60%" }}>
+              <Image
+                src="/assets/images/site/slide/slide_foto_03.jpg"
+                alt="Logo"
+                width={800}
+                height={880}
+              />
+            </div>
+            <div
+              style={{ background: "#3957bb", height: "40%" }}
+              className={styles.divTextoSlid}
+            >
+              ENSINO <br></br>FUNDAMENTAL 2
+            </div>
+          </div>
+
+          <div className={styles.divItemSlid}>
+            <div style={{ height: "60%" }}>
+              <Image
+                src="/assets/images/site/slide/slide_foto_04.jpg"
+                alt="Logo"
+                width={800}
+                height={880}
+              />
+            </div>
+            <div
+              style={{ background: "#2f4794", height: "40%" }}
+              className={styles.divTextoSlid}
+            >
+              NOVO <br></br>ENSINO MEDIO
+            </div>
+          </div>
+
+          <div className={styles.divItemSlid}>
+            <div style={{ height: "60%" }}>
+              <Image
+                src="/assets/images/site/slide/slide_foto_05.jpg"
+                alt="Logo"
+                width={800}
+                height={880}
+              />
+            </div>
+            <div
+              style={{ background: "#14308d", height: "40%" }}
+              className={styles.divTextoSlid}
+            >
+              TURNO <br></br>COMPLEMENTAR
+            </div>
+          </div>
         </div>
-        {errorMessage && <p className={styles.error}>{errorMessage}</p>}
-        <button type="submit" className={styles.button}>Entrar</button>
-      </form>
+      </div>
+      {showModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <form onSubmit={handleSubmit} className={styles.formContainer}>
+              <div
+                style={{
+                  justifyContent: "center",
+                  justifyItems: "center",
+                  marginTop: "200px",
+                }}
+              >
+                <Image
+                  src="/assets/images/logo.png"
+                  alt="Logo"
+                  width={130}
+                  height={130}
+                />
+              </div>
+              <div className={styles.inputGroup}>
+                <label>Login</label>
+                <input
+                  type="text"
+                  value={seduc}
+                  onChange={(e) => setSeduc(e.target.value)}
+                  required
+                  className={styles.input}
+                />
+              </div>
+
+              <div className={styles.inputGroup}>
+                <label>Senha</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className={styles.input}
+                />
+              </div>
+
+              {errorMessage && <p className={styles.error}>{errorMessage}</p>}
+
+              <button type="submit" className={styles.button}>
+                Entrar
+              </button>
+
+              <button
+                onClick={() => setShowModal(false)}
+                className={styles.button}
+              >
+                Cancelar
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,11 +1,9 @@
-/* Layout principal */
-.layoutContainer {
+/* Container geral para app */
+.appContainer {
   display: flex;
+  flex-direction: column;
   height: 100vh;
-  position: relative;
-  color: rgb(1, 1, 1);
 }
-
 /* Imagem de fundo */
 .imgbackground {
   display: flex;
@@ -25,71 +23,32 @@
   z-index: -1;
 }
 
-/* Sidebar */
-.sidebar {
-  width: 200px;
-  background-color: #0f4761;
-  color: white;
+.logo {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease-in-out;
-  z-index: 10; /* Ajustando para que a sidebar fique abaixo da header */
+  cursor: default;
 }
 
-/* Sidebar visível */
-.sidebar.visible {
-  left: 0%;
+.logoImg {
+  height: 30px;
+  width: 30px;
 }
 
-/* Logo na sidebar */
-.sidebarLogo {
-  width: 50px;
-  height: 50px;
+.logoTextPrimeiraParte {
+    padding-left: 8px;
+    font-size: 20px;
+    color: #0e5a94;
+}
+
+
+.divHeaderUserDetalhe {
+  display: flex;
+  justify-content: left;
+  padding: 10px;
+  align-items: center;
+  width: 100%;      
+  height: 60px;     
   margin-bottom: 10px;
-}
-
-/* Imagem do usuário abaixo da logo */
-.userImage {
-  margin-top: 10px;
-  width: 80px;
-  height: 80px;
-  align-items: center;
-  overflow: hidden;
-  margin-bottom: 25px;
-}
-
-.divUserImagePerfil {
-  display: flex;
-  flex-direction: column;  /* Coloca os elementos (imagem e texto) em uma coluna */
-  justify-content: center; /* Centraliza verticalmente */
-  align-items: center;     /* Centraliza horizontalmente */
-  width: 100%;             /* Opcional: Ajuste conforme necessário */
-  height: 100%;            /* Opcional: Ajuste conforme necessário */
-  margin-bottom: 30px;
-}
-
-.userInfoPerfil {
-  margin-top: 10px; /* Espaço entre a imagem e o texto */
-  text-align: center; /* Garante que o texto na div fique centralizado */
-}
-
-.userNamePerfil {
-  font-size: 18px;
-  font-weight: bold;
-  font-family: fangsong;
-  color: #686868; /* Ajuste conforme a cor desejada */
-}
-
-.userFuncaoPerfil {
-  font-size: 18px;
-  font-family: Arial, Helvetica, sans-serif;
-  color: #8d8d8d; /* Ajuste conforme a cor desejada */
 }
 
 .userFuncaoComunicacao {
@@ -97,6 +56,17 @@
   font-family: Arial, Helvetica, sans-serif;
   color: #8d8d8d; /* Ajuste conforme a cor desejada */
 }
+
+.userSemImagem {
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  padding: 3px;
+  color: #757575;
+  margin-right: 10px;
+  border: 1px solid #757575;
+}
+
 
 
 /* Navegação do menu */
@@ -170,38 +140,1013 @@
   width: 100%;
 }
 
-/* Barra de navegação superior (Header) */
+/* Header fixo no topo */
 .header {
-  background-color: #0a2f41;
-  color: #333;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
   position: fixed;
   top: 0;
-  left: 200px;
-  width: calc(100% - 200px); /* Ajusta a largura do header */
-  z-index: 1; /* A header agora ficará acima da sidebar */
-  height: 60px;
-  box-sizing: border-box;
-  padding-left: 20px;
-}
-
-
-/* Informações do usuário na header */
-.userInfo {
+  left: 0;
+  right: 0;
+  height: 40px;
+  background-color: #ffffff;
   display: flex;
-  justify-content: flex-end; /* Alinha o conteúdo à direita */
-  align-items: center; /* Garante que o texto fique verticalmente centralizado */
-  color: rgb(255, 255, 255); /* Cor do texto */
-  font-size: 16px; /* Tamanho da fonte */
-  padding-right: 20px; /* Ajusta o espaço da borda direita, se necessário */
+  align-items: center;
+  padding: 0 10px;
+  color: rgb(0, 0, 0);
+  z-index: 1000;
 }
 
-.userInfo span {
-  font-weight: 500; /* Peso da fonte */
+.dashboardContainer {
+  display: flex;
+  flex: 1;
+  margin-top: 40px; /* Espaço para header fixa */
+  height: calc(100vh - 50px);
 }
+
+/* Sidebar fixa no lado esquerdo, abaixo da header */
+.sidebar {
+  position: fixed;
+  top: 40px; /* logo abaixo do header */
+  left: 0;
+  height: calc(100vh - 42px); /* ocupa a altura da tela menos o header */
+  background-color: #ffffff;
+  transition: width 0.1s ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  padding-top: 1rem;
+  z-index: 999; /* abaixo do header, mas acima do conteúdo */
+}
+
+.sidebarOpen {
+  width: 230px;
+}
+
+.sidebarClosed {
+  width: 52px;
+}
+
+.menuButton {
+  background: none;
+  border: none;
+  color: #0f2b60;
+  font-size: 20px;
+  margin-left: 1rem;
+  margin-bottom: 1.5rem;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.menuItems {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  align-items: center;
+}
+
+.menuItems li {
+  display: flex;
+  align-items: center;
+  padding: 10px 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+  width: fit-content;
+}
+
+.menuItems li:hover {
+  background-color: #9fdac0;
+}
+
+/* Ícones sempre visíveis */
+.icon {
+  font-size: 1rem;
+  margin-right: 8px;
+  color: #101111;
+  min-width: 18px;
+}
+/* Ícones sempre visíveis */
+.iconUser {
+  font-size: 1rem;
+  margin-right: 8px;
+  min-width: 25px;
+  border-radius:50%;
+}
+
+/* Texto do item (aparece só quando aberto) */
+.itemText {
+  flex: 1;
+  color: #101111;
+  margin-left: 5px;
+}
+
+.mobileOnlyText {
+  display: none;
+  font-size: 14px;
+  color: #101111;
+}
+
+/* Torna visível só no mobile */
+@media screen and (max-width: 768px) {
+  .mobileOnlyText {
+    display: block;
+  }
+
+  .mobileIconText {
+    padding-left: 12px;
+    padding-right: 12px;
+    margin-top: 3px;
+  }
+}
+
+/* Estilo do wrapper do ícone no mobile */
+.mobileIconWrapper {
+  display: none;
+  padding-left: 12px;
+  padding-right: 12px;
+  margin-top: 3px;
+}
+
+
+
+/* Mobile: mostra o wrapper e esconde o ícone direto */
+@media screen and (max-width: 768px) {
+  .mobileIconWrapper {
+    display: block;
+  }
+
+  .desktopIcon {
+    display: none;
+  }
+}
+
+.active {
+  background-color: #69be99;
+  border-radius: 20%;
+  color: #ffffff;
+}
+
+/* Menu perfil na sidebar */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3000;
+  background-color: rgba(0, 0, 0, 0); /* fundo invisível */
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding-left: 10px;
+  padding-top: 20px;
+  padding-bottom: 5px;
+}
+
+.userModal {
+  background-color: #fff;
+  color: #000;
+  display: flex;
+  flex-direction: row;
+  border-radius: 8px;
+  width: 515px;
+  height: 730px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 3001;
+  animation: slideUp 0.2s ease-out;
+  overflow: hidden;
+}
+
+.modalLeft {
+  width: 10%;
+  background-color: #f1f1f1;
+  border-right: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalMenu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.modalMenu li {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  border-radius: 4px;
+}
+
+.modalMenu li:hover {
+  background-color: #ddd;
+}
+
+.activeMenuItem {
+  background-color: #ccc;
+  font-weight: bold;
+}
+
+.menuIcon {
+  margin-right: 5px;
+}
+
+.modalRight {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.geralSenhaPjes {
+  font-size:10px;
+  text-align:left;
+  margin-left:1px;
+}
+
+.imgUserModal {
+  width:60px;
+  height: 60px;
+  border-radius: 50%;
+  color: #dad7d7;
+  padding: 5px;
+  object-fit: cover;
+  border:1px solid #ccc;
+}
+
+.imgUserModalComentario {
+  width:50px;
+  height: 50px;
+  border-radius: 50%;
+  color: #dad7d7;
+  padding: 5px;
+  object-fit: cover;
+  border:1px solid #ccc;
+}
+
+.imgUserModalAlteracao {
+  width:25px;
+  height: 23px;
+  border-radius: 50%;
+  color: #dad7d7;
+}
+
+.identificacaoUser {
+  margin-bottom:1rem;
+  font-size: 15px;
+  text-align:left;
+}
+
+.seiFuncaoTelEmail {
+  text-align:left;
+  display:flex;
+  flex-direction:column;
+  gap:0.5rem;
+}
+
+.divSeiFuncaoTelEmail {
+  display:flex; align-items:center;
+}
+
+.faSeiFuncaoTelEmail {
+  margin-right:8px;
+}
+
+.hrSeiFuncaoTelEmail {
+  border:none;
+  border-top:1px solid #ccc;
+  margin-top:2rem;
+}
+
+.divTabGeral {
+  display:flex;
+  flex-direction:column;
+  height:100%;
+}
+
+.divTabGeralBotoes {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 10px;
+  padding-bottom:1rem;
+}
+
+.divTabPrincipalBotoes {
+  display:flex;
+  gap: 10px;
+  margin-top:10px;
+}
+
+.divTabBotoes {
+  flex: 1;
+  padding: 30px;
+  background: #f5f5f5;
+  border-radius:20px;
+}
+
+.divPrincipalComentario {
+  margin-top: 10px;
+  height: 200px;
+  padding: 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content:space-between;
+}
+
+.labelComentario {
+  color: #333;
+  font-size: 15px;
+  font-family: cursive;
+  flex-grow: 1;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  line-height: 1.5;
+
+}
+
+.labelDataComentario {
+  color:#333;
+  font-size: 10px;
+
+}
+
+.divAspasDireita {
+  font-size:30px;
+  color: #6d6868;
+  align-self: flex-end;
+  padding-right:120px;
+}
+
+.divImgComentario {
+  position: absolute;
+  bottom: 10px;
+  justify-items: center;
+  right: 10px;
+}
+
+.labelNomeUserComentario {
+  color: #333;
+  font-size: 10px;
+}
+
+.divDesconectar {
+
+}
+
+.imgSenhaModal {
+  width:100px;
+  height: 100px;
+  color: #dad7d7;
+  object-fit: cover;
+}
+
+.modalFooterLeft {
+  margin-top: auto;
+  padding-top: 1rem;
+}
+
+.profileFooterItem {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border-radius: 4px;
+  background-color:#2e53b1;
+  color:#ffffff;
+}
+
+.profileFooterItem:hover {
+  background-color: #ddd;
+}
+
+.input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  
+}
+/* fim Menu perfil na sidebar */
+
+
+
+
+/* Conteúdo da página */
+.conteudoPagina {
+  flex: 1;
+  margin-left: 55px;
+  color: #101111;
+  /*overflow-y: auto;*/
+}
+
+.headerMenu {
+  position: relative;
+  margin-left: auto;
+}
+
+.headerMenuButton {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.headerDropdown {
+  position: absolute;
+  right: 0;
+  top: 39px;
+  background-color: #1a1a2e;
+  border: 1px solid #333;
+  border-radius: 4px;
+  overflow: hidden;
+  z-index: 2000;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.headerDropdown div {
+  padding: 10px 16px;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.headerDropdown div:hover {
+  background-color: #cbd0dd;
+}
+
+
+/* Rodapé fixo na sidebar (modo desktop) */
+.sidebarFooter {
+  margin-top: auto;
+  width: 100%;
+  border-top: 1px solid #f0eaea;
+}
+
+.profileItem {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.profileItem:hover {
+  background-color: #cbd0dd;
+}
+
+/* FIM DO TEMPLATE PRINCIPAL */
+
+
+/* INICIO TELA NOVA USUARIOS */
+.alunosContainer {
+  display: flex;
+  height: 100%;
+  background-color: #ffffffa8;
+}
+
+/* Div esquerda (lista de alunos) */
+.listaEsquerda {
+  width: 25%;
+  padding: 5px;
+  border-right: 1px solid #dadee3;
+}
+
+/* Div direita (detalhes do aluno) */
+.detalhesDesktop {
+  width: 75%;
+  padding: 5px;
+}
+
+.divFiltroUsuarios {
+  display: flex;
+  width: 100%;
+  padding-left: 3px;
+  padding-right: 3px;
+  padding-bottom: 20px;
+
+  gap: 6px; /* opcional: espaçamento entre spans */
+}
+
+
+.divUsuarios {
+  height: 100%;
+  overflow-y: auto;
+  padding-bottom: 50px;
+}
+
+.spanFiltroUsuarios {
+  flex: 1; /* faz cada span ocupar espaço igual */
+  text-align: center; /* centraliza o texto */
+  border-radius: 15px;
+  font-size: 12px;
+  padding: 5px 0; /* altura do botão */
+  border: 1px solid #c9c9c9;
+  cursor: pointer; /* opcional: parece clicável */
+}
+
+
+
+
+
+
+
+.listdeAlunos ul {
+  padding: 0;
+  list-style: none;
+}
+
+.listdeAlunos li {
+  color: rgb(68, 67, 67); /* Cor do texto */
+  margin-bottom: 5px; /* Espaço entre os itens */
+  font-size: 8px; /* Tamanho da fonte */
+  display: flex; /* Alinha ícone e texto horizontalmente */
+  align-items: center; /* Alinha o ícone e o texto verticalmente */
+  padding: 10px; /* Espaçamento entre o conteúdo e a linha */
+}
+
+.listdeAlunos li i {
+  margin-right: 5px; /* Espaço entre o ícone e o texto */
+  color: green; /* Cor do ícone */
+}
+
+.listdeAlunos li .rightIcon {
+  margin-left: auto; /* Alinha o ícone à direita */
+  font-size: 12px; /* Tamanho do ícone */
+  color: black; /* Cor do ícone à direita */
+}
+
+.listdeAlunos li .rightTexto {
+  margin-left: auto; /* Alinha o ícone à direita */
+  font-size: 10px; /* Tamanho do ícone */
+  color: black; /* Cor do ícone à direita */
+
+}
+
+.alunoListImg {
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  margin-right: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.alunoSelecionado {
+  background-color: #e3e6ebb1;
+  border-radius:5px;
+}
+
+.editIcon {
+  font-size: 15px;
+  cursor: pointer;
+  position: absolute;
+  top: 5px;
+  right: 5;
+  color: #333;
+}
+
+.menuSuspenso {
+  position: absolute;
+  top: 80px;
+  right: 10px;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  width: 200px;
+  padding: 5px 0;
+  font-family: sans-serif;
+}
+
+.menuSuspenso ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menuSuspenso li {
+  padding: 14px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+.menuSuspenso li:hover {
+  background-color: #f0f0f0;
+}
+
+
+.modalOverlayCadAluno {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3000;
+  background-color: rgba(75, 30, 30, 0);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding-left: 480px;
+  padding-top: 110px;
+}
+
+
+.imgCadAluno {
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  padding: 3px;
+  color: #757575;
+  margin-right: 10px;
+  border: 1px solid #757575;
+}
+
+
+.menuIcon {
+  margin-right: 5px;
+}
+
+
+.cadAlunoModal {
+  background-color: #fff;
+  color: #000;
+  display: flex;
+  flex-direction: row;
+  border-radius: 4px;
+  width: 400px;
+  height: 580px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 3001;
+  animation: slideDown  0.1s ease-out;
+  overflow: hidden;
+}
+
+.modalOverlayCadDetalhesAluno {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3000;
+  background-color: rgba(75, 30, 30, 0);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding-right: 40px;
+  padding-top: 540px;
+}
+
+.cadDetalhesAlunoModal {
+  background-color: #fff;
+  color: #000;
+  display: flex;
+  flex-direction: row;
+  border-radius: 4px;
+  width: 400px;
+  height: 310px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 3001;
+  animation: slideDown  0.1s ease-out;
+  overflow: hidden;
+}
+
+
+.modalOverlayCadEndereco {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3000;
+  background-color: rgba(75, 30, 30, 0);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding-right: 40px;
+  padding-top: 350px;
+}
+
+.cadEnderecoModal {
+  background-color: #fff;
+  color: #000;
+  display: flex;
+  flex-direction: row;
+  border-radius: 4px;
+  width: 400px;
+  height: 280px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 3001;
+  animation: slideDown  0.1s ease-out;
+  overflow: hidden;
+}
+
+
+.modalOverlayCadComunicacao {
+  position: fixed;
+  top: 0;
+  left: 20;
+  right: 0;
+  bottom: 0;
+  z-index: 3000;
+  background-color: rgba(75, 30, 30, 0);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding-left: 480px;
+  padding-top: 50px;
+}
+
+.cadComunicacaoModal {
+  background-color: #fff;
+  color: #000;
+  display: flex;
+  flex-direction: row;
+  border-radius: 4px;
+  width: 95%;
+  height: 800px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 3001;
+  animation: slideDown  0.1s ease-out;
+  overflow: hidden;
+}
+
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-30%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modalRightCadAluno {
+  flex: 1;
+  padding: 1.5rem;
+  background-color: #fff;
+  overflow-y: auto;
+}
+
+
+.inputCadAlunoApenasinput {
+  width: 95%;
+  border-bottom: 1px solid #ccc;
+  font-size: 14px;
+  outline: none;
+  margin: 5px;
+  padding-left: 4px;
+}
+
+.botaoFooterCadAluno {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  font-size: 18px;
+  margin-top: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border-radius: 4px;
+  background-color:#3c8114;
+  color:#ffffff;
+}
+
+.botaoFooterCadAluno:hover {
+  background-color: #619c3f;
+}
+
+.botaoFooterCancelar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  margin-top: 5px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border-radius: 4px;
+  background-color:#b13914;
+  color:#ffffff;
+}
+
+.alunoSemImagem {
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  padding: 3px;
+  color: #757575;
+  margin-right: 10px;
+  border: 1px solid #757575;
+}
+
+.divItensMeioUsuario {
+  font-size:14px;
+  color:#89899b;
+  display:flex;
+}
+
+.divItensMeioUsuarioTelefone {
+  display: flex;
+  margin-right:15px;
+  align-items: center;
+}
+
+.divItensMeioUsuarioMat {
+  display:flex;
+  margin-right:5px;
+  align-items:center;
+}
+
+.divItensMeioUsuarioFuncao {
+  display:flex;
+  margin-left:10px;
+  align-items:center;
+}
+
+.divDadosBasicosUserPrincipal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.divDadosBasicosUserTexto {
+  padding: 5px;
+  border: 1px solid #d4d0d0;
+  margin-top: 5px;
+}
+
+
+
+/* mobile */
+@media (max-width: 768px) {
+  .alunosContainer {
+    display: block;
+  }
+
+  .listaEsquerda {
+    width: 100%;
+    border-right: none;
+    padding: 5px;
+    overflow-y: auto;
+  }
+
+  .detalhesDesktop {
+    display: none;
+  }
+
+  .detalhesMobile {
+    display: block;
+    margin-top: 5px;
+  }
+
+  .listdeAlunos {
+    width: 100% !important;
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  .modalOverlay {
+    justify-content: center;
+    align-items: flex-end;
+    padding-left: 0;
+    padding-bottom: 0;
+  }
+
+  .userModal {
+    width: 100%;
+    height: 70%;
+    border-radius: 12px 12px 0 0;
+    animation: slideUp 0.2s ease-out;
+  }
+
+  .modalOverlayCadAluno {
+    padding-left: 0px;
+  }
+
+  .modalOverlayCadComunicacao {
+    padding-left: 0px;
+  }
+
+}
+
+/* DESKTOP */
+@media (min-width: 769px) {
+  .detalhesMobile {
+    display: none;
+  }
+}
+
+/* FIM TELA NOVA USUARIOS */
+
+
+/* INICIO TELA LISTA DE COMUNICAÇÃO ALUNOS */
+
+.comunicacaoContainer {
+  display: flex;
+  height: 100%;
+}
+
+.itemComunicacao {
+  background-color: #9795a11e;
+  border-radius: 5px;
+}
+
+.comunicacaoAlunoListImg {
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin-right: 5px;
+
+  /* Centralizando o ícone */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.comunicacaoAlunoListImg i {
+  color: white;        /* cor branca */
+  font-size: 18px;     /* aumenta o tamanho do ícone, ajuste como quiser */
+}
+
+.divComunicacaoRodape {
+  display: flex;
+  flex-direction: column; /* Alinha os itens em coluna */
+  align-items: center;     /* Centraliza horizontalmente */
+  justify-content: center; /* Centraliza verticalmente (opcional) */
+  text-align: center;      /* Centraliza o texto */
+  padding: 5px;       /* Opcional: dá um espaçamento interno */
+  height: 100%;
+  margin-top: 50px;
+  margin-bottom: 30px;
+}
+
+
+/* FIM TELA LISTA DE COMUNICAÇÃO ALUNOS */
+
+.divUserImagePerfil {
+  display: flex;
+  flex-direction: column; /* Alinha os itens em coluna */
+  align-items: center;     /* Centraliza horizontalmente */
+  justify-content: center; /* Centraliza verticalmente (opcional) */
+  text-align: center;      /* Centraliza o texto */
+  padding: 5px;       /* Opcional: dá um espaçamento interno */
+  height: 100%;            /* Se quiser centralizar verticalmente, garanta altura */
+  margin-bottom: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /* Tabela de usuário */
@@ -222,16 +1167,6 @@
   background-color: #f4f4f4;
 }
 
-/* Conteúdo da página (ajustado à direita da sidebar) */
-.conteudoPagina {
-  flex-grow: 1; /* Faz com que o conteúdo ocupe o restante da tela */
-  margin-top: 50px;
-  margin-left: 200px; /* Deixa a margem da sidebar à esquerda */
-  padding: 20px; /* Espaçamento dentro do conteúdo */
-  overflow-x: hidden; /* Impede que o conteúdo ultrapasse à direita */
-  box-sizing: border-box; /* Inclui padding e borda no cálculo da largura */
-  max-width: 100vw; /* Garante que a largura máxima da div não ultrapasse a tela */
-}
 
 .tabelaUsuarios {
   width: 100%;
@@ -358,9 +1293,45 @@
   margin-bottom: 10px; /* Espaço entre os itens */
   font-size: 14px; /* Tamanho da fonte */
   display: flex; /* Alinha ícone e texto horizontalmente */
-  align-items: center; /* Alinha o ícone e o texto verticalmente */
-  padding-bottom: 10px; /* Espaçamento entre o conteúdo e a linha */
-  border-bottom: 1px solid rgb(194, 190, 190); /* Linha abaixo de cada item */
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgb(228, 219, 219); /* Linha abaixo de cada item */
+}
+
+.divIdentificacaoUsuario {
+  color: rgb(68, 67, 67); /* Cor do texto */
+  margin-bottom: 10px; /* Espaço entre os itens */
+  font-size: 14px; /* Tamanho da fonte */
+  display: flex; /* Alinha ícone e texto horizontalmente */
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgb(228, 219, 219); /* Linha abaixo de cada item */
+}
+
+.profileDetails .divIdentificacaoUsuario i {
+  margin-right: 10px; /* Espaço entre o ícone e o texto */
+  color: rgb(0, 0, 0); /* Cor do ícone */
+}
+
+.profileDetails .divIdentificacaoUsuario .rightIcon {
+  margin-left: auto; /* Alinha o ícone à direita */
+  font-size: 18px; /* Tamanho do ícone */
+  color: black; /* Cor do ícone à direita */
+}
+
+.profileDetails .divIdentificacaoUsuario .rightTexto {
+  margin-left: auto; /* Alinha o ícone à direita */
+  font-size: 12px; /* Tamanho do ícone */
+  color: black; /* Cor do ícone à direita */
+
+}
+
+.divConteudoComunicacao {
+  color: rgb(68, 67, 67); /* Cor do texto */
+  margin-bottom: 10px; /* Espaço entre os itens */
+  font-size: 14px; /* Tamanho da fonte */
+  display: flex; /* Alinha ícone e texto horizontalmente */
+  align-items: center;
 }
 
 .profileDetails li i {
@@ -420,21 +1391,15 @@
 }
 
 
-
-
-
-
-
 /* Conteúdo da página (ajustado à direita da sidebar) */
 .comunicacaoPagina {
   flex-grow: 1; /* Faz com que o conteúdo ocupe o restante da tela */
-  padding: 20px; /* era 20px Espaçamento dentro do conteúdo */
+  padding: 10px; /* era 20px Espaçamento dentro do conteúdo */
   overflow-x: hidden; /* Impede que o conteúdo ultrapasse à direita */
   overflow-y: auto; /* Adiciona scroll vertical quando necessário */
   box-sizing: border-box; /* Inclui padding e borda no cálculo da largura */
   border: 1px solid;
-  border-color: #bfbbbb;
-  background-color: #ffffff;
+  border-color: #d1cfcf;
   max-width: 100vw; /* Garante que a largura máxima da div não ultrapasse a tela */
 }
 
@@ -449,10 +1414,8 @@
 }
 
 .tituloListar {
-  font-size: x-large;
-  margin-bottom: 10px;
-  border-bottom: 1px solid;
-  border-color: #bfbbbb;
+  font-size: 18px;
+  margin-bottom: 5px;
 }
 
 
@@ -607,25 +1570,20 @@
 }
 
 .enquadramento {
-  width: 80%;
+  width: 100%;
   margin-bottom: 10px;
 }
 
 .inputRespostaCheck {
 
-  margin-right: 10px;
-  margin-left: 40px;
   font-size: 12px;
-  width: 250px;
+  width: 330px;
   height: 20px;
   color: #e90808;
 
 }
 
 .labelEnquadramento {
-
-  margin-right: 5px;
-  margin-left: 45px;
   width: 100%;
   height: 40px;
   font-size: 12px;
@@ -639,10 +1597,10 @@
 }
 
 .inputComunicacaoTextarea {
-  padding: 10px;
+  padding: 5px;
   width: 100%;
-  height: 150px;
-  background-color: #d3d2d2;
+  height: 100px;
+  background-color: #ececec;
 }
 
 .areadetextocomunicacao {
@@ -659,6 +1617,15 @@
 .inputEnquadramento {
   padding: 10px;
   width: 100%;
+  border: 1px solid;
+  border-color: #c1bfbf;
+  margin-bottom: 10px;
+}
+
+.selectEnquadramento {
+  padding: 10px;
+  width: 100%;
+  height: 46px;
   border: 1px solid;
   border-color: #c1bfbf;
   margin-bottom: 10px;
@@ -684,16 +1651,16 @@
 
 .comunicacaoSalvarButton {
   width: 100%;
-  height: 50px;
-  font-size: 25px; /* Tamanho da fonte */
+  height: 30px;
+  font-size: 15px; /* Tamanho da fonte */
   color: rgb(255, 255, 255); /* Cor do texto */
   background-color: #199f2b;
   margin-bottom: 5px;
 }
 .comunicacaoCancelarButton {
   width: 100%;
-  height: 50px;
-  font-size: 25px; /* Tamanho da fonte */
+  height: 30px;
+  font-size: 15px; /* Tamanho da fonte */
   color: rgb(255, 255, 255); /* Cor do texto */
   background-color: #c30808;
 }
@@ -709,18 +1676,6 @@
 
 
 
-.modalOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-}
 
 .modalContent {
   background: #fff;
@@ -736,6 +1691,10 @@
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+}
+
+.modalInputs {
+  display:flex;
 }
 
 .enviarRespBtn {
@@ -756,6 +1715,37 @@
   margin-bottom: 5px;
 }
 
+.inputSenha {
+  padding: 10px;
+  width: 100%;
+  border: 1px solid;
+  border-color: #c1bfbf;
+  margin-top: 10px;
+}
+
+.btnCancel {
+  width: 100%;
+  height: 30px;
+  font-size: 15px; /* Tamanho da fonte */
+  color: rgb(255, 255, 255); /* Cor do texto */
+  background-color: #909597;
+  margin-bottom: 5px;
+}
+
+.btnConfirm {
+  width: 100%;
+  height: 30px;
+  font-size: 15px; /* Tamanho da fonte */
+  color: rgb(255, 255, 255); /* Cor do texto */
+  background-color: #129109;
+  margin-bottom: 5px;
+}
+
+.btnCancel {
+  background-color: #f44336;
+  color: white;
+}
+
 
 .navLogoHeader {
   display: none;
@@ -766,10 +1756,85 @@
 }
 
 
+.divPrincialTelaComunicacao {
+  width: 100%;
+  height: 100px;
+  padding: 5px;
+}
+
+
+.divBotoesCia{
+  background: #174ea6;
+  width: 30%;
+  text-align: center;
+  align-content: center;
+  font-size: 22px;
+  height: 40px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.divTotal {
+  font-size:14px;
+  padding-left: 20px;
+  font-weight: bold;
+  color: #ffffff;
+
+}
+
+.divTextoTotais {
+  font-size: 11px;
+  padding-left: 20px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.divIcone {
+  align-items: initial;
+  margin-left: 10px;
+  width: 50%;
+}
+
+.thDivTituloTabelaComunicacao {
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+
+
+
+.tdDivTitleComunicacaoAluno {
+  font-weight:bold;
+  font-size: 15px;
+  padding-top: 20px;
+  padding-bottom: 1px;
+  vertical-align: bottom;
+}
+
+.tdDivIdComunicacao {
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 14px;
+  font-weight: bold;
+  color: #ffffff;
+  width:100%;
+}
+
+
 
 .tabelaComunicacao td {
-  vertical-align: middle; /* Alinha o conteúdo verticalmente no meio */
-  padding-bottom: 8px; /* Ajuste da distância inferior */
+  vertical-align: middle;
+  margin: 0;
+  font-size: 12px;
+  padding: 12px 16px;
+  text-align: left;
+  border: 1px solid #d2d4d7;
+  vertical-align: top;
+  
 }
 
 .tabelaComunicacao td img {
@@ -778,11 +1843,7 @@
   margin-right: auto;
 }
 
-.tabelaComunicacao td {
-  margin: 0;
-  padding-bottom: 4px;
-  font-size: 12px;
-}
+
 
 .pComunicacao {
   text-align: center; /* Centraliza o texto */
@@ -798,21 +1859,20 @@
 .tabelaComunicacao {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
   table-layout: fixed;
 }
 
-.tabelaComunicacao th, .tabelaComunicacao td {
+.tabelaComunicacao th {
   padding: 5px;
-  text-align: left; /* Alinha os outros dados à esquerda */
+  text-align: left;
 }
 
 .tabelaComunicacao th {
-  background-color: #f2f2f2;
+  background-color: #0a4d6b;
 }
 
 .tabelaComunicacao tr:nth-child(even) {
-  background-color: #f9f9f9;
+  background-color: #f9f9f97c;
 }
 
 .tabelaComunicacao tr:hover {
@@ -823,22 +1883,76 @@
   width: 100%;
   border-collapse: collapse;
   font-family: Arial, sans-serif;
+  min-width: 900px;
 }
 
 .tabelaComunicacao thead {
   background-color: #1153ae;
-  color:#4947ba;
+  color:#ffffff;
 }
+
+.divtabelaComunicacao {
+  display:flex;
+  align-items: center;
+  padding: 5px;
+  border-bottom:1px solid #e1dada;
+  width: 100%;
+  gap: 8px;
+}
+
+/* Container principal dos três blocos (1ª, 2ª, 3ª CIA) */
+.topoContainer {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+/* Cada bloco de CIA */
+.ciaBox {
+  flex: 1;
+  min-width: 280px;   /* evita encolher demais */
+}
+
+@media (max-width: 768px) {
+  .containerPrincipal {
+    padding: 5px;
+    width: 100%;
+    overflow-y: auto;
+  }
+  .topoContainer {
+    flex-direction: column;
+  }
+
+  .divBotoesSuperiores {
+    flex-direction: column;
+
+  }
+}
+
+.divBotoesPrincipal  {
+   display: flex;
+    flex: 1;
+    text-align: center;
+}
+
+.divBotoesSuperiores {
+  flex: 1;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  background-color: #f5f3f38e;
+  border:1px solid #ece5e5;
+  padding: 5px;
+}
+
+
 
 .navIconComunicacaoHeader {
   width: 18px;
   height: 18px;
   margin-left: 5px;
-  color: #4753ba;
+  color: #ffffff;
   margin-right: 5px;
-}
-.thComunicacaoHeader {
-  width: 20px;
 }
 
 .thComunicacaoHeaderBotoes {
@@ -991,14 +2105,30 @@
   margin-bottom: 1px;
 }
 
+.scrollableTableWrapper {
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+}
 
-.tabelaComunicacao th,
-.tabelaComunicacao td {
-  padding: 12px 16px;
-  text-align: left;
+
+
+.tabelaComunicacao thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+
+.tabelaComunicacao th {
+  padding: 10px 10px;
+  text-align: center;
   border: 1px solid #d2d4d7;
   vertical-align: top;
 }
+
 
 .tabelaComunicacao tr:hover {
   background-color: #e2e1f4;
@@ -1007,18 +2137,141 @@
 /*fim tabela listar comunicação*/
 
 .inputBuscar {
-  margin-bottom: 1rem;
   padding: 0.5rem;
   width: 100%;
   border-radius: 20px;
   color: #ccc;
   border: 1px solid;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.iconeAddUsuario {
+  width: 10%;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
-.comunicacaoAlunoListImg {
-  border-radius: 50%;
-  width: 35px;
+
+.menuBotoesUsuarios {
+  display: flex;
+  text-align: center;
+  width: 50px;
   height: 35px;
+  font-family: Arial, sans-serif;
+  border-radius: 10px;
+  background-color: #ffffff;
+  margin-top: 1px;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.tabelaUsuarios {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  table-layout: fixed;
+}
+
+.usuarioImagem {
+  width: 30px;
+  margin-right: 10px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.usuarioImagemList {
+  width: 60px;
+  height: 60px;
+  margin-right: 10px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.usuarioImagemDetalhe {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.usuarioSemImagemDetalhe {
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  padding: 3px;
+  color: #757575;
+  margin-right: 10px;
+  border: 1px solid #757575;
+
+}
+
+.tabelaUsuarios th,
+.tabelaUsuarios td {
+  padding: 5px 5px;
+  text-align: left;
+  border: 1px solid #d2d4d7;
+  vertical-align: top;
+}
+
+.iconsTabelaUsuarios {
+  font-size: 20px;
+  text-align: justify;
+  padding: 4px;
+
+}
+
+.iconsTabelaUsuarios:hover {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+}
+
+.cardContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: flex-start;
+  margin-top: 2rem;
+}
+
+.card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  width: 300px;
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.cardTitle {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.cardCia {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 1rem;
+}
+
+.cardActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.turmaListImg {
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
   margin-right: 5px;
 
   /* Centralizando o ícone */
@@ -1027,10 +2280,24 @@
   align-items: center;
 }
 
-.comunicacaoAlunoListImg i {
-  color: white;        /* cor branca */
-  font-size: 18px;     /* aumenta o tamanho do ícone, ajuste como quiser */
+
+/*INICIO DETALHES DA COMUNICAÇÃO CLICADA*/
+
+
+.pRespostaAluno {
+  padding-left:5px;
+  text-align: justify;
+  font-style:italic;
 }
+
+.divCienciaResponsavel {
+  font-size:14px;
+  color: #333;
+  display:flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
 
 
 
@@ -1072,125 +2339,72 @@
     opacity: 0.1;
     z-index: -1;
   }
+  
+  .dashboardContainer {
+    flex-direction: column;
+    margin-top: 5px;
+    height: calc(100vh - 100px); /* header + bottom nav */
+  }
+
   .sidebar {
-    left: -200px; /* Esconde a sidebar */
-  }
-
-  .sidebar.visible {
-    left: 0;
-  }
-
-  .sidebarLogo {
-    width: 40px;
-    height: 40px;
-    margin-bottom: 10px;
-  }
-
-  .userImage {
-    margin-top: 10px;
-    width: 50px;
-    height: 50px;
-    margin-bottom: 15px;
-  }
-
-  .mainContent {
-    margin-left: 0; /* Ajusta a margem */
-  }
-
-  .header {
-    left: 0; /* Ajusta o header para ocupar toda a largura */
-    width: 100%; /* O header ocupa toda a largura da tela */
-  }
-  /* Informações do usuário na header */
-  .userInfo {
-    display: flex;
-    justify-content: space-between; /* Alinha o conteúdo à direita */
-    align-items: center; /* Garante que o texto fique verticalmente centralizado */
-    color: rgb(255, 255, 255); /* Cor do texto */
-    font-size: 16px; /* Tamanho da fonte */
-    padding-right: 20px; /* Ajusta o espaço da borda direita, se necessário */
-    width: 100%;
-  }
-  
-  .userInfo span {
-    font-weight: 500; /* Peso da fonte */
-  }
-
-  .nav {
-    display: none; /* Esconde o menu completo na sidebar em telas pequenas */
-  }
-
-  /* Estilos para a imagem */
-  .userImageList {
-    width: 20px;
-    height: 20px;
-    object-fit: cover; /* Garante que a imagem não distorça e preencha a área definida */
-    border-radius: 50%; /* Deixa a imagem arredondada */
-  }
-
-  /* Footer fixo com ícones da sidebar */
-  .sidebarIconOnly {
-    display: flex;
-    justify-content: space-around; /* Distribui os ícones uniformemente */
     position: fixed;
+    top: auto;
     bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
     width: 100%;
-    background-color: #0f4761;
-    padding: 5px 0;
-    z-index: 5;
+    background: #ffffff;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0;
+    border-top: 1px solid #d3d1d1;
   }
 
-  .sidebarIconOnly a {
-    text-decoration: none;
-    color: white;
-    display: block;
-    padding: 5px;
-    font-size: 12px;
-    text-align: center;
+  .sidebarFooter {
+    display: none;
   }
 
-  .sidebarIconOnly .navIcon {
-    margin: 0;
-    width: 20px;
-    height: 15px;
+  .sidebarOpen,
+  .sidebarClosed {
+    width: 100% !important;
   }
 
-  .navIconHeader {
-    margin-left: 10px;
-    width: 2px;
-    height: 10px;
+  .menuButton {
+    display: none;
   }
-  .navLogoHeader {
+
+  .menuItems {
     display: flex;
-    flex-direction: column; /* Organiza os itens verticalmente */
-    align-items: center; /* Centraliza os itens horizontalmente */
-    justify-content: center; /* Garante que o conteúdo ocupe o centro vertical */
-    margin-left: 0;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
   }
-  
-  .navLogoHeader img {
-    margin-bottom: 0px; /* Espaçamento entre a imagem e o texto */
+
+  .menuItems li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    text-align: center;
+    width: 60px;
   }
-  
-  .navLogoHeader span {
-    font-size: 16px; /* Ajuste o tamanho da fonte do texto, se necessário */
+
+  .icon {
+  margin: 0 auto; 
   }
   
 
-  /* Alinhamento dos ícones no Footer */
-  .sidebarIconOnly a:hover {
-    background-color: #ffffff30;
+  .itemText {
+    display: none;
   }
 
   .conteudoPagina {
-    flex-grow: 1; /* Faz com que o conteúdo ocupe o restante da tela */
-    margin-top: 50px;
-    margin-left: 0; /* Deixa a margem da sidebar à esquerda */
-    padding: 20px; /* Espaçamento dentro do conteúdo */
-    overflow-y: auto; /* Adiciona scroll vertical quando necessário */
-    box-sizing: border-box; /* Inclui padding e borda no cálculo da largura */
-    max-width: 100vw; /* Garante que a largura máxima da div não ultrapasse a tela */
-    max-height: 90vh; /* Limita a altura da div à altura da tela */
+    margin-left: 0 !important;
+    padding-top: 35px;
+    height: calc(100vh - 100px);
   }
 
   .tituloComunicacao {
@@ -1242,7 +2456,351 @@
 
 }
 
+/* INICIO TELA NOVA PERFIL DO USUARIO  */
+
+.divPrincipalUsuarioPerfil {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 50px;
+  padding:0 16px;
+  border-bottom: 1px solid #ebf4f3;
+}
+
+.tituloPerfil{
+  position:absolute;
+  left: 50%;
+  font-size: 25px;
+  transform: translateX(-50%);
+}
+
+.itemMenuPerfilPrincipal {
+  display: flex;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  align-items: center;
+  border-bottom: 1px solid #ebf4f3;
+
+}
+
+.itemMenuPerfilSecundaria {
+  margin-left:20px;
+
+}
+
+.itemMenuPerfilIcone {
+  margin-left: 20px;
+  font-size: 20px;
+  color:#7e7b7b;
+
+  }
+
+.itemMenuPerfilLabel {
+  font-size:13px;
+  color:#7e7b7b;
+
+}
+
+.itemMenuPerfilNome {
+  font-size:14px;
+  color: #4f4c4c;
+  font-weight: bold;
+
+}
+
+.divConteinerDadosUsuario{
+  position:relative;
+  border-radius: 20px;
+  border-bottom: 1px solid #ebf4f3;
+  width: 100%;
+  margin-top: 5px;
+  padding: 20px;
+  overflow: hidden;
+  background: #ebecf494;
+  min-height: 210px;
+  display: flex;
+}
+
+.imagUserFundoDireita{
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 40%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.imgUser{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+.divSobreposta{
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction:column;
+}
+
+.divSobrepostaItens{
+  display: flex;
+  font-size: 15px;
+  color: #807979;
+  align-items: center;
+}
+.divEnderecoPerfil{
+  margin-top:10px;
+  background: #ebecf494;
+  border-radius: 20px;
+  border-bottom: 1px solid #ebf4f3;
+  padding:10px;
+}
+
+.divEnderecoPerfilTitulo {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.divPrincipalDependentesPerfil{
+  margin-top:10px;
+  background: #ebecf494;
+  border-radius: 20px;
+  border-bottom: 1px solid #ebf4f3;
+  padding:10px;
+
+}
+
+.divimgResponsaveisPrincipal {
+  display:flex;
+  padding: 10px;
+}
+
+
+.divimgDependentesPrincipal {
+  display:flex;
+  padding: 10px;
+  border-bottom: 1px solid #ccd1d0;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+.imagemUsuario{
+  border-radius:50%;
+  width: 70px;
+  height: 70px;
+  padding: 3px;
+  color: #757575;
+  border: 1px solid #757575;
+}
+
+.imagemUsuarioPerfilDependente{
+  border-radius:50%;
+  width: 50px;
+  height: 50px;
+  padding: 3px;
+  color: #757575;
+  border: 1px solid #757575;
+}
+
+.semImagemUsuarioPerfilDependente{
+  border-radius:50%;
+  width: 50px;
+  height: 50px;
+  padding: 3px;
+  color: #757575;
+  border: 1px solid #757575;
+}
+
+
+.divBotoesDependentesPrincipal {
+  display: flex;
+  justify-content: flex-end;
+  margin-left: auto; /* <-- ESSENCIAL */
+}
+
+.divBotoesDependentesSecundaria {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.divGrupoBotaoDependentes {
+  cursor:pointer;
+  padding: 5px;
+  font-size: 11px;
+  color: #ffffff;
+  background: #1ba494;
+  border-radius:5px;
+}
+
+.divGrupoBotaoDependentesDesativado {
+  cursor:pointer;
+  padding: 5px;
+  font-size: 11px;
+  color: #ffffff;
+  background: #b0b0b0;
+  border-radius:5px;
+}
+
+.divDadosAcademicosPrincipal {
+  margin-left: auto; /* 🔥 empurra a div para a direita */
+  display: flex;
+  align-items: center; /* verticalmente centralizado */
+}
+
+.spanDadosAcademicosTurma {
+  background: #0ea860;
+  color: #ffffff;
+  padding: 8px;
+  text-align: center;
+  width: 100px;
+  border-radius: 15px;
+  font-size: 12px;
+}
+
+.spanDadosAcademicosComunicacao {
+  background: #0e4ca8;
+  color: #ffffff;
+  padding: 8px;
+  text-align: center;
+  width: 100px;
+  border-radius: 15px;
+  font-size: 12px;
+}
 
 
 
 
+/* FIM TELA NOVA PERFIL DO USUARIO  */
+
+
+/* INICIO TELA AUTORIZAÇÃO  */
+
+.divNumeroAutorizacao {
+  text-align:center;
+  margin-top: 5px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.alunoSemImagemAutorizacao {
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  padding: 3px;
+  color: #757575;
+  border: 1px solid #757575;
+}
+
+.divModalAutorizacaoPrincipal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+  backdrop-filter: blur(2px);
+}
+
+.divModalAutorizacaoSecundaria {
+  background:#fff;
+  max-width: 420px;
+  width: 90%;
+  color: #333;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  animation: slideUp 0.4s ease;
+  position: relative;
+  
+}
+
+.divModalAutorizacaoFechar {
+  position: absolute;
+  top: 10px;
+  right:10px;
+  cursor: pointer;
+  color: #888;
+  font-size: 18px;
+  transition: 0.2s;
+}
+
+
+/* FIM TELA AUTORIZAÇÃO  */
+
+
+/* INICIO TELA DASHBOARD  */
+
+
+
+
+
+.iconGrid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 100vw; /* evita overflow horizontal */
+  box-sizing: border-box;
+}
+
+/* Ícones */
+.iconBox {
+  flex: 1 1 calc(25% - 10px);
+  max-width: calc(25% - 10px);
+  background-color: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #12549162;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  font-size: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.iconBox:hover {
+  background-color: #e9ecef;
+  transform: scale(1.05);
+}
+
+.iconLabel {
+  font-size: 0.8rem;
+  margin-top: 8px;
+  color: #000000;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .iconBox {
+    flex: 1 1 calc(25% - 10px);
+    max-width: calc(25% - 10px);
+    height: 80px;
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .iconBox {
+    flex: 1 1 calc(25% - 10px);
+    max-width: calc(25% - 10px);
+    height: 70px;
+    font-size: 18px;
+  }
+}

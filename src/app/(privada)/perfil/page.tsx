@@ -1,262 +1,421 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import styles from '../privateLayout.module.css';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  FaAngleLeft,
+  FaBarcode,
+  FaChartLine,
+  FaGraduationCap,
+  FaMapMarker,
+  FaPhone,
+  FaSearch,
+  FaUser,
+} from "react-icons/fa";
+import styles from "../privateLayout.module.css";
+import Image from "next/image";
 
-interface UserLogin {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  cpf: string;
-  orgao: string;
-  pg: string;
-  mat: number;
-  nomeGuerra: string;
-  funcao: string;
-  typeUser: number;
-  iat: number;
-  exp: number;
-  addresses?: {
-    complement: string;
-    numberAddress: number;
-    cep: string;
-    city?: {
-      name: string;
-      state?:{
-        name:string;
-      };
-    };
-  };
-  aluno?: {
-    id: number;
-    userId: number;
-    resp1: string;
-    resp2: string;
-    grauInicial : number;
-    grauAtual : number;
-    turmaId: number;
-    turma: {
-      id: number;
-      name: string; // Nome da Turma
-      cia: {
-        id: number;
-        name: string; // Nome da Cia
-      };
-    };
-  };
-}
+export default function PerfilPage() {
+  const [userSelecionado, setUserSelecionado] = useState<any>(null);
+  const [alunosDependentes, setAlunosDependentes] = useState<any[]>([]);
+  const [responsaveisDoAluno, setResponsaveisDoAluno] = useState<any[]>([]);
 
-export default function Perfil() {
-  const [userLogin, setUserLogin] = useState<UserLogin | null>(null); // Inicialmente null
-  const [userDetails, setUserDetails] = useState<any | null>(null); // Estado para armazenar as relações do usuário
-  const [isLoading, setIsLoading] = useState(true); // Estado de carregamento
   const router = useRouter();
+  // Busca o ID do usuário logado via cookie e usa esse ID para buscar os dados completos
+  useEffect(() => {
+    const userCookie = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("userData="));
+
+    if (!userCookie) return;
+
+    try {
+      const userString = userCookie.split("=")[1];
+      const userData = JSON.parse(decodeURIComponent(userString));
+
+      if (userData?.id) {
+        fetch(`/api/user/${userData.id}`)
+          .then((res) => res.json())
+          .then((data) => {
+            // Inclui iat e exp no objeto do usuário selecionado
+            setUserSelecionado({
+              ...data,
+              iat: userData.iat,
+              exp: userData.exp,
+            });
+          })
+          .catch((err) => {
+            console.error("Erro ao buscar dados do usuário logado:", err);
+          });
+      }
+    } catch (err) {
+      console.error("Erro ao parsear cookie do usuário:", err);
+    }
+  }, []);
+
+  // Busca alunos/dependentes relacionados a esse usuário
+  useEffect(() => {
+    if (!userSelecionado?.id) return;
+
+    const fetchDependentes = async () => {
+      try {
+        const res = await fetch("/api/user");
+        const allUsers = await res.json();
+
+        const dependentes = allUsers.filter((u: any) => {
+          const aluno = u.aluno;
+          return (
+            aluno &&
+            (aluno.resp1 === userSelecionado.id ||
+              aluno.resp2 === userSelecionado.id)
+          );
+        });
+
+        setAlunosDependentes(dependentes);
+      } catch (error) {
+        console.error("Erro ao buscar usuários/dependentes:", error);
+      }
+    };
+
+    fetchDependentes();
+  }, [userSelecionado]);
 
   useEffect(() => {
-    // Lê o cookie 'userData' que foi configurado no middleware
-    const userLoginData = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('userData='))?.split('=')[1];
+    if (!userSelecionado?.aluno) return;
 
-    if (userLoginData) {
-      // Decodifica e converte de volta para o formato de objeto
-      const decodedUserLoginData = decodeURIComponent(userLoginData);
+    const { resp1, resp2 } = userSelecionado.aluno;
+
+    const fetchResponsaveis = async () => {
       try {
-        const parsedUserLogin = JSON.parse(decodedUserLoginData); // Tenta fazer o parse do JSON
-        setUserLogin(parsedUserLogin); // Atualiza o estado do usuário
-        console.log('Usuário carregado do cookie:', parsedUserLogin); // Verifica se o usuário foi carregado corretamente
-        
-        // Após carregar o usuário, faz a consulta das relações
-        fetchUserDetails(parsedUserLogin.id);
+        const res = await fetch("/api/user");
+        const allUsers = await res.json();
+
+        const responsaveis = allUsers.filter(
+          (u: any) => u.id === resp1 || u.id === resp2
+        );
+
+        setResponsaveisDoAluno(responsaveis);
       } catch (error) {
-        console.error('Erro ao parsear os dados do usuário do cookie:', error);
+        console.error("Erro ao buscar responsáveis do aluno:", error);
       }
-    } else {
-      console.log('Cookie "userData" não encontrado.');
-    }
+    };
 
-    // Setar o estado de loading como falso após a leitura
-    setIsLoading(false);
-  }, []); // O useEffect será chamado apenas uma vez, após a montagem do componente
-
-  // Função para buscar as relações do usuário
-  const fetchUserDetails = async (userId: number) => {
-    try {
-      const response = await fetch(`http://localhost:8081/user/${userId}`);
-      const data = await response.json();
-      setUserDetails(data); // Armazena as relações do usuário
-    } catch (error) {
-      console.error('Erro ao buscar as relações do usuário:', error);
-    }
-  };
-
-  // Se os dados do usuário ainda não estiverem carregados, exibe um loading
-  if (isLoading || !userDetails) {
-    return <div>Carregando...</div>; // Aqui você pode exibir um loading enquanto espera os dados
-  }
-
-  // Se não tiver usuário, você pode redirecionar ou mostrar algo
-  if (!userLogin) {
-    return <div>Você não está autenticado. Redirecionando para o login...</div>;
-  }
-
-  const handleView = (userId: number) => {
-    console.log(`Redirecionando para lista das Comunicações do Aluno com id: ${userId}`);
-    router.push(`/comunicacaoalunolistar/${userId}`);
-  };
-
-  console.log("Os dados do userDetails é", userDetails);
-
-  
+    fetchResponsaveis();
+  }, [userSelecionado]);
 
   return (
-    <div className={styles.conteudoPagina}>
-      <div className={styles.divUserImagePerfil}>
-        <Image src="/assets/images/avatar.png" alt="Logo" width={80} height={80} />
-        <div className={styles.userInfoPerfil}>
-          <span className={styles.userNamePerfil}>
-            {userLogin.pg} {userLogin.nomeGuerra} {userLogin.orgao}
-          </span>
-        </div>
-        <div>
-          <span className={styles.userFuncaoPerfil}>
-            Usuario: {userLogin.funcao}
-          </span>
-        </div>
-      </div>
-
-      {/* INICIO PERFIL ALUNO*/}
-        {userLogin.typeUser === 1 && (
-          <div className={styles.profileDetails}>
-            <ul>
-              <li>
-                <i className={`fa fa-user ${styles.navIcon}`}></i> {userLogin.name}
-                <i className={`fa fa-check ${styles.rightIcon}`}></i>
-              </li>
-              <li>
-                <i className={`fa fa-at ${styles.navIcon}`}></i> {userLogin.email}
-                <i className={`fa fa-check ${styles.rightIcon}`}></i>
-              </li>
-              <li>
-                <i className={`fa fa-phone ${styles.navIcon}`}></i> {userLogin.phone}
-                <i className={`fa fa-check ${styles.rightIcon}`}></i>
-              </li>
-              <li>
-                <i className={`fa fa-barcode ${styles.navIcon}`}></i> Matricula: 
-                <i className={`${styles.rightIcon}`}></i>
-                {userLogin.mat}
-              </li>
-              <li>
-                <i className={`fa fa-barcode ${styles.navIcon}`}></i> Cpf: 
-                <i className={`${styles.rightIcon}`}></i>
-                {userLogin.cpf}
-              </li>
-              <li>
-                <i className={`fa fa-line-chart ${styles.navIcon}`}></i> Comportamento: 
-                <i className={`${styles.rightIcon}`}></i>
-                {userDetails.aluno?.grauAtual}
-              </li>
-              <li>
-                <i className={`fa fa-cube ${styles.navIcon}`}></i> Turma: 
-                <i className={`${styles.rightIcon}`}></i>
-                {userDetails.aluno?.turma?.name || 'Turma não informada'}
-              </li>
-              <li>
-                <i className={`fa fa-sitemap ${styles.navIcon}`}></i> Cia: 
-                <i className={`${styles.rightIcon}`}></i>
-                {userDetails.aluno?.turma?.cia?.name || 'Cia não informada'}
-              </li>
-              <li>
-                <i className={`fa fa-book ${styles.navIcon}`}></i> Comunicação
-                <i onClick={() => handleView(userDetails.aluno?.userId)} className={`fa fa-angle-right ${styles.rightIcon}` }></i>
-              </li>
-              <li>
-                <i className={`fa fa-vcard ${styles.navIcon}`}></i> Autorização
-                <i className={`fa fa-angle-right ${styles.rightIcon} `}></i>
-              </li><br></br>
-              <h1>Responsavel(s)</h1>
-              <li>
-                <i className={`fa fa-user ${styles.navIcon}`}></i> Pai: 
-                {userDetails.aluno?.resp1 || 'Resposnsavel não informado'} <br></br>
-                <i className={`${styles.rightIcon}`}></i>
-                {userLogin.phone || 'Resposnsavel não informado'}
-              </li>
-              <li>
-                <i className={`fa fa-user ${styles.navIcon}`}></i> Mae: 
-                {userDetails.aluno?.resp2 || 'Resposnsavel não informado'} <br></br>
-                <i className={`${styles.rightIcon}`}></i>
-                {userLogin.phone || 'Resposnsavel não informado'}
-              </li>
-            </ul>
+    <div style={{ padding: "10px", maxHeight: "800px", overflowY: "auto" }}>
+      {userSelecionado ? (
+        <>
+          <div style={{ marginBottom: "20px" }}>
+            <div className={styles.divPrincipalUsuarioPerfil}>
+              <div>
+                <FaAngleLeft size={30} />
+              </div>
+              <div className={styles.tituloPerfil}>
+                <span>Perfil</span>
+              </div>
+              <div>
+                <FaSearch size={20} />
+              </div>
+            </div>
           </div>
-        )}
 
-      {/* FIM PERFIL ALUNO*/}
-
-      {/* INICIO PERFIL MASTER*/}
-        {userLogin.typeUser === 10 && (
-          <div className={styles.profileDetails}>
-            <ul>
-              <li>
-                <i className={`fa fa-user ${styles.navIcon}`}></i> {userLogin.name}
-                <i className={`fa fa-check ${styles.rightIcon}`}></i>
-              </li>
-              <li>
-                <i className={`fa fa-at ${styles.navIcon}`}></i> {userLogin.email}
-                <i className={`fa fa-check ${styles.rightIcon}`}></i>
-              </li>
-              <li>
-                <i className={`fa fa-phone ${styles.navIcon}`}></i> {userLogin.phone}
-                <i className={`fa fa-check ${styles.rightIcon}`}></i>
-              </li>
-              <li>
-                <i className={`fa fa-barcode ${styles.navIcon}`}></i> {userLogin.cpf}
-                <i className={`fa fa-check ${styles.rightIcon}`}></i>
-              </li>
-              <li>
-                <i className={`fa fa-barcode ${styles.navIcon}`}></i> {userLogin.mat}
-                <i className={`fa fa-check ${styles.rightIcon}`}></i>
-              </li>
-              <li>
-                <i className={`fa fa-comments ${styles.navIcon}`}></i> Comunicação
-                <i className={`fa fa-angle-right ${styles.rightIcon}`}></i>
-              </li>
-              <li>
-                <i className={`fa fa-book ${styles.navIcon}`}></i> Minha Escala
-                <i className={`fa fa-angle-right ${styles.rightIcon}`}></i>
-              </li>
-            </ul>
+          {/* nome comeplto */}
+          <div className={styles.itemMenuPerfilPrincipal}>
+            <div className={styles.itemMenuPerfilIcone}>
+              <FaUser />
+            </div>
+            <div className={styles.itemMenuPerfilSecundaria}>
+              <div className={styles.itemMenuPerfilLabel}>Nome Completo</div>
+              <div className={styles.itemMenuPerfilNome}>
+                {userSelecionado.name}
+              </div>
+            </div>
           </div>
-        )}
 
-      {/* FIM PERFIL MASTER*/}
+          {/* nome nomeGuerra */}
+          <div className={styles.itemMenuPerfilPrincipal}>
+            <div className={styles.itemMenuPerfilIcone}>
+              <FaUser />
+            </div>
+            <div className={styles.itemMenuPerfilSecundaria}>
+              <div className={styles.itemMenuPerfilLabel}>Nome Guerra</div>
+              <div className={styles.itemMenuPerfilNome}>
+                {userSelecionado.nomeGuerra}
+              </div>
+            </div>
+          </div>
 
+          {/* nome post/graducacao */}
+          <div className={styles.itemMenuPerfilPrincipal}>
+            <div className={styles.itemMenuPerfilIcone}>
+              <FaUser />
+            </div>
+            <div className={styles.itemMenuPerfilSecundaria}>
+              <div className={styles.itemMenuPerfilLabel}>
+                Posto ou Graducação
+              </div>
+              <div className={styles.itemMenuPerfilNome}>
+                {userSelecionado.pg}
+              </div>
+            </div>
+          </div>
 
-        <div className={styles.profileDetails}>
-          <h1>Endereço(s)</h1>
-          <ul>
-            {userDetails.addresses && userDetails.addresses.length > 0 ? (
-              userDetails.addresses.map((address: any, index: number) => (
-                <li key={index}>
-                  <i className={`fa fa-home ${styles.navIcon}`}></i> 
-                  {address.complement || 'Endereço não informado'}, 
-                  nº {address.numberAddress || 'Número não informado'}, {address.city?.name || 'Cidade'} - {address.city?.state?.name || 'Estado'}
-                </li>
-              ))
+          {/* nome funcao */}
+          <div className={styles.itemMenuPerfilPrincipal}>
+            <div className={styles.itemMenuPerfilIcone}>
+              <FaChartLine />
+            </div>
+            <div className={styles.itemMenuPerfilSecundaria}>
+              <div className={styles.itemMenuPerfilLabel}>Função</div>
+              <div className={styles.itemMenuPerfilNome}>
+                {userSelecionado.funcao}
+              </div>
+            </div>
+          </div>
+
+          {/* nome matricula */}
+          <div className={styles.itemMenuPerfilPrincipal}>
+            <div className={styles.itemMenuPerfilIcone}>
+              <FaBarcode />
+            </div>
+            <div className={styles.itemMenuPerfilSecundaria}>
+              <div className={styles.itemMenuPerfilLabel}>Matricula</div>
+              <div className={styles.itemMenuPerfilNome}>
+                {userSelecionado.mat}
+              </div>
+            </div>
+          </div>
+
+          {/* seduc */}
+          <div className={styles.itemMenuPerfilPrincipal}>
+            <div className={styles.itemMenuPerfilIcone}>
+              <FaUser />
+            </div>
+            <div className={styles.itemMenuPerfilSecundaria}>
+              <div className={styles.itemMenuPerfilLabel}>Login Seduc</div>
+              <div className={styles.itemMenuPerfilNome}>
+                {userSelecionado.seduc}
+              </div>
+            </div>
+          </div>
+
+          {/* telefone */}
+          <div className={styles.itemMenuPerfilPrincipal}>
+            <div className={styles.itemMenuPerfilIcone}>
+              <FaPhone />
+            </div>
+            <div className={styles.itemMenuPerfilSecundaria}>
+              <div className={styles.itemMenuPerfilLabel}>Telefone</div>
+              <div className={styles.itemMenuPerfilNome}>
+                {userSelecionado.phone}
+              </div>
+            </div>
+          </div>
+
+          <div style={{ paddingTop: "20px" }}>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <h3 className={styles.divEnderecoPerfilTitulo}>Meu Endereço</h3>
+            </div>
+
+            {userSelecionado?.addresses?.length > 0 ? (
+              <div
+                style={{
+                  display: "flex",
+                  borderBottom: "1px solid #ccd1d0",
+                  paddingBottom: "10px",
+                }}
+              >
+                <div className={styles.itemMenuPerfilIcone}>
+                  <FaMapMarker />
+                </div>
+                <div className={styles.itemMenuPerfilSecundaria}>
+                  {userSelecionado.addresses[0].complement}, Nº{" "}
+                  {userSelecionado.addresses[0].numberAddress} -{" "}
+                  {userSelecionado.addresses[0].city.name},{" "}
+                  {userSelecionado.addresses[0].city.state.name}, CEP:{" "}
+                  {userSelecionado.addresses[0].cep}
+                </div>
+              </div>
             ) : (
-              <li>Endereço não informado</li>
+              <div>Endereço não cadastrado.</div>
             )}
-          </ul>
-        </div>
+          </div>
 
+          {/* Apenas para alunos */}
+          {userSelecionado?.aluno && (
+            <div
+              style={{ paddingTop: "20px", borderBottom: "1px solid #ccd1d0" }}
+            >
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <h3 className={styles.divEnderecoPerfilTitulo}>
+                  Dados Acadêmicos
+                </h3>
+              </div>
 
-      <div className={styles.lastLogin}>
-        <h3>Último Acesso</h3>
-        <p><i className={`fa fa-clock ${styles.navIcon}`}></i>{new Date(userLogin.iat * 1000).toLocaleString()}</p>
-      </div>
+              {/* turma */}
+              <div className={styles.itemMenuPerfilPrincipal}>
+                <div className={styles.itemMenuPerfilIcone}>
+                  <FaGraduationCap />
+                </div>
+                <div className={styles.itemMenuPerfilSecundaria}>
+                  <div className={styles.itemMenuPerfilLabel}>
+                    Turma e Companhia
+                  </div>
+                  <div className={styles.itemMenuPerfilNome}>
+                    {userSelecionado.aluno.turma?.name} |{" "}
+                    {userSelecionado.aluno.turma?.cia?.name}
+                  </div>
+                </div>
+                <div className={styles.divDadosAcademicosPrincipal}>
+                  <span className={styles.spanDadosAcademicosTurma}>
+                    Minha Turma
+                  </span>
+                </div>
+              </div>
+
+              {/* grauAtual */}
+              <div className={styles.itemMenuPerfilPrincipal}>
+                <div className={styles.itemMenuPerfilIcone}>
+                  <FaChartLine />
+                </div>
+                <div className={styles.itemMenuPerfilSecundaria}>
+                  <div className={styles.itemMenuPerfilLabel}>Grau Atual</div>
+                  <div className={styles.itemMenuPerfilNome}>
+                    {userSelecionado.aluno.grauAtual}
+                  </div>
+                </div>
+                <div className={styles.divDadosAcademicosPrincipal}>
+                  <span className={styles.spanDadosAcademicosComunicacao}>
+                    Comunicações
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+          {/* Apenas para alunos */}
+
+          {/* dados dos dependentes */}
+          {alunosDependentes.length > 0 && (
+            <div style={{ paddingTop: "20px" }}>
+              <h3 className={styles.divEnderecoPerfilTitulo}>
+                Meus Dependentes
+              </h3>
+              {alunosDependentes.map((dep, idx) => (
+                <div key={idx}>
+                  <div className={styles.divimgDependentesPrincipal}>
+                    <div>
+                      {dep.imagemUrl ? (
+                        <Image
+                          width={40}
+                          height={40}
+                          src={`/${dep.imagemUrl.replace(/\\/g, "/")}`}
+                          alt="Foto do usuário"
+                          className={styles.imagemUsuarioPerfilDependente}
+                        />
+                      ) : (
+                        <FaUser className={styles.imagemUsuario} />
+                      )}
+                    </div>
+
+                    <div style={{ marginLeft: "10px", marginRight: "30px" }}>
+                      <div style={{ fontSize: "13px", fontWeight: "bold" }}>
+                        {dep.pg} {dep.nomeGuerra}
+                      </div>
+
+                      <div style={{ fontSize: "13px", color: "#606060" }}>
+                        {dep.seduc}
+                      </div>
+                      <div style={{ fontSize: "11px", color: "#606060" }}>
+                        Turma: {dep.aluno?.turma?.name || "N/A"} |{" "}
+                        {dep.aluno?.turma?.cia?.name || "N/A"}
+                      </div>
+                    </div>
+                    <div
+                      style={{
+                        textAlign: "center",
+                        alignContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <span
+                        className={styles.divGrupoBotaoDependentes}
+                        onClick={() => {
+                          router.push(`/aluno/comunicacao?id=${dep.id}`);
+                        }}
+                        style={{
+                          background: "#0ea860",
+                          color: "#ffffff",
+                          padding: "10px",
+                          borderRadius: "15px",
+                          fontSize: "11px",
+                          marginRight: "5px",
+                        }}
+                      >
+                        Comunicação
+                      </span>
+
+                      <span
+                        style={{
+                          background: "#0e44a8",
+                          color: "#ffffff",
+                          padding: "10px",
+                          borderRadius: "15px",
+                          fontSize: "11px",
+                        }}
+                      >
+                        Autorizações
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* dados dos responsáveis, se o usuário for aluno */}
+          {responsaveisDoAluno.length > 0 && (
+            <div style={{ paddingTop: "20px", paddingBottom: "50px" }}>
+              <h3 className={styles.divEnderecoPerfilTitulo}>
+                Meus Responsáveis
+              </h3>
+
+              {responsaveisDoAluno.map((resp, idx) => (
+                <div key={idx} className={styles.divimgResponsaveisPrincipal}>
+                  <div>
+                    {resp.imagemUrl ? (
+                      <Image
+                        width={40}
+                        height={40}
+                        src={`/${resp.imagemUrl.replace(/\\/g, "/")}`}
+                        alt="Foto do usuário"
+                        className={styles.imagemUsuarioPerfilDependente}
+                      />
+                    ) : (
+                      <FaUser
+                        className={styles.semImagemUsuarioPerfilDependente}
+                      />
+                    )}
+                  </div>
+
+                  <div style={{ marginLeft: "10px", marginRight: "30px" }}>
+                    <div style={{ fontSize: "13px", fontWeight: "bold" }}>
+                      {resp.pg} {resp.nomeGuerra}
+                    </div>
+
+                    <div style={{ fontSize: "13px", color: "#606060" }}>
+                      {resp.seduc}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      ) : (
+        <div>Carregando dados do usuário...</div>
+      )}
     </div>
   );
 }

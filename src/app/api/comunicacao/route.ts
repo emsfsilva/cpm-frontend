@@ -1,0 +1,46 @@
+// src/app/api/comunicacao/route.ts
+import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8081";
+
+export const dynamic = "force-dynamic";
+
+export async function GET(request: Request) {
+  try {
+    const cookieStore = cookies();
+    const token = cookieStore.get("accessToken")?.value;
+
+    if (!token) {
+      return NextResponse.json(
+        { error: "Token não encontrado" },
+        { status: 401 }
+      );
+    }
+
+    const response = await fetch(`${API_BASE_URL}/comunicacao`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token,
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return NextResponse.json(
+        { error: "Erro ao buscar comunicações", details: data },
+        { status: response.status }
+      );
+    }
+
+    return NextResponse.json(data);
+  } catch (error: any) {
+    return NextResponse.json(
+      { error: "Erro ao buscar comunicações", details: error.message },
+      { status: 500 }
+    );
+  }
+}

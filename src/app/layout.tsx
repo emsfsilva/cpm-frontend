@@ -1,7 +1,9 @@
+// src/app/layout.tsx
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import styles from './(privada)/privateLayout.module.css'; // Importando os estilos do módulo CSS
+import styles from "./(privada)/privateLayout.module.css";
+import { Toaster } from "sonner"; // ✅ IMPORTAÇÃO DO SONNER
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,13 +34,13 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`} 
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <div className={styles.imgbackground}></div>
         <div className={styles.imgbackgroundMedia}></div>
+        <Toaster richColors position="top-right" /> {/* ✅ TOASTER AQUI */}
         {children}
       </body>
     </html>
   );
 }
-
