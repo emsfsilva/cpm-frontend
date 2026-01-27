@@ -91,7 +91,7 @@ export default function PerfilPage() {
         const allUsers = await res.json();
 
         const responsaveis = allUsers.filter(
-          (u: any) => u.id === resp1 || u.id === resp2
+          (u: any) => u.id === resp1 || u.id === resp2,
         );
 
         setResponsaveisDoAluno(responsaveis);
@@ -357,6 +357,10 @@ export default function PerfilPage() {
                       </span>
 
                       <span
+                        className={styles.divGrupoBotaoDependentes}
+                        onClick={() => {
+                          router.push(`/aluno/autorizacao?id=${dep.id}`);
+                        }}
                         style={{
                           background: "#0e44a8",
                           color: "#ffffff",
