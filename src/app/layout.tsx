@@ -1,19 +1,8 @@
 // src/app/layout.tsx
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import "./globals.css"; // já contém @font-face
 import styles from "./(privada)/privateLayout.module.css";
-import { Toaster } from "sonner"; // ✅ IMPORTAÇÃO DO SONNER
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -22,9 +11,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <head>
@@ -33,12 +22,10 @@ export default function RootLayout({
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
         />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className="antialiased">
         <div className={styles.imgbackground}></div>
         <div className={styles.imgbackgroundMedia}></div>
-        <Toaster richColors position="top-right" /> {/* ✅ TOASTER AQUI */}
+        <Toaster richColors position="top-right" />
         {children}
       </body>
     </html>
