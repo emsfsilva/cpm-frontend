@@ -29,6 +29,20 @@ import CadastrarAlunoModal from "@/components/CadastrarAlunoModal";
 import type { Aluno } from "@/components/CadastrarAlunoModal";
 import AutorizacaoModal from "@/components/AutorizacaoModal";
 
+type Endereco = {
+  complement: string;
+  numberAddress: number;
+  cep: string;
+  city: {
+    id: number;
+    name: string;
+    state?: {
+      id: number;
+      name: string;
+    };
+  };
+};
+
 type User = {
   id: number;
   imagemUrl: string;
@@ -45,31 +59,27 @@ type User = {
   typeUser: number;
 
   aluno?: {
+    id: number;
     turma?: {
+      id: number;
       name: string;
-      cia?: {
-        name: string;
-      };
+      cia?: { id: number; name: string };
     };
-    resp1?: number;
-    resp2?: number;
+    resp1?: User; // ou null
+    resp2?: User;
+    grauInicial?: number;
+    grauAtual?: number;
+    responsavel1?: User;
+    responsavel2?: User;
   };
-};
 
-interface UsuarioDetalhe extends User {
-  addresses?: { id: number }[];
-}
+  addresses?: Endereco[];
+};
 
 interface UserLogin {
   id: number;
   name: string;
   typeUser: number;
-}
-
-interface ComunicacaoInput {
-  motivo: string;
-  descricaoMotivo: string;
-  userIdAl: number;
 }
 
 interface AutorizacaoInput {
@@ -91,9 +101,7 @@ const UsuariosPage = () => {
 
   const [modalComunicacaoAberta, setModalComunicacaoAberta] = useState(false);
   const [modalAutorizacaoAberta, setModalAutorizacaoAberta] = useState(false);
-  const [userSelecionado, setUserSelecionado] = useState<UsuarioDetalhe | null>(
-    null,
-  );
+  const [userSelecionado, setUserSelecionado] = useState<User | null>(null);
   const [modalEnderecoAberto, setModalEnderecoAberto] = useState(false);
 
   const [modalAlunoAberto, setModalAlunoAberto] = useState(false);
@@ -306,7 +314,7 @@ const UsuariosPage = () => {
   //FIM REDEFINIR SENHA
 
   //INICIO MODAL COMUNICAÇÃO
-  const abrirModalComunicacao = (user: UsuarioDetalhe) => {
+  const abrirModalComunicacao = (user: User) => {
     setUserSelecionado(user);
     setModalComunicacaoAberta(true);
   };
@@ -328,7 +336,7 @@ const UsuariosPage = () => {
   //FIM MODAL COMUNICAÇÃO
 
   //INICIO MODAL AUTORIZACAO
-  const abrirModalAutorizacao = (user: UsuarioDetalhe) => {
+  const abrirModalAutorizacao = (user: User) => {
     setUserSelecionado(user);
     setModalAutorizacaoAberta(true);
   };
@@ -478,6 +486,16 @@ const UsuariosPage = () => {
                               setMostrarMenuModal(true);
                             }}
                           />
+
+                          {/* 👈 aqui você coloca o dropdown */}
+                          {menuAbertoId === user.id && (
+                            <div className={styles.dropdownMenu}>
+                              <button>Editar</button>
+                              <button onClick={() => handleDelete(user.id)}>
+                                Excluir
+                              </button>
+                            </div>
+                          )}
                         </div>
                       )
                     }
@@ -591,7 +609,7 @@ const UsuariosPage = () => {
 
                 <ul style={{ marginTop: "15px" }}>
                   {/* Endereços, se existirem */}
-                  {userSelecionado.addresses?.length > 0 ? (
+                  {userSelecionado.addresses?.length ? (
                     <div
                       style={{ padding: "10px", border: "1px solid #d4d0d0" }}
                     >
@@ -611,16 +629,16 @@ const UsuariosPage = () => {
                         </button>
                       </div>
 
-                      {userSelecionado.addresses.map((endereco, index) => (
+                      {userSelecionado.addresses?.map((endereco, index) => (
                         <div
-                          style={{ marginLeft: "10px", marginBottom: "10px" }}
                           key={index}
+                          style={{ marginLeft: "10px", marginBottom: "10px" }}
                         >
                           <div style={{ fontWeight: "bold" }}>
                             {endereco.complement} - {endereco.numberAddress}
                           </div>
                           <div>
-                            {endereco.city?.name}, {endereco.city?.state?.name},
+                            {endereco.city.name}, {endereco.city.state?.name},
                             CEP: {endereco.cep}
                           </div>
                         </div>
@@ -654,8 +672,33 @@ const UsuariosPage = () => {
                           {/* Editar dados basicos do aluno */}
                           <button
                             onClick={() => {
-                              setAlunoData(userSelecionado.aluno);
-                              setModalAlunoAberto(true);
+                              if (userSelecionado?.aluno) {
+                                const aluno: Aluno = {
+                                  id: userSelecionado.aluno?.id ?? 0, // ou undefined se for opcional
+                                  grauInicial: (
+                                    userSelecionado.aluno?.grauInicial ?? 0
+                                  ).toString(),
+                                  grauAtual: (
+                                    userSelecionado.aluno?.grauAtual ?? 0
+                                  ).toString(),
+                                  turma: {
+                                    id: userSelecionado.aluno?.turma?.id ?? 0,
+                                    name:
+                                      userSelecionado.aluno?.turma?.name ?? "",
+                                    cia: {
+                                      id:
+                                        userSelecionado.aluno?.turma?.cia?.id ??
+                                        0,
+                                      name:
+                                        userSelecionado.aluno?.turma?.cia
+                                          ?.name ?? "",
+                                    },
+                                  },
+                                };
+
+                                setAlunoData(aluno);
+                                setModalAlunoAberto(true);
+                              }
                             }}
                           >
                             <FaEdit />
@@ -691,7 +734,7 @@ const UsuariosPage = () => {
                               Compainha:
                             </label>
                             <div className={styles.divDadosBasicosUserTexto}>
-                              {userSelecionado.aluno.turma.cia.name}
+                              {userSelecionado?.aluno?.turma?.cia?.name}
                             </div>
                           </div>
 
@@ -699,7 +742,7 @@ const UsuariosPage = () => {
                           <div style={{ flex: 1, padding: "5px" }}>
                             <label style={{ fontSize: "12px" }}>Turma:</label>
                             <div className={styles.divDadosBasicosUserTexto}>
-                              {userSelecionado.aluno.turma.name}
+                              {userSelecionado?.aluno?.turma?.name}
                             </div>
                           </div>
                         </div>
@@ -780,7 +823,7 @@ const UsuariosPage = () => {
                       <div style={{ fontWeight: "bold", marginBottom: "10px" }}>
                         Meus Dependentes:
                       </div>
-                      {alunosDependentes.map((alunoUser: any) => (
+                      {alunosDependentes.map((alunoUser: User) => (
                         <div key={alunoUser.id}>
                           <ul className={styles.itemAluno}>
                             <li style={{ position: "relative" }}>

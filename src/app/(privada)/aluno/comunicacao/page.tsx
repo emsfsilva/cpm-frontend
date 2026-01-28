@@ -28,7 +28,7 @@ const ComunicacaoPage = () => {
   >([]);
   const [comunicacaoSelecionado, setComunicacaoSelecionado] =
     useState<Comunicacao | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
 

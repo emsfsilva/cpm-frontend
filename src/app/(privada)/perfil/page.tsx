@@ -15,13 +15,50 @@ import {
 import styles from "../privateLayout.module.css";
 import Image from "next/image";
 
+// Tipagem das turmas e alunos
+interface Turma {
+  id: number;
+  name: string;
+  cia: {
+    id: number;
+    name: string;
+  };
+}
+
+interface Aluno {
+  id: number;
+  userId: number;
+  resp1: number;
+  resp2: number;
+  turmaId: number;
+  turma?: Turma;
+}
+
+// Tipagem do usuário
+interface User {
+  id: number;
+  name: string;
+  pg?: string;
+  nomeGuerra?: string;
+  funcao?: string;
+  phone?: string;
+  cpf?: string;
+  orgao?: string;
+  seduc?: string;
+  imagemUrl?: string;
+  aluno?: Aluno;
+  iat?: number;
+  exp?: number;
+}
+
 export default function PerfilPage() {
-  const [userSelecionado, setUserSelecionado] = useState<any>(null);
-  const [alunosDependentes, setAlunosDependentes] = useState<any[]>([]);
-  const [responsaveisDoAluno, setResponsaveisDoAluno] = useState<any[]>([]);
+  const [userSelecionado, setUserSelecionado] = useState<User | null>(null);
+  const [alunosDependentes, setAlunosDependentes] = useState<User[]>([]);
+  const [responsaveisDoAluno, setResponsaveisDoAluno] = useState<User[]>([]);
 
   const router = useRouter();
-  // Busca o ID do usuário logado via cookie e usa esse ID para buscar os dados completos
+
+  // Busca o ID do usuário logado via cookie e busca os dados completos
   useEffect(() => {
     const userCookie = document.cookie
       .split("; ")
@@ -31,25 +68,28 @@ export default function PerfilPage() {
 
     try {
       const userString = userCookie.split("=")[1];
-      const userData = JSON.parse(decodeURIComponent(userString));
+      const userData: { id: number; iat?: number; exp?: number } = JSON.parse(
+        decodeURIComponent(userString),
+      );
 
       if (userData?.id) {
         fetch(`/api/user/${userData.id}`)
           .then((res) => res.json())
-          .then((data) => {
-            // Inclui iat e exp no objeto do usuário selecionado
+          .then((data: User) => {
             setUserSelecionado({
               ...data,
               iat: userData.iat,
               exp: userData.exp,
             });
           })
-          .catch((err) => {
-            console.error("Erro ao buscar dados do usuário logado:", err);
+          .catch((err: unknown) => {
+            if (err instanceof Error) console.error(err.message);
+            else console.error("Erro desconhecido ao buscar dados do usuário");
           });
       }
-    } catch (err) {
-      console.error("Erro ao parsear cookie do usuário:", err);
+    } catch (err: unknown) {
+      if (err instanceof Error) console.error(err.message);
+      else console.error("Erro desconhecido ao parsear cookie do usuário");
     }
   }, []);
 
@@ -60,9 +100,9 @@ export default function PerfilPage() {
     const fetchDependentes = async () => {
       try {
         const res = await fetch("/api/user");
-        const allUsers = await res.json();
+        const allUsers: User[] = await res.json();
 
-        const dependentes = allUsers.filter((u: any) => {
+        const dependentes = allUsers.filter((u) => {
           const aluno = u.aluno;
           return (
             aluno &&
@@ -72,14 +112,16 @@ export default function PerfilPage() {
         });
 
         setAlunosDependentes(dependentes);
-      } catch (error) {
-        console.error("Erro ao buscar usuários/dependentes:", error);
+      } catch (error: unknown) {
+        if (error instanceof Error) console.error(error.message);
+        else console.error("Erro desconhecido ao buscar usuários/dependentes");
       }
     };
 
     fetchDependentes();
   }, [userSelecionado]);
 
+  // Busca responsáveis do aluno selecionado
   useEffect(() => {
     if (!userSelecionado?.aluno) return;
 
@@ -88,15 +130,16 @@ export default function PerfilPage() {
     const fetchResponsaveis = async () => {
       try {
         const res = await fetch("/api/user");
-        const allUsers = await res.json();
+        const allUsers: User[] = await res.json();
 
         const responsaveis = allUsers.filter(
-          (u: any) => u.id === resp1 || u.id === resp2,
+          (u) => u.id === resp1 || u.id === resp2,
         );
 
         setResponsaveisDoAluno(responsaveis);
-      } catch (error) {
-        console.error("Erro ao buscar responsáveis do aluno:", error);
+      } catch (error: unknown) {
+        if (error instanceof Error) console.error(error.message);
+        else console.error("Erro desconhecido ao buscar responsáveis do aluno");
       }
     };
 

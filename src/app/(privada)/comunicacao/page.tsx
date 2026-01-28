@@ -109,15 +109,20 @@ const ComunicacaosPage = () => {
           throw new Error("Erro ao buscar dados");
         }
 
-        const dataComunicacoes = await resComunicacoes.json();
-        const dataContagemStatus = await resContagemStatus.json();
-        const dataContagemCia = await resContagemCia.json();
+        const dataComunicacoes: Comunicacao[] = await resComunicacoes.json();
+        const dataContagemStatus: ContagemStatusCia[] =
+          await resContagemStatus.json();
+        const dataContagemCia: ContagemCia[] = await resContagemCia.json();
 
         setComunicacoes(dataComunicacoes);
         setContagem(dataContagemStatus);
         setContagemCia(dataContagemCia);
-      } catch (error: any) {
-        setErro(error.message || "Erro desconhecido");
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          setErro(error.message);
+        } else {
+          setErro("Erro desconhecido");
+        }
       } finally {
         setLoading(false);
       }
@@ -213,7 +218,7 @@ const ComunicacaosPage = () => {
                         <div style={{ fontSize: "12px" }}>
                           {getTotalPorCiaEStatus(
                             "1ª CIA",
-                            "Aguardando notificar aluno"
+                            "Aguardando notificar aluno",
                           )}
                         </div>
 
@@ -230,7 +235,7 @@ const ComunicacaosPage = () => {
                         <div style={{ fontSize: "12px" }}>
                           {getTotalPorCiaEStatus(
                             "1ª CIA",
-                            "Aguardando resposta do aluno"
+                            "Aguardando resposta do aluno",
                           )}
                         </div>
                         <div style={{ fontSize: "11px" }}>ALUNO</div>
@@ -250,7 +255,7 @@ const ComunicacaosPage = () => {
                         <div style={{ fontSize: "12px" }}>
                           {getTotalPorCiaEStatus(
                             "1ª CIA",
-                            "Aguardando parecer do Cmt da Cia"
+                            "Aguardando parecer do Cmt da Cia",
                           )}
                         </div>
                         <div style={{ fontSize: "11px" }}>CMT CIA</div>
@@ -266,7 +271,7 @@ const ComunicacaosPage = () => {
                         <div style={{ fontSize: "12px" }}>
                           {getTotalPorCiaEStatus(
                             "1ª CIA",
-                            "Aguardando parecer do Cmt do CA"
+                            "Aguardando parecer do Cmt do CA",
                           )}
                         </div>
                         <div style={{ fontSize: "11px" }}>CMT CA</div>
@@ -286,7 +291,7 @@ const ComunicacaosPage = () => {
                         <div style={{ fontSize: "12px" }}>
                           {getTotalPorCiaEStatus(
                             "1ª CIA",
-                            "Aguardando parecer do Subcomando"
+                            "Aguardando parecer do Subcomando",
                           )}
                         </div>
                         <div style={{ fontSize: "11px" }}>SUBCOMANDO</div>
@@ -302,7 +307,7 @@ const ComunicacaosPage = () => {
                         <div style={{ fontSize: "12px" }}>
                           {getTotalPorCiaEStatus(
                             "1ª CIA",
-                            "Aguardando arquivada"
+                            "Aguardando arquivada",
                           )}
                         </div>
                         <div style={{ fontSize: "11px" }}>ARQUIVADAS</div>
@@ -337,7 +342,7 @@ const ComunicacaosPage = () => {
                         <div style={{ fontSize: "12px" }}>
                           {getTotalPorCiaEStatus(
                             "2ª CIA",
-                            "Aguardando notificar aluno"
+                            "Aguardando notificar aluno",
                           )}
                         </div>
 
@@ -354,7 +359,7 @@ const ComunicacaosPage = () => {
                         <div style={{ fontSize: "12px" }}>
                           {getTotalPorCiaEStatus(
                             "2ª CIA",
-                            "Aguardando resposta do aluno"
+                            "Aguardando resposta do aluno",
                           )}
                         </div>
                         <div style={{ fontSize: "11px" }}>ALUNO</div>
@@ -374,7 +379,7 @@ const ComunicacaosPage = () => {
                         <div style={{ fontSize: "12px" }}>
                           {getTotalPorCiaEStatus(
                             "2ª CIA",
-                            "Aguardando parecer do Cmt da Cia"
+                            "Aguardando parecer do Cmt da Cia",
                           )}
                         </div>
                         <div style={{ fontSize: "11px" }}>CMT CIA</div>
@@ -390,7 +395,7 @@ const ComunicacaosPage = () => {
                         <div style={{ fontSize: "12px" }}>
                           {getTotalPorCiaEStatus(
                             "2ª CIA",
-                            "Aguardando parecer do Cmt do CA"
+                            "Aguardando parecer do Cmt do CA",
                           )}
                         </div>
                         <div style={{ fontSize: "11px" }}>CMT CA</div>
@@ -410,7 +415,7 @@ const ComunicacaosPage = () => {
                         <div style={{ fontSize: "12px" }}>
                           {getTotalPorCiaEStatus(
                             "2ª CIA",
-                            "Aguardando parecer do Subcomando"
+                            "Aguardando parecer do Subcomando",
                           )}
                         </div>
                         <div style={{ fontSize: "11px" }}>SUBCOMANDO</div>
@@ -426,7 +431,7 @@ const ComunicacaosPage = () => {
                         <div style={{ fontSize: "12px" }}>
                           {getTotalPorCiaEStatus(
                             "2ª CIA",
-                            "Aguardando arquivada"
+                            "Aguardando arquivada",
                           )}
                         </div>
                         <div style={{ fontSize: "11px" }}>ARQUIVADAS</div>
@@ -461,7 +466,7 @@ const ComunicacaosPage = () => {
                         <div style={{ fontSize: "12px" }}>
                           {getTotalPorCiaEStatus(
                             "3ª CIA",
-                            "Aguardando notificar aluno"
+                            "Aguardando notificar aluno",
                           )}
                         </div>
 
@@ -478,7 +483,7 @@ const ComunicacaosPage = () => {
                         <div style={{ fontSize: "12px" }}>
                           {getTotalPorCiaEStatus(
                             "3ª CIA",
-                            "Aguardando resposta do aluno"
+                            "Aguardando resposta do aluno",
                           )}
                         </div>
                         <div style={{ fontSize: "11px" }}>ALUNO</div>
@@ -498,7 +503,7 @@ const ComunicacaosPage = () => {
                         <div style={{ fontSize: "12px" }}>
                           {getTotalPorCiaEStatus(
                             "3ª CIA",
-                            "Aguardando parecer do Cmt da Cia"
+                            "Aguardando parecer do Cmt da Cia",
                           )}
                         </div>
                         <div style={{ fontSize: "11px" }}>CMT CIA</div>
@@ -514,7 +519,7 @@ const ComunicacaosPage = () => {
                         <div style={{ fontSize: "12px" }}>
                           {getTotalPorCiaEStatus(
                             "3ª CIA",
-                            "Aguardando parecer do Cmt do CA"
+                            "Aguardando parecer do Cmt do CA",
                           )}
                         </div>
                         <div style={{ fontSize: "11px" }}>CMT CA</div>
@@ -534,7 +539,7 @@ const ComunicacaosPage = () => {
                         <div style={{ fontSize: "12px" }}>
                           {getTotalPorCiaEStatus(
                             "3ª CIA",
-                            "Aguardando parecer do Subcomando"
+                            "Aguardando parecer do Subcomando",
                           )}
                         </div>
                         <div style={{ fontSize: "11px" }}>SUBCOMANDO</div>
@@ -550,7 +555,7 @@ const ComunicacaosPage = () => {
                         <div style={{ fontSize: "12px" }}>
                           {getTotalPorCiaEStatus(
                             "3ª CIA",
-                            "Aguardando arquivada"
+                            "Aguardando arquivada",
                           )}
                         </div>
                         <div style={{ fontSize: "11px" }}>ARQUIVADAS</div>
@@ -630,7 +635,7 @@ const ComunicacaosPage = () => {
                           <div>
                             <strong>Data:</strong>{" "}
                             {new Date(
-                              comunicacao.dataInicio
+                              comunicacao.dataInicio,
                             ).toLocaleDateString("pt-BR")}{" "}
                             às {comunicacao.horaInicio}
                           </div>
@@ -696,7 +701,7 @@ const ComunicacaosPage = () => {
                             <strong>Data:</strong>{" "}
                             {comunicacao.dataParecerCmtCia
                               ? new Date(
-                                  comunicacao.dataParecerCmtCia
+                                  comunicacao.dataParecerCmtCia,
                                 ).toLocaleString()
                               : ""}
                           </div>
@@ -731,7 +736,7 @@ const ComunicacaosPage = () => {
                             <strong>Data:</strong>{" "}
                             {comunicacao.dataParecerCa
                               ? new Date(
-                                  comunicacao.dataParecerCa
+                                  comunicacao.dataParecerCa,
                                 ).toLocaleString()
                               : ""}
                           </div>
@@ -766,7 +771,7 @@ const ComunicacaosPage = () => {
                             <strong>Data:</strong>{" "}
                             {comunicacao.dataParecerSubcom
                               ? new Date(
-                                  comunicacao.dataParecerSubcom
+                                  comunicacao.dataParecerSubcom,
                                 ).toLocaleString()
                               : ""}
                           </div>
@@ -788,7 +793,7 @@ const ComunicacaosPage = () => {
                             <strong>Data:</strong>{" "}
                             {comunicacao.dtAtualizacaoStatus
                               ? new Date(
-                                  comunicacao.dtAtualizacaoStatus
+                                  comunicacao.dtAtualizacaoStatus,
                                 ).toLocaleString()
                               : "-"}
                           </div>
