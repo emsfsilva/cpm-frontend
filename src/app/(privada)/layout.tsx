@@ -88,7 +88,7 @@ export default function TemplateLayout({
   const [newPassword, setNewPassword] = useState("");
   const pathname = usePathname();
   const router = useRouter();
-  const [comentario, setComentario] = useState<any | null>(null);
+  const [comentario, setComentario] = useState<Comentario | null>(null);
   const [showComentarioModal, setShowComentarioModal] = useState(false);
   const [novoComentario, setNovoComentario] = useState("");
 

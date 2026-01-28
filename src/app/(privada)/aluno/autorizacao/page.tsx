@@ -13,11 +13,43 @@ import {
 import styles from "../../privateLayout.module.css";
 import Image from "next/image";
 
-export default function PerfilPage() {
-  const [userSelecionado, setUserSelecionado] = useState<any>(null);
-  const [autorizacoes, setAutorizacoes] = useState<any[]>([]);
+// 🔹 Tipos
+interface Usuario {
+  id: string;
+  name: string;
+  imagemUrl?: string;
+}
+
+type StatusAut =
+  | "Autorizada"
+  | "Autorizada com restrição"
+  | "Negada"
+  | "Pendente";
+
+interface Autorizacao {
+  id: string;
+  motivoAut: string;
+  statusAut: StatusAut;
+  dataInicio: string;
+  dataFinal: string;
+  horaInicio?: string;
+  seg?: "Sim" | "Não";
+  ter?: "Sim" | "Não";
+  qua?: "Sim" | "Não";
+  qui?: "Sim" | "Não";
+  sex?: "Sim" | "Não";
+  sab?: "Sim" | "Não";
+  dom?: "Sim" | "Não";
+  despacho?: string;
+  datadespacho?: string;
+}
+
+export default function AutorizacaoPage() {
+  const [userSelecionado, setUserSelecionado] = useState<Usuario | null>(null);
+  const [autorizacoes, setAutorizacoes] = useState<Autorizacao[]>([]);
   const [loading, setLoading] = useState(true);
-  const [despachoSelecionado, setDespachoSelecionado] = useState<any>(null);
+  const [despachoSelecionado, setDespachoSelecionado] =
+    useState<Autorizacao | null>(null);
 
   // 🔹 Carrega dados do usuário logado
   useEffect(() => {
@@ -29,18 +61,16 @@ export default function PerfilPage() {
 
     try {
       const userString = userCookie.split("=")[1];
-      const userData = JSON.parse(decodeURIComponent(userString));
+      const userData: Usuario = JSON.parse(decodeURIComponent(userString));
       setUserSelecionado(userData);
 
-      // 🔹 Busca as autorizações do aluno logado
+      // 🔹 Busca autorizações do aluno logado
       fetch(`/api/aluno/autorizacao?id=${userData.id}`)
         .then((res) => res.json())
-        .then((data) => {
+        .then((data: Autorizacao[]) => {
           setAutorizacoes(data);
         })
-        .catch((err) => {
-          console.error("Erro ao buscar autorizações:", err);
-        })
+        .catch((err) => console.error("Erro ao buscar autorizações:", err))
         .finally(() => setLoading(false));
     } catch (err) {
       console.error("Erro ao parsear cookie do usuário:", err);
@@ -53,14 +83,22 @@ export default function PerfilPage() {
   // 🔹 Filtrando por status
   const validas = autorizacoes.filter((a) => a.statusAut === "Autorizada");
   const autorizadacomrestricao = autorizacoes.filter(
-    (a) => a.statusAut === "Autorizada com restrição"
+    (a) => a.statusAut === "Autorizada com restrição",
   );
   const negadas = autorizacoes.filter((a) => a.statusAut === "Negada");
   const pendentes = autorizacoes.filter((a) => a.statusAut === "Pendente");
 
-  // 🔹 Função para renderizar os dias
-  const renderDias = (aut: any) => {
-    const dias = ["seg", "ter", "qua", "qui", "sex", "sab", "dom"];
+  // 🔹 Renderiza dias
+  const renderDias = (aut: Autorizacao) => {
+    const dias: (keyof Autorizacao)[] = [
+      "seg",
+      "ter",
+      "qua",
+      "qui",
+      "sex",
+      "sab",
+      "dom",
+    ];
 
     return (
       <div
@@ -91,8 +129,6 @@ export default function PerfilPage() {
               }}
             >
               <div style={{ fontWeight: "bold" }}>{d.toUpperCase()}</div>
-
-              {/* Mostra horaInicio somente se ativo for true */}
               {ativo && hora && (
                 <div
                   style={{
@@ -113,30 +149,31 @@ export default function PerfilPage() {
     );
   };
 
-  const formatarData = (dataStr) => {
+  // 🔹 Formata datas
+  const formatarData = (dataStr: string) => {
     if (!dataStr) return "";
     const data = new Date(dataStr);
     return data.toLocaleDateString("pt-BR", { timeZone: "UTC" });
   };
 
-  const renderAutorizacao = (aut: any, tipo: string) => {
-    let icon;
-    let corBg;
+  // 🔹 Renderiza autorizações
+  const renderAutorizacao = (aut: Autorizacao, tipo: StatusAut) => {
     let IconComp;
+    let corBg;
     switch (tipo) {
-      case "valida":
+      case "Autorizada":
         IconComp = FaCheckSquare;
         corBg = "#46cb32";
         break;
-      case "autorizadacomrestricao":
+      case "Autorizada com restrição":
         IconComp = FaCheckSquare;
         corBg = "#129f69";
         break;
-      case "negada":
+      case "Negada":
         IconComp = FaTimes;
         corBg = "#c41616";
         break;
-      case "pendente":
+      case "Pendente":
         IconComp = FaExclamationTriangle;
         corBg = "#e4800e";
         break;
@@ -154,7 +191,7 @@ export default function PerfilPage() {
           <div className={styles.itemMenuPerfilLabel}>
             {formatarData(aut.dataInicio)} a {formatarData(aut.dataFinal)}
           </div>
-          {(tipo === "valida" || tipo === "autorizadacomrestricao") &&
+          {(tipo === "Autorizada" || tipo === "Autorizada com restrição") &&
             renderDias(aut)}
           <div
             onClick={() => setDespachoSelecionado(aut)}
@@ -179,7 +216,6 @@ export default function PerfilPage() {
             >
               {aut.statusAut}
             </span>
-
             <FaHandPointUp
               color={"#fff"}
               size={16}
@@ -238,15 +274,14 @@ export default function PerfilPage() {
           {/* Seções */}
           <div style={{ paddingTop: "20px" }}>
             <h3 className={styles.divEnderecoPerfilTitulo}>Válidas</h3>
-
             <div style={{ paddingBottom: "40px" }}>
               {validas.length === 0 && autorizadacomrestricao.length === 0 ? (
                 <span>Nenhuma autorização válida.</span>
               ) : (
                 <>
-                  {validas.map((a) => renderAutorizacao(a, "valida"))}
+                  {validas.map((a) => renderAutorizacao(a, "Autorizada"))}
                   {autorizadacomrestricao.map((a) =>
-                    renderAutorizacao(a, "autorizadacomrestricao")
+                    renderAutorizacao(a, "Autorizada com restrição"),
                   )}
                 </>
               )}
@@ -255,13 +290,13 @@ export default function PerfilPage() {
             <h3 className={styles.divEnderecoPerfilTitulo}>Negadas</h3>
             <div style={{ paddingBottom: "40px" }}>
               {negadas.length > 0
-                ? negadas.map((a) => renderAutorizacao(a, "negada"))
+                ? negadas.map((a) => renderAutorizacao(a, "Negada"))
                 : "Nenhuma autorização negada."}
             </div>
 
             <h3 className={styles.divEnderecoPerfilTitulo}>Pendentes</h3>
             {pendentes.length > 0
-              ? pendentes.map((a) => renderAutorizacao(a, "pendente"))
+              ? pendentes.map((a) => renderAutorizacao(a, "Pendente"))
               : "Nenhuma autorização pendente."}
           </div>
         </>
@@ -310,24 +345,19 @@ export default function PerfilPage() {
                 marginBottom: "20px",
               }}
             >
-              {/* Imagem à esquerda */}
               <Image
                 src="/assets/images/logo.png"
                 alt="logo"
                 width={80}
                 height={80}
               />
-
-              {/* Texto à direita */}
               <span style={{ textAlign: "right", flex: 1, fontSize: "16px" }}>
                 {despachoSelecionado.despacho || "Nenhum despacho disponível."}
                 <br />
                 {despachoSelecionado.datadespacho
                   ? new Date(despachoSelecionado.datadespacho).toLocaleString(
                       "pt-BR",
-                      {
-                        timeZone: "America/Sao_Paulo",
-                      }
+                      { timeZone: "America/Sao_Paulo" },
                     )
                   : ""}
               </span>

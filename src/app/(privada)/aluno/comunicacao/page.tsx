@@ -2,9 +2,7 @@
 
 import { useEffect, useState } from "react";
 import styles from "../../privateLayout.module.css";
-import { useRouter } from "next/navigation";
-
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { FaFilter } from "react-icons/fa";
 
@@ -19,21 +17,24 @@ interface Comunicacao {
   status: string;
 }
 
+interface ComunicacaoApi extends Comunicacao {
+  userIdAl: number;
+}
+
 const ComunicacaoPage = () => {
   const [comunicacao, setComunicacoes] = useState<Comunicacao[]>([]);
   const [filteredComunicacoes, setFilteredComunicacoes] = useState<
     Comunicacao[]
   >([]);
-  const [comunicacaoSelecionado, setComunicacaoSelecionado] = useState<
-    any | null
-  >(null);
-  const [loading, setLoading] = useState(true);
+  const [comunicacaoSelecionado, setComunicacaoSelecionado] =
+    useState<Comunicacao | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const router = useRouter();
 
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const alunoId = searchParams.get("id"); // Isso é uma string
+  const alunoId = searchParams.get("id");
 
   useEffect(() => {
     async function fetchComunicacoes() {
@@ -42,22 +43,23 @@ const ComunicacaoPage = () => {
           ? `/api/aluno/comunicacao?id=${alunoId}`
           : "/api/aluno/comunicacao";
 
-        const res = await fetch(url, {
-          method: "GET",
-        });
+        const res = await fetch(url);
+        const data: ComunicacaoApi[] = await res.json();
 
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Erro desconhecido");
+        if (!res.ok) throw new Error("Erro ao buscar comunicações");
 
-        // Se houver um ID de aluno, filtra as comunicações dele
-        const comunicacoesFiltradas = alunoId
-          ? data.filter((com: any) => com.userIdAl === parseInt(alunoId))
+        const comunicacoesFiltradas: Comunicacao[] = alunoId
+          ? data.filter((com) => com.userIdAl === Number(alunoId))
           : data;
 
         setComunicacoes(comunicacoesFiltradas);
         setFilteredComunicacoes(comunicacoesFiltradas);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("Erro desconhecido");
+        }
       } finally {
         setLoading(false);
       }
@@ -66,14 +68,14 @@ const ComunicacaoPage = () => {
     fetchComunicacoes();
   }, [alunoId]);
 
-  //INICIO FUNÇÃO DE BUSCAR COMUNICAÇÃO
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value.toLowerCase();
     setSearchTerm(value);
 
-    const filtered = comunicacao.filter((comunicacao) =>
-      comunicacao.motivo.toLowerCase().includes(value)
+    const filtered = comunicacao.filter((com) =>
+      com.motivo.toLowerCase().includes(value),
     );
+
     setFilteredComunicacoes(filtered);
   };
   //FIM FUNÇÃO DE BUSCAR COMUNICAÇÃO
@@ -87,18 +89,12 @@ const ComunicacaoPage = () => {
 
     try {
       const res = await fetch(`/api/comunicacao/${id}`);
+      if (!res.ok) throw new Error("Erro ao buscar detalhes");
 
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(
-          errorData.message || "Erro ao buscar detalhes da comunicacao"
-        );
-      }
-
-      const comunicacaoDetalhe = await res.json();
-      setComunicacaoSelecionado(comunicacaoDetalhe);
+      const detalhe: Comunicacao = await res.json();
+      setComunicacaoSelecionado(detalhe);
     } catch (error) {
-      console.error("Erro ao buscar detalhes do comunicacao:", error);
+      console.error(error);
     }
   };
   //FIM ABRIR DETALHES DA COMUNICAÇÃO
@@ -167,7 +163,7 @@ const ComunicacaoPage = () => {
                       <span>
                         {comunicacao.dataInicio
                           ? new Date(comunicacao.dataInicio).toLocaleDateString(
-                              "pt-BR"
+                              "pt-BR",
                             )
                           : "Nenhuma data informada"}
                         ,{comunicacao.horaInicio}

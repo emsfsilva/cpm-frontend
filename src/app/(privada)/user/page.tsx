@@ -45,19 +45,35 @@ type User = {
   typeUser: number;
 
   aluno?: {
-    turma: {
+    turma?: {
       name: string;
-      cia: {
+      cia?: {
         name: string;
       };
     };
+    resp1?: number;
+    resp2?: number;
   };
 };
+
+interface UsuarioDetalhe extends User {
+  addresses?: { id: number }[];
+}
 
 interface UserLogin {
   id: number;
   name: string;
   typeUser: number;
+}
+
+interface ComunicacaoInput {
+  motivo: string;
+  descricaoMotivo: string;
+  userIdAl: number;
+}
+
+interface AutorizacaoInput {
+  [key: string]: unknown;
 }
 
 const UsuariosPage = () => {
@@ -71,11 +87,13 @@ const UsuariosPage = () => {
   const [mostrarModal, setMostrarModal] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
-  const [modalData, setModalData] = useState<any | null>(null);
+  const [modalData, setModalData] = useState<User | null>(null);
 
   const [modalComunicacaoAberta, setModalComunicacaoAberta] = useState(false);
   const [modalAutorizacaoAberta, setModalAutorizacaoAberta] = useState(false);
-  const [userSelecionado, setUserSelecionado] = useState<any | null>(null);
+  const [userSelecionado, setUserSelecionado] = useState<UsuarioDetalhe | null>(
+    null,
+  );
   const [modalEnderecoAberto, setModalEnderecoAberto] = useState(false);
 
   const [modalAlunoAberto, setModalAlunoAberto] = useState(false);
@@ -83,24 +101,21 @@ const UsuariosPage = () => {
 
   const [mostrarMenuModal, setMostrarMenuModal] = useState(false);
   const [userMenuSelecionado, setUserMenuSelecionado] = useState<User | null>(
-    null
+    null,
   );
 
   useEffect(() => {
     async function fetchUsers() {
       try {
-        const res = await fetch("/api/user", {
-          method: "GET",
-        });
+        const res = await fetch("/api/user");
+        const data: User[] = await res.json();
 
-        const data = await res.json();
-
-        if (!res.ok) throw new Error(data.error || "Erro desconhecido");
+        if (!res.ok) throw new Error("Erro ao buscar usuários");
 
         setUsers(data);
-        setFilteredUsers(data); // 👈 Garante a lista inicial visível
-      } catch (err: any) {
-        setError(err.message);
+        setFilteredUsers(data);
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : "Erro desconhecido");
       } finally {
         setLoading(false);
       }
@@ -156,8 +171,8 @@ const UsuariosPage = () => {
         filtroFuncao === "Todos"
           ? true
           : filtroFuncao === "Turmas"
-          ? !!user.aluno?.turma
-          : user.funcao === filtroFuncao;
+            ? !!user.aluno?.turma
+            : user.funcao === filtroFuncao;
 
       return nomeMatch && funcaoMatch;
     });
@@ -185,14 +200,11 @@ const UsuariosPage = () => {
       if (!res.ok) {
         const errorData = await res.json();
         throw new Error(
-          errorData.message || "Erro ao buscar detalhes do usuário"
+          errorData.message || "Erro ao buscar detalhes do usuário",
         );
       }
 
       const userDetalhe = await res.json();
-
-      console.log("Esse é o userDetalhe clicado", userDetalhe);
-
       setUserSelecionado(userDetalhe);
     } catch (error) {
       console.error("Erro ao buscar detalhes do usuário:", error);
@@ -205,30 +217,27 @@ const UsuariosPage = () => {
     if (!userSelecionado) return;
 
     try {
-      const response = await fetch("/api/address", {
+      const res = await fetch("/api/address", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(dados),
       });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Erro ao cadastrar endereço.");
-      }
+      const novoEndereco = await res.json();
 
-      const novoEndereco = await response.json();
+      setUserSelecionado((prev) =>
+        prev
+          ? {
+              ...prev,
+              addresses: [...(prev.addresses ?? []), novoEndereco],
+            }
+          : prev,
+      );
 
-      // Atualiza estado do user selecionado com o novo endereço
-      setUserSelecionado((prev: any) => ({
-        ...prev,
-        addresses: [...(prev.addresses || []), novoEndereco],
-      }));
-
-      toast.success("Endereço cadastrado com sucesso!");
+      toast.success("Endereço cadastrado");
       setModalEnderecoAberto(false);
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error.message || "Erro ao cadastrar endereço.");
+    } catch {
+      toast.error("Erro ao cadastrar endereço");
     }
   };
 
@@ -248,7 +257,7 @@ const UsuariosPage = () => {
 
       if (!res.ok) {
         toast.error(
-          `Erro ao excluir usuário: ${result?.error || "Erro desconhecido"}`
+          `Erro ao excluir usuário: ${result?.error || "Erro desconhecido"}`,
         );
         return;
       }
@@ -272,7 +281,7 @@ const UsuariosPage = () => {
   //INICIO REDEFINIR SENHA
   const handleResetPassword = async (userId: number) => {
     const confirmar = confirm(
-      "Deseja realmente redefinir a senha deste usuário?"
+      "Deseja realmente redefinir a senha deste usuário?",
     );
     if (!confirmar) return;
 
@@ -297,7 +306,7 @@ const UsuariosPage = () => {
   //FIM REDEFINIR SENHA
 
   //INICIO MODAL COMUNICAÇÃO
-  const abrirModalComunicacao = (user: any) => {
+  const abrirModalComunicacao = (user: UsuarioDetalhe) => {
     setUserSelecionado(user);
     setModalComunicacaoAberta(true);
   };
@@ -319,36 +328,24 @@ const UsuariosPage = () => {
   //FIM MODAL COMUNICAÇÃO
 
   //INICIO MODAL AUTORIZACAO
-  const abrirModalAutorizacao = (user: any) => {
+  const abrirModalAutorizacao = (user: UsuarioDetalhe) => {
     setUserSelecionado(user);
     setModalAutorizacaoAberta(true);
   };
 
-  const enviarAutorizacao = async (dados: any) => {
-    try {
-      const userIdAut = userLogin?.id;
-      if (!userIdAut) {
-        alert("Usuário não autenticado.");
-        return;
-      }
+  const enviarAutorizacao = async (dados: AutorizacaoInput) => {
+    if (!userLogin) return;
 
-      // Adiciona o userIdAut na URL
-      await axios.post(`/api/autorizacao/criar?userIdAut=${userIdAut}`, dados);
-
-      alert("Autorização cadastrada com sucesso!");
-    } catch (err) {
-      console.error(err);
-      alert("Erro ao cadastrar Autorização.");
-    }
+    await axios.post(`/api/autorizacao/criar?userIdAut=${userLogin.id}`, dados);
   };
 
   //FIM MODAL AUTORIZACAO
 
   const alunosDependentes = users.filter(
-    (u: any) =>
+    (u) =>
       u.aluno &&
       (u.aluno.resp1 === userSelecionado?.id ||
-        u.aluno.resp2 === userSelecionado?.id)
+        u.aluno.resp2 === userSelecionado?.id),
   );
 
   //INICIO ABRIR MODAL CADASTRAR USUARIO
@@ -794,7 +791,7 @@ const UsuariosPage = () => {
                                     height={60}
                                     src={`/${alunoUser.imagemUrl.replace(
                                       /\\/g,
-                                      "/"
+                                      "/",
                                     )}`}
                                     alt={`Foto de Usuario`}
                                     className={styles.usuarioImagemList}
@@ -911,7 +908,7 @@ const UsuariosPage = () => {
 
             if (isEditando) {
               setUsers((prev) =>
-                prev.map((u) => (u.id === result.id ? result : u))
+                prev.map((u) => (u.id === result.id ? result : u)),
               );
               toast.success("Usuário editado com sucesso!");
             } else {
@@ -934,7 +931,7 @@ const UsuariosPage = () => {
             toast.error(
               isEditando
                 ? "Erro interno ao editar usuário."
-                : "Erro interno ao cadastrar usuário."
+                : "Erro interno ao cadastrar usuário.",
             );
           }
         }}
@@ -999,7 +996,7 @@ const UsuariosPage = () => {
 
             console.log(
               "Payload enviado para /responsaveis:",
-              payloadResponsaveis
+              payloadResponsaveis,
             );
 
             const resResponsaveis = await fetch(
@@ -1008,7 +1005,7 @@ const UsuariosPage = () => {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payloadResponsaveis),
-              }
+              },
             );
 
             if (!resResponsaveis.ok) {
@@ -1019,7 +1016,7 @@ const UsuariosPage = () => {
             toast.success("Dados do aluno salvos com sucesso!");
 
             const resUsuarioAtualizado = await fetch(
-              `/api/user/${form.userId}`
+              `/api/user/${form.userId}`,
             );
             const usuarioAtualizado = await resUsuarioAtualizado.json();
 
@@ -1031,8 +1028,8 @@ const UsuariosPage = () => {
             // Atualiza lista e detalhe com dados completos
             setUsers((prevUsers) =>
               prevUsers.map((u) =>
-                u.id === usuarioAtualizado.id ? usuarioAtualizado : u
-              )
+                u.id === usuarioAtualizado.id ? usuarioAtualizado : u,
+              ),
             );
 
             setUserSelecionado(usuarioAtualizado);

@@ -4,7 +4,7 @@ import styles from "../../../privateLayout.module.css";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
-import { FaThumbsUp, FaUser } from "react-icons/fa";
+import { FaThumbsUp } from "react-icons/fa";
 import ModalResponder from "@/components/ModalResponder";
 import ModalEnquadramento from "@/components/ModalEnquadramento";
 import ModalParecerCmtCia from "@/components/ModalParecerCmtCia";
@@ -257,7 +257,7 @@ const ComunicacaoRespPage = () => {
             enquadramento: String(enquadramento),
             natureza: String(natureza),
           }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -312,7 +312,7 @@ const ComunicacaoRespPage = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ resposta }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -389,7 +389,7 @@ const ComunicacaoRespPage = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ parecerCmtCia, userIdCmtCia: userLogin.id }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -423,7 +423,7 @@ const ComunicacaoRespPage = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ parecerCa, userIdCa: userLogin.id }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -471,7 +471,7 @@ const ComunicacaoRespPage = () => {
             parecerSubcom,
             userIdSubcom: userLogin.id,
           }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -500,7 +500,7 @@ const ComunicacaoRespPage = () => {
     }
 
     const confirmarPublicacao = window.confirm(
-      "Deseja realmente publicar essa comunicação?"
+      "Deseja realmente publicar essa comunicação?",
     );
     if (!confirmarPublicacao) {
       return;
@@ -548,7 +548,7 @@ const ComunicacaoRespPage = () => {
     }
 
     const confirmarArquivamento = window.confirm(
-      "Deseja arquivar essa comunicação?"
+      "Deseja arquivar essa comunicação?",
     );
     if (!confirmarArquivamento) {
       return;
@@ -608,7 +608,7 @@ const ComunicacaoRespPage = () => {
     if (!id) return;
 
     const confirmacao = confirm(
-      "Tem certeza que deseja excluir esta comunicação?"
+      "Tem certeza que deseja excluir esta comunicação?",
     );
     if (!confirmacao) return;
 
@@ -644,8 +644,12 @@ const ComunicacaoRespPage = () => {
       filename: `comunicacao_${comunicacao?.id}.pdf`,
       image: { type: "jpeg", quality: 0.98 },
       html2canvas: { scale: 2 },
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-    };
+      jsPDF: {
+        unit: "mm",
+        format: "a4",
+        orientation: "portrait",
+      },
+    } as const;
 
     html2pdf().set(opt).from(element).save();
   };
@@ -1072,7 +1076,7 @@ const ComunicacaoRespPage = () => {
                             title={
                               comunicacao.dataCienciaResponsavel1
                                 ? `Visualizado em: ${new Date(
-                                    comunicacao.dataCienciaResponsavel1
+                                    comunicacao.dataCienciaResponsavel1,
                                   ).toLocaleString("pt-BR")}`
                                 : "Ainda não visualizado"
                             }
@@ -1103,7 +1107,7 @@ const ComunicacaoRespPage = () => {
                             title={
                               comunicacao.dataCienciaResponsavel2
                                 ? `Visualizado em: ${new Date(
-                                    comunicacao.dataCienciaResponsavel2
+                                    comunicacao.dataCienciaResponsavel2,
                                   ).toLocaleString("pt-BR")}`
                                 : "Ainda não visualizado"
                             }
@@ -1348,7 +1352,7 @@ const ComunicacaoRespPage = () => {
                       <strong>
                         {comunicacao.dtAtualizacaoStatus
                           ? new Date(
-                              comunicacao.dtAtualizacaoStatus
+                              comunicacao.dtAtualizacaoStatus,
                             ).toLocaleString()
                           : "Nenhuma data informada"}
                       </strong>

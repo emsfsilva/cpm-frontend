@@ -80,23 +80,27 @@ export default function AutorizacaoPage() {
   const [filteredAutorizacoes, setFilteredAutorizacoes] = useState<
     Autorizacao[]
   >([]);
-  const [autorizacaoSelecionada, setAutorizacaoSelecionada] = useState<
-    any | null
-  >(null);
+  const [autorizacaoSelecionada, setAutorizacaoSelecionada] =
+    useState<Autorizacao | null>(null);
 
   useEffect(() => {
     const fetchAutorizacoes = async () => {
       try {
-        const res = await fetch("/api/autorizacao"); // chama o route.ts
-        const data = await res.json();
+        const res = await fetch("/api/autorizacao");
+
+        const data: Autorizacao[] = await res.json();
 
         if (!res.ok) {
-          throw new Error(data.error || "Erro desconhecido");
+          throw new Error("Erro ao buscar autorizações");
         }
 
         setAutorizacoes(data);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("Erro desconhecido");
+        }
       } finally {
         setLoading(false);
       }
@@ -153,13 +157,14 @@ export default function AutorizacaoPage() {
       if (!res.ok) {
         const errorData = await res.json();
         throw new Error(
-          errorData.message || "Erro ao buscar detalhes da Autorização"
+          errorData.message || "Erro ao buscar detalhes da Autorização",
         );
       }
-      const autorizacaoDetalhe = await res.json();
+
+      const autorizacaoDetalhe: Autorizacao = await res.json();
       setAutorizacaoSelecionada(autorizacaoDetalhe);
-    } catch (error) {
-      console.error("Erro ao buscar detalhes da Autorização:", error);
+    } catch (err: unknown) {
+      console.error("Erro ao buscar detalhes da Autorização:", err);
     }
   };
   //FIM ABRIR DETALHES DA AUTORIZAÇÃO
@@ -328,11 +333,11 @@ export default function AutorizacaoPage() {
                               autorizacao.statusAut === "Autorizada"
                                 ? "#28a745"
                                 : autorizacao.statusAut ===
-                                  "Autorizada com restrição"
-                                ? "#ff9800"
-                                : autorizacao.statusAut === "Negada"
-                                ? "#f44336"
-                                : "#000000",
+                                    "Autorizada com restrição"
+                                  ? "#ff9800"
+                                  : autorizacao.statusAut === "Negada"
+                                    ? "#f44336"
+                                    : "#000000",
                           }}
                         >
                           {autorizacao.statusAut}
@@ -355,11 +360,11 @@ export default function AutorizacaoPage() {
                           <FaCalendar />
                         </span>
                         {new Date(
-                          autorizacao.dataInicio + "T00:00:00"
+                          autorizacao.dataInicio + "T00:00:00",
                         ).toLocaleDateString()}{" "}
                         a{" "}
                         {new Date(
-                          autorizacao.dataFinal + "T00:00:00"
+                          autorizacao.dataFinal + "T00:00:00",
                         ).toLocaleDateString()}
                       </div>
                       <div
@@ -374,7 +379,7 @@ export default function AutorizacaoPage() {
                           .filter(
                             (d) =>
                               autorizacao[d.chave as keyof Autorizacao] ===
-                              "Sim"
+                              "Sim",
                           )
                           .map((d) => d.label)
                           .join(" ")}
@@ -493,11 +498,11 @@ export default function AutorizacaoPage() {
                               autorizacao.statusAut === "Autorizada"
                                 ? "#19d044"
                                 : autorizacao.statusAut ===
-                                  "Autorizada com restrição"
-                                ? "#108444"
-                                : autorizacao.statusAut === "Negada"
-                                ? "#f44336"
-                                : "#000000",
+                                    "Autorizada com restrição"
+                                  ? "#108444"
+                                  : autorizacao.statusAut === "Negada"
+                                    ? "#f44336"
+                                    : "#000000",
                           }}
                         >
                           {autorizacao.statusAut}
@@ -507,11 +512,11 @@ export default function AutorizacaoPage() {
                       <div style={{ fontSize: "14px", color: "#868686" }}>
                         Período:{" "}
                         {new Date(
-                          autorizacao.dataInicio + "T00:00:00"
+                          autorizacao.dataInicio + "T00:00:00",
                         ).toLocaleDateString()}{" "}
                         a{" "}
                         {new Date(
-                          autorizacao.dataFinal + "T00:00:00"
+                          autorizacao.dataFinal + "T00:00:00",
                         ).toLocaleDateString()}
                       </div>
                     </div>
@@ -573,7 +578,7 @@ export default function AutorizacaoPage() {
                       </label>
                       <div className={styles.divDadosBasicosUserTexto}>
                         {new Date(
-                          autorizacaoSelecionada.dataInicio + "T00:00:00"
+                          autorizacaoSelecionada.dataInicio + "T00:00:00",
                         ).toLocaleDateString()}{" "}
                         às {autorizacaoSelecionada.horaInicio}
                       </div>
@@ -586,7 +591,7 @@ export default function AutorizacaoPage() {
                       </label>
                       <div className={styles.divDadosBasicosUserTexto}>
                         {new Date(
-                          autorizacaoSelecionada.dataFinal + "T00:00:00"
+                          autorizacaoSelecionada.dataFinal + "T00:00:00",
                         ).toLocaleDateString()}{" "}
                         às {autorizacaoSelecionada.horaFinal}
                       </div>
@@ -708,22 +713,10 @@ export default function AutorizacaoPage() {
                             width: "10%",
                           }}
                         >
-                          {autorizacaoSelecionada?.imagemUrl ? (
-                            <Image
-                              width={50}
-                              height={50}
-                              src={`/${autorizacaoSelecionada.imagemUrl.replace(
-                                /\\/g,
-                                "/"
-                              )}`}
-                              alt="Foto de Usuario"
-                              className={styles.usuarioImagemList}
-                            />
-                          ) : (
-                            <FaUser
-                              className={styles.alunoSemImagemAutorizacao}
-                            />
-                          )}
+                          <FaUser
+                            className={styles.alunoSemImagemAutorizacao}
+                          />
+
                           <span
                             style={{
                               fontSize: "12px",
