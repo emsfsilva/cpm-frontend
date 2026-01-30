@@ -27,6 +27,7 @@ interface Turma {
 
 interface Aluno {
   id: number;
+  grauAtual: number;
   userId: number;
   resp1: number;
   resp2: number;
@@ -34,9 +35,28 @@ interface Aluno {
   turma?: Turma;
 }
 
-// Tipagem do usuário
+interface State {
+  id: number;
+  name: string;
+}
+
+interface City {
+  id: number;
+  name: string;
+  state: State;
+}
+
+interface Address {
+  id: number;
+  complement?: string;
+  numberAddress?: string | number;
+  city: City;
+  cep?: string;
+}
+
 interface User {
   id: number;
+  mat?: number;
   name: string;
   pg?: string;
   nomeGuerra?: string;
@@ -47,6 +67,7 @@ interface User {
   seduc?: string;
   imagemUrl?: string;
   aluno?: Aluno;
+  addresses?: Address[]; // ✅ Adicionado
   iat?: number;
   exp?: number;
 }
@@ -262,7 +283,8 @@ export default function PerfilPage() {
               <h3 className={styles.divEnderecoPerfilTitulo}>Meu Endereço</h3>
             </div>
 
-            {userSelecionado?.addresses?.length > 0 ? (
+            {/* Pega o primeiro endereço de forma segura */}
+            {userSelecionado?.addresses?.[0] ? (
               <div
                 style={{
                   display: "flex",
