@@ -14,7 +14,7 @@ export async function GET() {
     if (!token) {
       return NextResponse.json(
         { error: "Token não encontrado" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -28,16 +28,23 @@ export async function GET() {
       const data = await response.json();
       return NextResponse.json(
         { error: "Erro ao buscar cidades", details: data },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
     const cidades = await response.json();
     return NextResponse.json(cidades);
-  } catch (error: any) {
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: "Erro interno", details: error.message },
+        { status: 500 },
+      );
+    }
+
     return NextResponse.json(
-      { error: "Erro ao buscar cidades", details: error.message },
-      { status: 500 }
+      { error: "Erro interno", details: "Erro desconhecido" },
+      { status: 500 },
     );
   }
 }

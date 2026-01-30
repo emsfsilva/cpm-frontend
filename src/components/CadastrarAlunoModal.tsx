@@ -18,6 +18,13 @@ interface Turma {
   };
 }
 
+interface UsuarioApi {
+  id: number;
+  name: string;
+  pg: string;
+  typeUser: number;
+}
+
 export interface Aluno {
   id: number;
   grauInicial: string;
@@ -67,15 +74,15 @@ export default function CadastrarAlunoModal({
     async function carregarResponsaveis() {
       try {
         const res = await fetch("/api/user");
-        const data = await res.json();
+        const data: UsuarioApi[] = await res.json();
 
         if (res.ok) {
           const responsaveisFiltrados = data.filter(
-            (user: any) => user.typeUser !== 1
+            (user) => user.typeUser !== 1,
           );
           setResponsaveis(responsaveisFiltrados);
         } else {
-          console.error("Erro ao carregar responsáveis:", data.error || data);
+          console.error("Erro ao carregar responsáveis:", data);
         }
       } catch (error) {
         console.error("Erro ao buscar responsáveis:", error);

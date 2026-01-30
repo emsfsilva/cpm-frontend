@@ -6,6 +6,31 @@ import { FaUser } from "react-icons/fa";
 import Image from "next/image";
 
 // Tipos de props esperadas
+interface UserAlvo {
+  id: number;
+  name?: string;
+}
+
+interface Turma {
+  name: string;
+  cia: {
+    name: string;
+  };
+}
+
+interface Aluno {
+  turma?: Turma;
+}
+
+interface UserAlvo {
+  id: number;
+  imagemUrl?: string | null;
+  pg?: string;
+  orgao?: string;
+  nomeGuerra?: string;
+  aluno?: Aluno;
+}
+
 interface ComunicacaoModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -16,7 +41,7 @@ interface ComunicacaoModalProps {
     dataInicio: string;
     horaInicio: string;
   }) => void;
-  userAlvo: any; // Idealmente tipar melhor (ex: UserEntity ou ReturnUserDto)
+  userAlvo: UserAlvo;
 }
 
 export default function ComunicacaoModal({
@@ -120,7 +145,7 @@ export default function ComunicacaoModal({
                         checked={motivoSelecionado === opcao}
                         onChange={() =>
                           setMotivoSelecionado(
-                            motivoSelecionado === opcao ? "" : opcao
+                            motivoSelecionado === opcao ? "" : opcao,
                           )
                         }
                       />

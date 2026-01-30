@@ -5,6 +5,25 @@ import styles from "@/app/(privada)/privateLayout.module.css";
 import { FaUser } from "react-icons/fa";
 import Image from "next/image";
 
+interface Turma {
+  id: number;
+  name: string;
+  cia: { id: number; name: string };
+}
+
+interface Aluno {
+  turma: Turma;
+}
+
+interface UserAlvo {
+  id: number;
+  imagemUrl?: string;
+  pg: string;
+  orgao: string;
+  nomeGuerra: string;
+  aluno?: Aluno;
+}
+
 interface AutorizacaoModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -24,7 +43,7 @@ interface AutorizacaoModalProps {
     sab: string;
     dom: string;
   }) => void;
-  userAlvo: any;
+  userAlvo: UserAlvo;
 }
 
 export default function AutorizacaoModal({
@@ -33,8 +52,6 @@ export default function AutorizacaoModal({
   onSubmit,
   userAlvo,
 }: AutorizacaoModalProps) {
-  if (!isOpen) return null;
-
   const [motivoAut, setMotivoAut] = useState("");
   const [obsAut, setObsAut] = useState("");
   const [dataInicio, setDataInicio] = useState("");
@@ -51,6 +68,8 @@ export default function AutorizacaoModal({
     sab: "Não",
     dom: "Não",
   });
+
+  if (!isOpen) return null;
 
   const toggleDia = (dia: keyof typeof dias) => {
     setDias((prev) => ({

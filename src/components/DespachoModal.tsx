@@ -80,8 +80,13 @@ export default function DespachoModal({
           sab: data.sab || "Não",
           dom: data.dom || "Não",
         });
-      } catch (err: any) {
+      } catch (err: unknown) {
         setError("Erro ao carregar dados da autorização.");
+        if (err instanceof Error) {
+          console.error(err.message);
+        } else {
+          console.error("Erro desconhecido ao carregar autorização");
+        }
         console.error(err);
       } finally {
         setCarregandoDados(false);
@@ -131,8 +136,12 @@ export default function DespachoModal({
 
       onSuccess();
       onClose();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Erro desconhecido ao salvar despacho.");
+      }
     } finally {
       setLoading(false);
     }
