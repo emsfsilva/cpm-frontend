@@ -5,13 +5,16 @@ import { cookies } from "next/headers";
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8081";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } },
-) {
-  const { id } = params;
+export const dynamic = "force-dynamic";
 
+export async function GET(request: NextRequest) {
   try {
+    // Extrai o id da URL
+    const url = new URL(request.url);
+    const pathParts = url.pathname.split("/");
+    // ['', 'api', 'autorizacao', '123']
+    const id = pathParts[pathParts.indexOf("autorizacao") + 1];
+
     const cookieStore = cookies();
     const token = cookieStore.get("accessToken")?.value;
 
