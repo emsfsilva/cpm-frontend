@@ -28,7 +28,7 @@ const ComunicacaoPage = () => {
   >([]);
   const [comunicacaoSelecionado, setComunicacaoSelecionado] =
     useState<Comunicacao | null>(null);
-  const [setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
@@ -98,6 +98,10 @@ const ComunicacaoPage = () => {
     }
   };
   //FIM ABRIR DETALHES DA COMUNICAÇÃO
+
+  if (loading) {
+    return <p>Carregando...</p>;
+  }
 
   return (
     <div className={styles.alunosContainer}>

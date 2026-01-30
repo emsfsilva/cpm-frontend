@@ -6,7 +6,7 @@ const API_BASE_URL =
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const token = cookies().get("accessToken")?.value;
@@ -19,7 +19,7 @@ export async function PUT(
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     const data = await response.json();
@@ -27,15 +27,22 @@ export async function PUT(
     if (!response.ok) {
       return NextResponse.json(
         { error: "Erro ao publicar comunicação", details: data },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
     return NextResponse.json(data);
-  } catch (error: any) {
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: "Erro interno", details: error.message },
+        { status: 500 },
+      );
+    }
+
     return NextResponse.json(
-      { error: "Erro interno ao publicar", details: error.message },
-      { status: 500 }
+      { error: "Erro interno", details: "Erro desconhecido" },
+      { status: 500 },
     );
   }
 }

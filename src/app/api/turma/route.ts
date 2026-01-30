@@ -14,7 +14,7 @@ export async function GET() {
     if (!token) {
       return NextResponse.json(
         { error: "Token não encontrado" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -30,15 +30,22 @@ export async function GET() {
     if (!res.ok) {
       return NextResponse.json(
         { error: "Erro ao buscar turmas", details: data },
-        { status: res.status }
+        { status: res.status },
       );
     }
 
     return NextResponse.json(data);
-  } catch (error: any) {
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: "Erro interno", details: error.message },
+        { status: 500 },
+      );
+    }
+
     return NextResponse.json(
-      { error: "Erro interno ao buscar turmas", details: error.message },
-      { status: 500 }
+      { error: "Erro interno", details: "Erro desconhecido" },
+      { status: 500 },
     );
   }
 }

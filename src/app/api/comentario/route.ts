@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     if (!token) {
       return NextResponse.json(
         { error: "Token não encontrado" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -35,15 +35,22 @@ export async function POST(request: Request) {
     if (!response.ok) {
       return NextResponse.json(
         { error: "Erro ao cadastrar comentario", details: data },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
     return NextResponse.json(data, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: "Erro interno", details: error.message },
+        { status: 500 },
+      );
+    }
+
     return NextResponse.json(
-      { error: "Erro interno", details: error.message },
-      { status: 500 }
+      { error: "Erro interno", details: "Erro desconhecido" },
+      { status: 500 },
     );
   }
 }
@@ -59,15 +66,22 @@ export async function GET() {
     if (!response.ok) {
       return NextResponse.json(
         { error: "Erro ao buscar comentário", details: data },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
     return NextResponse.json(data, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: "Erro interno", details: error.message },
+        { status: 500 },
+      );
+    }
+
     return NextResponse.json(
-      { error: "Erro interno ao buscar comentário", details: error.message },
-      { status: 500 }
+      { error: "Erro interno", details: "Erro desconhecido" },
+      { status: 500 },
     );
   }
 }

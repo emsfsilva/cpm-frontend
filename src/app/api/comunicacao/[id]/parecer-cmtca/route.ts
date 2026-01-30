@@ -6,7 +6,7 @@ const API_BASE_URL =
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const { parecerCa, userIdCa } = await request.json();
@@ -21,22 +21,29 @@ export async function PUT(
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ parecerCa, userIdCa }),
-      }
+      },
     );
 
     const data = await response.json();
     if (!response.ok) {
       return NextResponse.json(
         { error: "Erro ao enviar parecer do CA", details: data },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
     return NextResponse.json(data);
-  } catch (error: any) {
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: "Erro interno", details: error.message },
+        { status: 500 },
+      );
+    }
+
     return NextResponse.json(
-      { error: "Erro interno", details: error.message },
-      { status: 500 }
+      { error: "Erro interno", details: "Erro desconhecido" },
+      { status: 500 },
     );
   }
 }

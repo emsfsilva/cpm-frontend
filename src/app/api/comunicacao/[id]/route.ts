@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 // ✅ GET /api/user/:id → busca detalhes do comunicacao
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const cookieStore = cookies();
@@ -19,7 +19,7 @@ export async function GET(
     if (!token) {
       return NextResponse.json(
         { error: "Token não encontrado" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -35,15 +35,22 @@ export async function GET(
     if (!response.ok) {
       return NextResponse.json(
         { error: "Erro ao buscar comunicacao", details: data },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
     return NextResponse.json(data);
-  } catch (error: any) {
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: "Erro interno", details: error.message },
+        { status: 500 },
+      );
+    }
+
     return NextResponse.json(
-      { error: "Erro ao buscar comunicacao", details: error.message },
-      { status: 500 }
+      { error: "Erro interno", details: "Erro desconhecido" },
+      { status: 500 },
     );
   }
 }
@@ -58,7 +65,7 @@ export async function PATCH(request: Request) {
     if (!token) {
       return NextResponse.json(
         { error: "Token não encontrado" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -78,7 +85,7 @@ export async function PATCH(request: Request) {
           Authorization: token,
         },
         body: JSON.stringify(body),
-      }
+      },
     );
 
     const data = await response.json();
@@ -87,16 +94,22 @@ export async function PATCH(request: Request) {
       console.error("Erro ao atualizar no backend:", data);
       return NextResponse.json(
         { error: "Erro ao editar", details: data },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
     return NextResponse.json(data, { status: 200 });
-  } catch (error: any) {
-    console.error("Erro inesperado:", error);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: "Erro interno", details: error.message },
+        { status: 500 },
+      );
+    }
+
     return NextResponse.json(
-      { error: "Erro ao editar comunicacao", details: error.message },
-      { status: 500 }
+      { error: "Erro interno", details: "Erro desconhecido" },
+      { status: 500 },
     );
   }
 }
@@ -111,7 +124,7 @@ export async function DELETE(request: Request) {
     if (!token) {
       return NextResponse.json(
         { error: "Token não encontrado" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -125,22 +138,29 @@ export async function DELETE(request: Request) {
         headers: {
           Authorization: token,
         },
-      }
+      },
     );
 
     if (!response.ok) {
       const error = await response.json();
       return NextResponse.json(
         { error: "Erro ao excluir", details: error },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
     return NextResponse.json({ success: true }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: "Erro interno", details: error.message },
+        { status: 500 },
+      );
+    }
+
     return NextResponse.json(
-      { error: "Erro ao excluir comunicacao", details: error.message },
-      { status: 500 }
+      { error: "Erro interno", details: "Erro desconhecido" },
+      { status: 500 },
     );
   }
 }

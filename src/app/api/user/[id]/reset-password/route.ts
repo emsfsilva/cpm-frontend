@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 // ✅ PATCH /api/user/:id/reset-password → redefine a senha do usuário
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const cookieStore = cookies();
@@ -19,7 +19,7 @@ export async function PATCH(
     if (!token) {
       return NextResponse.json(
         { error: "Token não encontrado" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -30,7 +30,7 @@ export async function PATCH(
         headers: {
           Authorization: token,
         },
-      }
+      },
     );
 
     const data = await response.json();
@@ -38,15 +38,22 @@ export async function PATCH(
     if (!response.ok) {
       return NextResponse.json(
         { error: "Erro ao redefinir senha", details: data },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
     return NextResponse.json(data);
-  } catch (error: any) {
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: "Erro interno", details: error.message },
+        { status: 500 },
+      );
+    }
+
     return NextResponse.json(
-      { error: "Erro ao redefinir senha", details: error.message },
-      { status: 500 }
+      { error: "Erro interno", details: "Erro desconhecido" },
+      { status: 500 },
     );
   }
 }

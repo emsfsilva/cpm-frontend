@@ -16,7 +16,7 @@ export async function GET(request: Request) {
     if (!token) {
       return NextResponse.json(
         { error: "Token não encontrado" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -33,15 +33,22 @@ export async function GET(request: Request) {
     if (!response.ok) {
       return NextResponse.json(
         { error: "Erro ao buscar usuários", details: data },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
     return NextResponse.json(data);
-  } catch (error: any) {
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: "Erro interno", details: error.message },
+        { status: 500 },
+      );
+    }
+
     return NextResponse.json(
-      { error: "Erro ao buscar os dados dos usuários", details: error.message },
-      { status: 500 }
+      { error: "Erro interno", details: "Erro desconhecido" },
+      { status: 500 },
     );
   }
 }
@@ -56,7 +63,7 @@ export async function PATCH(request: Request) {
     if (!token) {
       return NextResponse.json(
         { error: "Token não encontrado" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -73,10 +80,17 @@ export async function PATCH(request: Request) {
 
     const data = await response.json();
     return NextResponse.json(data, { status: response.status });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: "Erro interno", details: error.message },
+        { status: 500 },
+      );
+    }
+
     return NextResponse.json(
-      { error: "Erro ao atualizar senha", details: error.message },
-      { status: 500 }
+      { error: "Erro interno", details: "Erro desconhecido" },
+      { status: 500 },
     );
   }
 }
@@ -89,7 +103,7 @@ export async function POST(request: Request) {
     if (!token) {
       return NextResponse.json(
         { error: "Token não encontrado" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -111,15 +125,22 @@ export async function POST(request: Request) {
         { error: "Erro ao criar usuário", details: data },
         {
           status: response.status,
-        }
+        },
       );
     }
 
     return NextResponse.json(data, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: "Erro interno", details: error.message },
+        { status: 500 },
+      );
+    }
+
     return NextResponse.json(
-      { error: "Erro interno", details: error.message },
-      { status: 500 }
+      { error: "Erro interno", details: "Erro desconhecido" },
+      { status: 500 },
     );
   }
 }

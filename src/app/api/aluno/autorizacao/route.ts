@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     if (!token || !userCookie) {
       return NextResponse.json(
         { error: "Token ou usuário não encontrado" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     if (!userId) {
       return NextResponse.json(
         { error: "ID do usuário não encontrado" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -47,15 +47,22 @@ export async function GET(request: NextRequest) {
     if (!res.ok) {
       return NextResponse.json(
         { error: data.message || "Erro no servidor" },
-        { status: res.status }
+        { status: res.status },
       );
     }
 
     return NextResponse.json(data);
-  } catch (error: any) {
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: "Erro interno", details: error.message },
+        { status: 500 },
+      );
+    }
+
     return NextResponse.json(
-      { error: "Erro interno", details: error.message },
-      { status: 500 }
+      { error: "Erro interno", details: "Erro desconhecido" },
+      { status: 500 },
     );
   }
 }
