@@ -73,10 +73,12 @@ export default function AutorizacaoPage() {
   const [autorizacoes, setAutorizacoes] = useState<Autorizacao[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [menuAbertoId, setMenuAbertoId] = useState<number | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
   const [modalAberto, setModalAberto] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filtroFuncao, setFiltroFuncao] = useState<string>("Todos");
-  const menuRef = useRef<HTMLDivElement>(null);
   const [filteredAutorizacoes, setFilteredAutorizacoes] = useState<
     Autorizacao[]
   >([]);
@@ -116,7 +118,6 @@ export default function AutorizacaoPage() {
         setMenuAbertoId(null);
       }
     };
-
     document.addEventListener("mousedown", handleClickFora);
     return () => {
       document.removeEventListener("mousedown", handleClickFora);
@@ -173,7 +174,7 @@ export default function AutorizacaoPage() {
     setSearchTerm(event.target.value.toLowerCase());
   };
 
-  const dias = [
+  const dias: { chave: keyof Autorizacao; label: string }[] = [
     { chave: "seg", label: "Seg" },
     { chave: "ter", label: "Ter" },
     { chave: "qua", label: "Qua" },
@@ -257,156 +258,84 @@ export default function AutorizacaoPage() {
                     : ""
                 }`}
                 onClick={() => handleView(autorizacao.id)}
+                style={{ position: "relative" }} // necessário para o menu suspenso
               >
                 <ul className={styles.itemAluno}>
                   <li style={{ position: "relative" }}>
-                    <div
-                      style={{ width: "10%" }}
-                      className={styles.alunoListImg}
-                    >
-                      <div>
-                        <Image
-                          src="/assets/images/logo.png"
-                          alt="logo"
-                          width={40}
-                          height={40}
-                        />
-                        <div className={styles.divNumeroAutorizacao}>
-                          Nº {autorizacao.id}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div style={{ width: "80%" }}>
+                    {/* 👈 Div com infos do aluno */}
+                    <div style={{ width: "90%" }}>
                       <div style={{ fontSize: "14px" }}>
                         <strong>{autorizacao.motivoAut}</strong>
                       </div>
-
                       <div className={styles.divItensMeioUsuario}>
-                        <span
-                          style={{
-                            paddingRight: "5px",
-                            alignContent: "center",
-                          }}
-                        >
-                          <FaUser />
+                        <FaUser />
+                        <span style={{ marginLeft: "5px", fontWeight: "bold" }}>
+                          Solicitante:
                         </span>
-                        <span style={{ fontWeight: "bold" }}>Solicitante:</span>
                         <span style={{ marginLeft: "5px" }}>
                           {autorizacao.useraut?.pg}{" "}
                           {autorizacao.useraut?.nomeGuerra} |{" "}
                           {autorizacao.useraut?.funcao}
                         </span>
                       </div>
-
                       <div className={styles.divItensMeioUsuario}>
-                        <span
-                          style={{
-                            paddingRight: "5px",
-                            alignContent: "center",
-                          }}
-                        >
-                          <FaGraduationCap fontSize={16} />
+                        <FaGraduationCap />
+                        <span style={{ marginLeft: "5px", fontWeight: "bold" }}>
+                          Aluno:
                         </span>
-
-                        <span style={{ fontWeight: "bold" }}>Aluno:</span>
                         <span style={{ marginLeft: "5px" }}>
                           {autorizacao.useralaut?.nomeGuerra} |{" "}
                           {autorizacao.alunoInfo?.turma?.name} -{" "}
                           {autorizacao.alunoInfo?.cia?.name}
                         </span>
                       </div>
-
-                      <div
-                        style={{
-                          fontSize: "14px",
-                          color: "#868686",
-                          border: "1px solid #d3d3d3",
-                          borderRadius: "20px",
-                        }}
-                      >
-                        <span
-                          style={{
-                            fontWeight: "bold",
-                            paddingLeft: "10px",
-                            color:
-                              autorizacao.statusAut === "Autorizada"
-                                ? "#28a745"
-                                : autorizacao.statusAut ===
-                                    "Autorizada com restrição"
-                                  ? "#ff9800"
-                                  : autorizacao.statusAut === "Negada"
-                                    ? "#f44336"
-                                    : "#000000",
-                          }}
-                        >
-                          {autorizacao.statusAut}
-                        </span>
-                      </div>
-
-                      <div
-                        style={{
-                          fontSize: "14px",
-                          color: "#868686",
-                          display: "flex",
-                        }}
-                      >
-                        <span
-                          style={{
-                            paddingRight: "5px",
-                            alignContent: "center",
-                          }}
-                        >
-                          <FaCalendar />
-                        </span>
-                        {new Date(
-                          autorizacao.dataInicio + "T00:00:00",
-                        ).toLocaleDateString()}{" "}
-                        a{" "}
-                        {new Date(
-                          autorizacao.dataFinal + "T00:00:00",
-                        ).toLocaleDateString()}
-                      </div>
-                      <div
-                        style={{
-                          fontSize: "14px",
-                          color: "#0aa538",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        Dias:{" "}
-                        {dias
-                          .filter(
-                            (d) =>
-                              autorizacao[d.chave as keyof Autorizacao] ===
-                              "Sim",
-                          )
-                          .map((d) => d.label)
-                          .join(" ")}
-                      </div>
                     </div>
 
-                    <div
-                      style={{ width: "10%" }}
-                      className={styles.alunoListImg}
-                    >
-                      <div>
-                        {autorizacao.statusAut === "Autorizada" && (
-                          <FaCheckCircle fontSize={30} color="#85f37e" />
-                        )}
+                    {/* 👈 Botão para abrir menu suspenso */}
+                    <div style={{ width: "10%" }}>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation(); // impede abrir detalhes
+                          setMenuAbertoId(
+                            menuAbertoId === autorizacao.id
+                              ? null
+                              : autorizacao.id,
+                          );
+                        }}
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          cursor: "pointer",
+                        }}
+                      >
+                        ⋮ {/* você pode trocar por ícone */}
+                      </button>
 
-                        {autorizacao.statusAut ===
-                          "Autorizada com restrição" && (
-                          <FaTriangleExclamation
-                            fontSize={30}
-                            color="#dd6210"
-                          />
-                        )}
-
-                        {autorizacao.statusAut === "Negada" && (
-                          <FaXmark fontSize={30} color="#ff3b30" />
-                        )}
-                      </div>
+                      {/* 👈 Menu suspenso */}
+                      {menuAbertoId === autorizacao.id && (
+                        <div
+                          ref={menuRef}
+                          className={styles.menuSuspenso}
+                          style={{
+                            position: "absolute",
+                            top: "100%",
+                            right: 0,
+                            background: "#fff",
+                            border: "1px solid #ccc",
+                            borderRadius: "4px",
+                            padding: "5px",
+                            zIndex: 10,
+                          }}
+                        >
+                          <p style={{ margin: 0, cursor: "pointer" }}>Editar</p>
+                          <p style={{ margin: 0, cursor: "pointer" }}>
+                            Excluir
+                          </p>
+                          <p style={{ margin: 0, cursor: "pointer" }}>
+                            Detalhes
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </li>
                 </ul>
@@ -654,12 +583,11 @@ export default function AutorizacaoPage() {
                           style={{
                             textAlign: "center",
                             justifyItems: "center",
-
-                            flex: 1, // cada item ocupa espaço igual
+                            flex: 1,
                           }}
                         >
                           <div style={{ fontSize: "24px" }}>
-                            {autorizacaoSelecionada[dia.chave] === "Sim" ? (
+                            {autorizacaoSelecionada[dia.chave] === "Sim" ? ( // TypeScript agora entende
                               <FaCheckSquare color="green" />
                             ) : (
                               <FaRegSquare color="#918e8e" />
