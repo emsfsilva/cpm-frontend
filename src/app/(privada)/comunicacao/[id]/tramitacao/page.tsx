@@ -12,7 +12,7 @@ import ModalParecerCmtCa from "@/components/ModalParecerCmtCa";
 import ModalParecerSubComando from "@/components/ModalParecerSubComando";
 import ModalArquivamento from "@/components/ModalArquivamento";
 import { useRef } from "react";
-import html2pdf from "html2pdf.js";
+//import html2pdf from "html2pdf.js";
 
 interface ComunicacaoResp {
   id: number;
@@ -632,6 +632,8 @@ const ComunicacaoRespPage = () => {
     }
   };
 
+  /*
+
   const gerarPdf = () => {
     if (!pdfRef.current) {
       console.error("PDF ref não encontrada");
@@ -653,6 +655,7 @@ const ComunicacaoRespPage = () => {
 
     html2pdf().set(opt).from(element).save();
   };
+  */
 
   if (!comunicacao) return <div>Carregando...</div>;
   return (
@@ -661,7 +664,9 @@ const ComunicacaoRespPage = () => {
       {userLogin?.typeUser != null && [10, 5].includes(userLogin.typeUser) && (
         <div className={styles.menuBotoesComunicacaoVer}>
           {/* inicio gerar pdf */}
-          <button className={styles.botoesComunicacaoVer} onClick={gerarPdf}>
+          <button className={styles.botoesComunicacaoVer}>
+            {" "}
+            {/* colocar dentro do botao: onClick={gerarPdf} */}
             <i
               className={`fa fa-file-pdf ${styles.menuIconsComunicacaoVer}`}
               title="Gerar Pdf"
