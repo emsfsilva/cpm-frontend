@@ -1,15 +1,17 @@
 // src/app/api/aluno/[id]/route.ts
-
 import { NextRequest, NextResponse } from "next/server";
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(req: NextRequest) {
   try {
-    const id = params.id;
+    // Extrai o id da URL
+    const url = new URL(req.url);
+    const pathParts = url.pathname.split("/");
+    // ['', 'api', 'aluno', '123']
+    const id = pathParts[pathParts.indexOf("aluno") + 1];
+
     const body = await req.json();
 
+    // Extrai token do cookie
     const cookieHeader = req.headers.get("cookie") || "";
     const token = cookieHeader
       .split("; ")
@@ -19,7 +21,7 @@ export async function PUT(
     if (!token) {
       return NextResponse.json(
         { message: "Token não encontrado" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
