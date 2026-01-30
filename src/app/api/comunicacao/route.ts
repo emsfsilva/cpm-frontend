@@ -1,4 +1,3 @@
-// src/app/api/comunicacao/route.ts
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
@@ -7,9 +6,9 @@ const API_BASE_URL =
 
 export const dynamic = "force-dynamic";
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies(); // 🔹 corrigido
     const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
@@ -44,7 +43,6 @@ export async function GET(request: Request) {
         { status: 500 },
       );
     }
-
     return NextResponse.json(
       { error: "Erro interno", details: "Erro desconhecido" },
       { status: 500 },

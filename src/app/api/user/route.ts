@@ -8,9 +8,9 @@ const API_BASE_URL =
 // 👇 ISSO É ESSENCIAL PARA USAR `cookies()` AQUI
 export const dynamic = "force-dynamic";
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    const cookieStore = await cookies();
+    const cookieStore = await cookies(); // 🔹 await
     const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
@@ -45,7 +45,6 @@ export async function GET(request: Request) {
         { status: 500 },
       );
     }
-
     return NextResponse.json(
       { error: "Erro interno", details: "Erro desconhecido" },
       { status: 500 },
@@ -97,7 +96,7 @@ export async function PATCH(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const cookieStore = await cookies();
+    const cookieStore = await cookies(); // 🔹 await
     const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
@@ -123,9 +122,7 @@ export async function POST(request: Request) {
     if (!response.ok) {
       return NextResponse.json(
         { error: "Erro ao criar usuário", details: data },
-        {
-          status: response.status,
-        },
+        { status: response.status },
       );
     }
 
@@ -137,7 +134,6 @@ export async function POST(request: Request) {
         { status: 500 },
       );
     }
-
     return NextResponse.json(
       { error: "Erro interno", details: "Erro desconhecido" },
       { status: 500 },

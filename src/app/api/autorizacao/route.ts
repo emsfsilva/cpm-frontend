@@ -7,9 +7,9 @@ const API_BASE_URL =
 
 export const dynamic = "force-dynamic";
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies(); // 🔹 await para TS
     const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
@@ -44,7 +44,6 @@ export async function GET(request: Request) {
         { status: 500 },
       );
     }
-
     return NextResponse.json(
       { error: "Erro interno", details: "Erro desconhecido" },
       { status: 500 },
