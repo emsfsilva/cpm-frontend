@@ -8,11 +8,11 @@ const API_BASE_URL =
 export const dynamic = "force-dynamic";
 
 // ✅ GET /api/user/:id → busca detalhes do comunicacao
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } },
-) {
+export async function GET(request: Request) {
   try {
+    const url = new URL(request.url);
+    const comunicacaoId = url.pathname.split("/").pop(); // pega o ID do final da URL
+
     const cookieStore = cookies();
     const token = cookieStore.get("accessToken")?.value;
 
@@ -23,12 +23,15 @@ export async function GET(
       );
     }
 
-    const response = await fetch(`${API_BASE_URL}/comunicacao/${params.id}`, {
-      method: "GET",
-      headers: {
-        Authorization: token,
+    const response = await fetch(
+      `${API_BASE_URL}/comunicacao/${comunicacaoId}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: token,
+        },
       },
-    });
+    );
 
     const data = await response.json();
 
