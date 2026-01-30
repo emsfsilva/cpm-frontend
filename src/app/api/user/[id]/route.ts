@@ -8,10 +8,7 @@ const API_BASE_URL =
 export const dynamic = "force-dynamic";
 
 // ✅ GET /api/user/:id → busca detalhes do usuário
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } },
-) {
+export async function GET(request: Request) {
   try {
     const cookieStore = cookies();
     const token = cookieStore.get("accessToken")?.value;
@@ -23,7 +20,11 @@ export async function GET(
       );
     }
 
-    const response = await fetch(`${API_BASE_URL}/user/${params.id}`, {
+    // Pega o ID do usuário da URL
+    const url = new URL(request.url);
+    const userId = url.pathname.split("/").pop(); // último segmento é o [id]
+
+    const response = await fetch(`${API_BASE_URL}/user/${userId}`, {
       method: "GET",
       headers: {
         Authorization: token,

@@ -8,10 +8,7 @@ const API_BASE_URL =
 export const dynamic = "force-dynamic";
 
 // ✅ PATCH /api/user/:id/reset-password → redefine a senha do usuário
-export async function PATCH(
-  request: Request,
-  { params }: { params: { id: string } },
-) {
+export async function PATCH(request: Request) {
   try {
     const cookieStore = cookies();
     const token = cookieStore.get("accessToken")?.value;
@@ -23,8 +20,12 @@ export async function PATCH(
       );
     }
 
+    // Pega o ID da URL
+    const url = new URL(request.url);
+    const userId = url.pathname.split("/").slice(-2, -1)[0]; // pega o [id] da rota
+
     const response = await fetch(
-      `${API_BASE_URL}/user/reset-password/${params.id}`,
+      `${API_BASE_URL}/user/reset-password/${userId}`,
       {
         method: "PATCH",
         headers: {
@@ -50,7 +51,6 @@ export async function PATCH(
         { status: 500 },
       );
     }
-
     return NextResponse.json(
       { error: "Erro interno", details: "Erro desconhecido" },
       { status: 500 },
