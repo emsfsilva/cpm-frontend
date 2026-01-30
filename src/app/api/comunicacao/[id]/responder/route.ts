@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+// src/app/api/comunicacao/[id]/responder/route.ts
+import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
 const API_BASE_URL =
@@ -6,13 +7,15 @@ const API_BASE_URL =
 
 export const dynamic = "force-dynamic";
 
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } },
-) {
+export async function PUT(request: NextRequest) {
   try {
-    const cookieStore = cookies();
-    const token = cookieStore.get("accessToken")?.value;
+    // Extrai o ID da URL
+    const url = new URL(request.url);
+    const pathParts = url.pathname.split("/");
+    // ['', 'api', 'comunicacao', '123', 'responder']
+    const id = pathParts[pathParts.indexOf("comunicacao") + 1];
+
+    const token = cookies().get("accessToken")?.value;
 
     if (!token) {
       return NextResponse.json(
@@ -22,15 +25,14 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const comunicacaoId = params.id;
 
     const response = await fetch(
-      `${API_BASE_URL}/comunicacao/responder/${comunicacaoId}`,
+      `${API_BASE_URL}/comunicacao/responder/${id}`,
       {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: token,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(body),
       },

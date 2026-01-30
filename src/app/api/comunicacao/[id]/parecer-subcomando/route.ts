@@ -1,19 +1,34 @@
+// src/app/api/comunicacao/[id]/parecer-subcomando/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8081";
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } },
-) {
+export async function PUT(request: NextRequest) {
   try {
+    // Extrai o ID da URL
+    const url = new URL(request.url);
+    const pathParts = url.pathname.split("/");
+    // ['', 'api', 'comunicacao', '123', 'parecer-subcomando']
+    const id = pathParts[pathParts.indexOf("comunicacao") + 1];
+
+    // Dados do body
     const { parecerSubcom, userIdSubcom } = await request.json();
+
+    // Token do cookie
     const token = cookies().get("accessToken")?.value;
 
+    if (!token) {
+      return NextResponse.json(
+        { error: "Token não encontrado" },
+        { status: 401 },
+      );
+    }
+
+    // Chamada ao backend
     const response = await fetch(
-      `${API_BASE_URL}/comunicacao/parecersubcom/${params.id}`,
+      `${API_BASE_URL}/comunicacao/parecersubcom/${id}`,
       {
         method: "PUT",
         headers: {

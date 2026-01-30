@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+// src/app/api/comunicacao/[id]/enviar-cmtcia/route.ts
+import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
 const API_BASE_URL =
@@ -6,11 +7,14 @@ const API_BASE_URL =
 
 export const dynamic = "force-dynamic";
 
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } },
-) {
+export async function PUT(request: NextRequest) {
   try {
+    // Extrai o id da URL
+    const url = new URL(request.url);
+    const pathParts = url.pathname.split("/");
+    // ['', 'api', 'comunicacao', '123', 'enviar-cmtcia']
+    const id = pathParts[pathParts.indexOf("comunicacao") + 1];
+
     const cookieStore = cookies();
     const token = cookieStore.get("accessToken")?.value;
 
@@ -21,10 +25,8 @@ export async function PUT(
       );
     }
 
-    const comunicacaoId = params.id;
-
     const response = await fetch(
-      `${API_BASE_URL}/comunicacao/enviar-cmtcia/${comunicacaoId}`,
+      `${API_BASE_URL}/comunicacao/enviar-cmtcia/${id}`,
       {
         method: "PUT",
         headers: {
