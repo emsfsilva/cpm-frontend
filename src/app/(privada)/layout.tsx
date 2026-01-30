@@ -55,6 +55,18 @@ interface User {
   };
 }
 
+interface Comentario {
+  id: number;
+  comentario: string;
+  createdAt: string; // ou Date se você já fizer parse
+  usercomentario: {
+    pg?: string;
+    nomeGuerra?: string;
+    funcao?: string;
+    imagemUrl?: string | undefined;
+  };
+}
+
 const getUserFromCookies = (): User | null => {
   if (typeof window !== "undefined") {
     const userCookie = document.cookie
@@ -618,10 +630,7 @@ export default function TemplateLayout({
                             <Image
                               width={60}
                               height={60}
-                              src={`/${comentario?.usercomentario?.imagemUrl.replace(
-                                /\\/g,
-                                "/",
-                              )}`}
+                              src={`/${(comentario?.usercomentario?.imagemUrl ?? "").replace(/\\/g, "/")}`}
                               alt={`Foto de Usuario`}
                               className={styles.usuarioImagemList}
                             />
