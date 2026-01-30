@@ -9,15 +9,12 @@ import { toast } from "sonner";
 
 import {
   FaArchive,
-  FaCalendar,
-  FaCheckCircle,
   FaCheckSquare,
   FaEdit,
   FaGraduationCap,
   FaRegSquare,
   FaUser,
 } from "react-icons/fa";
-import { FaTriangleExclamation, FaXmark } from "react-icons/fa6";
 
 interface User {
   id: number;
