@@ -17,7 +17,8 @@ export async function PUT(request: NextRequest) {
 
     const { userIdArquivamento, motivoArquivamento } = await request.json();
 
-    const token = cookies().get("accessToken")?.value;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken")?.value;
 
     const response = await fetch(`${API_BASE_URL}/comunicacao/arquivar/${id}`, {
       method: "PUT",
