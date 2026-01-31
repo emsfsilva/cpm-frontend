@@ -8,7 +8,7 @@ export async function POST(request: Request) {
     const password = String(body.password || "").trim();
 
     const baseUrl =
-      process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8081";
+      process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
 
     const externalApiResponse = await fetch(`${baseUrl}/api/auth`, {
       method: "POST",
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
       // Aqui repassamos a mensagem original da API externa
       return NextResponse.json(
         { error: data.message || "Erro ao autenticar" },
-        { status: externalApiResponse.status }
+        { status: externalApiResponse.status },
       );
     }
 
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
         httpOnly: false, // importante: visível para o frontend
         secure: process.env.NODE_ENV === "production",
         path: "/",
-      }
+      },
     );
 
     return response;
