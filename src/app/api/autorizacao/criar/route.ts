@@ -7,11 +7,13 @@ const API_BASE_URL =
 
 // POST /api/comunicacao/criar?userIdAut=X
 export async function POST(req: NextRequest) {
-  const token = cookies().get("accessToken")?.value;
+  const cookieStore = await cookies(); // ✅ await
+
+  const token = cookieStore.get("accessToken")?.value;
   if (!token) {
     return NextResponse.json(
       { error: "Token não encontrado" },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
@@ -27,7 +29,7 @@ export async function POST(req: NextRequest) {
         Authorization: token,
       },
       body: JSON.stringify(body),
-    }
+    },
   );
 
   const data = await response.json();
@@ -35,7 +37,7 @@ export async function POST(req: NextRequest) {
   if (!response.ok) {
     return NextResponse.json(
       { error: data.message || "Erro ao criar autorizacao" },
-      { status: response.status }
+      { status: response.status },
     );
   }
 

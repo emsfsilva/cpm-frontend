@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 // ✅ PATCH /api/user/:id/reset-password → redefine a senha do usuário
 export async function PATCH(request: Request) {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {

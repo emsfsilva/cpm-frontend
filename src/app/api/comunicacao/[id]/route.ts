@@ -13,7 +13,7 @@ export async function GET(request: Request) {
     const url = new URL(request.url);
     const comunicacaoId = url.pathname.split("/").pop(); // pega o ID do final da URL
 
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {

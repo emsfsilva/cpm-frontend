@@ -15,7 +15,8 @@ export async function PUT(request: NextRequest) {
     // ['', 'api', 'comunicacao', '123', 'responder']
     const id = pathParts[pathParts.indexOf("comunicacao") + 1];
 
-    const token = cookies().get("accessToken")?.value;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
       return NextResponse.json(

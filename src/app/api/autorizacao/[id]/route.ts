@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     // ['', 'api', 'autorizacao', '123']
     const id = pathParts[pathParts.indexOf("autorizacao") + 1];
 
-    const cookieStore = cookies();
+    const cookieStore = await cookies(); // ✅ await
     const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {

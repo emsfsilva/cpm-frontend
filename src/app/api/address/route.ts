@@ -1,4 +1,3 @@
-// src/app/api/address/route.ts
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
@@ -9,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies(); // ✅ await
     const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {

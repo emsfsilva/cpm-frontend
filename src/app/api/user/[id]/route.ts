@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 // ✅ GET /api/user/:id → busca detalhes do usuário
 export async function GET(request: Request) {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {

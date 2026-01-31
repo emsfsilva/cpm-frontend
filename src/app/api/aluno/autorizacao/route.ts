@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies(); // ✅ await
 
     const token = cookieStore.get("accessToken")?.value;
     const userCookie = cookieStore.get("userData")?.value;
