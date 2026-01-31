@@ -86,6 +86,22 @@ interface AutorizacaoInput {
   [key: string]: unknown;
 }
 
+type UserAlvo = {
+  id: number;
+  imagemUrl?: string | null;
+  pg?: string;
+  orgao?: string;
+  nomeGuerra?: string;
+  aluno?: {
+    turma?: {
+      name: string;
+      cia: {
+        name: string;
+      };
+    };
+  };
+};
+
 const UsuariosPage = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [userLogin, setUserLogin] = useState<UserLogin | null>(null);
@@ -363,6 +379,30 @@ const UsuariosPage = () => {
   }
   //FIM ABRIR MODAL CADASTRAR USUARIO
 
+  function toUserAlvo(user: User | null): UserAlvo | null {
+    if (!user) return null;
+
+    return {
+      id: user.id,
+      imagemUrl: user.imagemUrl ?? null,
+      pg: user.pg,
+      orgao: user.orgao,
+      nomeGuerra: user.nomeGuerra,
+      aluno: user.aluno?.turma
+        ? {
+            turma: {
+              name: user.aluno.turma.name,
+              cia: user.aluno.turma.cia
+                ? { name: user.aluno.turma.cia.name }
+                : { name: "" }, // garante estrutura
+            },
+          }
+        : undefined,
+    };
+  }
+
+  const userAlvo = toUserAlvo(userSelecionado);
+
   if (loading) return <p>Carregando usuários...</p>;
   if (error) return <p>Erro: {error}</p>;
 
@@ -512,9 +552,7 @@ const UsuariosPage = () => {
         </div>
       </div>
       {/* fim da div da esquerda */}
-
       {/* inicio da div da direita */}
-
       <div className={styles.detalhesDesktop}>
         <div style={{ width: "100%" }}>
           {userSelecionado ? (
@@ -913,9 +951,7 @@ const UsuariosPage = () => {
           )}
         </div>
       </div>
-
       {/* fim da div da direita */}
-
       {/* Modal usado para cadastro e edição */}
       <CadastrarUsuarioModal
         isOpen={mostrarModal}
@@ -985,23 +1021,22 @@ const UsuariosPage = () => {
         isOpen={modalComunicacaoAberta}
         onClose={() => setModalComunicacaoAberta(false)}
         onSubmit={enviarComunicacao}
-        userAlvo={userSelecionado}
+        userAlvo={userAlvo}
       />
-
       <AutorizacaoModal
         isOpen={modalAutorizacaoAberta}
         onClose={() => setModalAutorizacaoAberta(false)}
         onSubmit={enviarAutorizacao}
-        userAlvo={userSelecionado}
+        userAlvo={userAlvo}
       />
-
-      <CadastrarEnderecoModal
-        isOpen={modalEnderecoAberto}
-        onClose={() => setModalEnderecoAberto(false)}
-        onSubmit={handleCadastrarEndereco}
-        userId={userSelecionado?.id}
-      />
-
+      {userSelecionado && (
+        <CadastrarEnderecoModal
+          isOpen={modalEnderecoAberto}
+          onClose={() => setModalEnderecoAberto(false)}
+          onSubmit={handleCadastrarEndereco}
+          userId={userSelecionado.id}
+        />
+      )}
       <CadastrarAlunoModal
         isOpen={modalAlunoAberto}
         onClose={() => {
@@ -1085,7 +1120,6 @@ const UsuariosPage = () => {
           }
         }}
       />
-
       {mostrarMenuModal && userMenuSelecionado && (
         <div
           onClick={() => setMostrarMenuModal(false)}

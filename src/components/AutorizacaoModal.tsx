@@ -6,21 +6,22 @@ import { FaUser } from "react-icons/fa";
 import Image from "next/image";
 
 interface Turma {
-  id: number;
   name: string;
-  cia: { id: number; name: string };
+  cia: {
+    name: string;
+  };
 }
 
 interface Aluno {
-  turma: Turma;
+  turma?: Turma;
 }
 
 interface UserAlvo {
   id: number;
-  imagemUrl?: string;
-  pg: string;
-  orgao: string;
-  nomeGuerra: string;
+  imagemUrl?: string | null;
+  pg?: string;
+  orgao?: string;
+  nomeGuerra?: string;
   aluno?: Aluno;
 }
 
@@ -43,7 +44,7 @@ interface AutorizacaoModalProps {
     sab: string;
     dom: string;
   }) => void;
-  userAlvo: UserAlvo;
+  userAlvo?: UserAlvo | null;
 }
 
 export default function AutorizacaoModal({
@@ -69,8 +70,6 @@ export default function AutorizacaoModal({
     dom: "Não",
   });
 
-  if (!isOpen) return null;
-
   const toggleDia = (dia: keyof typeof dias) => {
     setDias((prev) => ({
       ...prev,
@@ -83,6 +82,8 @@ export default function AutorizacaoModal({
       alert("Preencha todos os campos obrigatórios.");
       return;
     }
+
+    if (!isOpen || !userAlvo) return null;
 
     onSubmit({
       motivoAut,

@@ -5,12 +5,6 @@ import styles from "@/app/(privada)/privateLayout.module.css";
 import { FaUser } from "react-icons/fa";
 import Image from "next/image";
 
-// Tipos de props esperadas
-interface UserAlvo {
-  id: number;
-  name?: string;
-}
-
 interface Turma {
   name: string;
   cia: {
@@ -41,7 +35,7 @@ interface ComunicacaoModalProps {
     dataInicio: string;
     horaInicio: string;
   }) => void;
-  userAlvo: UserAlvo;
+  userAlvo?: UserAlvo | null;
 }
 
 export default function ComunicacaoModal({
@@ -55,13 +49,13 @@ export default function ComunicacaoModal({
   const [dataInicio, setDataInicioSelecionado] = useState("");
   const [horaInicio, setHoraInicioSelecionado] = useState("");
 
-  if (!isOpen) return null;
-
   const handleSalvar = () => {
     if (!motivoSelecionado || !descricaoMotivo || !dataInicio || !horaInicio) {
       alert("Preencha todos os campos.");
       return;
     }
+
+    if (!isOpen || !userAlvo) return null;
 
     onSubmit({
       motivo: motivoSelecionado,
