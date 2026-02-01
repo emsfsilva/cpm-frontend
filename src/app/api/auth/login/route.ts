@@ -28,7 +28,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const response = NextResponse.json({ message: "Autenticado com sucesso" });
+    const response = NextResponse.json(
+      { message: "Autenticado com sucesso" },
+      { status: 200 },
+    );
 
     // Setar token em cookie
     response.cookies.set("accessToken", data.accessToken, {
