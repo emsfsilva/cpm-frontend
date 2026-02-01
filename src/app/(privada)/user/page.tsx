@@ -1017,18 +1017,24 @@ const UsuariosPage = () => {
         initialData={modalData}
       />
 
-      <ComunicacaoModal
-        isOpen={modalComunicacaoAberta}
-        onClose={() => setModalComunicacaoAberta(false)}
-        onSubmit={enviarComunicacao}
-        userAlvo={userAlvo}
-      />
-      <AutorizacaoModal
-        isOpen={modalAutorizacaoAberta}
-        onClose={() => setModalAutorizacaoAberta(false)}
-        onSubmit={enviarAutorizacao}
-        userAlvo={userAlvo}
-      />
+      {modalComunicacaoAberta && userAlvo && (
+        <ComunicacaoModal
+          isOpen={modalComunicacaoAberta}
+          onClose={() => setModalComunicacaoAberta(false)}
+          onSubmit={enviarComunicacao}
+          userAlvo={userAlvo}
+        />
+      )}
+
+      {modalAutorizacaoAberta && userAlvo && (
+        <AutorizacaoModal
+          isOpen={modalAutorizacaoAberta}
+          onClose={() => setModalAutorizacaoAberta(false)}
+          onSubmit={enviarAutorizacao}
+          userAlvo={userAlvo}
+        />
+      )}
+
       {userSelecionado && (
         <CadastrarEnderecoModal
           isOpen={modalEnderecoAberto}
