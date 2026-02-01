@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { jwtVerify } from "jose";
 
 const publicRoutes = [
   { path: "/login", whenAuthenticated: "redirect" },
@@ -10,10 +9,12 @@ const REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE = "/login";
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
+  // Libera rotas da API
   if (path.startsWith("/api/")) {
     return NextResponse.next();
   }
 
+  // Libera arquivos estáticos
   if (
     path.startsWith("/assets/images/") ||
     path.startsWith("/_next/static/") ||
@@ -25,33 +26,20 @@ export async function middleware(request: NextRequest) {
 
   const publicRoute = publicRoutes.find((route) => route.path === path);
   const authToken = request.cookies.get("accessToken");
-  const JWT_SECRET =
-    process.env.JWT_SECRET ||
-    "senhaMuitoGrandeParaNaoPerderAbcdjflkjsagdflsagjk";
 
+  // Não autenticado tentando rota pública
   if (!authToken && publicRoute) {
     return NextResponse.next();
   }
 
+  // Não autenticado tentando rota privada
   if (!authToken && !publicRoute) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE;
     return NextResponse.redirect(redirectUrl);
   }
 
-  if (
-    authToken &&
-    publicRoute &&
-    publicRoute.whenAuthenticated === "redirect"
-  ) {
-    const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = "/";
-  }
-
-  if (authToken && !publicRoute) {
-    return NextResponse.next();
-  }
-
+  // Autenticado → segue o jogo
   return NextResponse.next();
 }
 
