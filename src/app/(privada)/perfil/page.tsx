@@ -370,7 +370,7 @@ export default function PerfilPage() {
               {alunosDependentes.map((dep, idx) => (
                 <div key={idx}>
                   <div className={styles.divimgDependentesPrincipal}>
-                    <div>
+                    <div style={{ width: "30%" }}>
                       {dep.imagemUrl ? (
                         <Image
                           width={40}
@@ -384,7 +384,13 @@ export default function PerfilPage() {
                       )}
                     </div>
 
-                    <div style={{ marginLeft: "10px", marginRight: "30px" }}>
+                    <div
+                      style={{
+                        width: "30%",
+                        marginLeft: "10px",
+                        marginRight: "30px",
+                      }}
+                    >
                       <div style={{ fontSize: "13px", fontWeight: "bold" }}>
                         {dep.pg} {dep.nomeGuerra}
                       </div>
@@ -397,8 +403,10 @@ export default function PerfilPage() {
                         {dep.aluno?.turma?.cia?.name || "N/A"}
                       </div>
                     </div>
+
                     <div
                       style={{
+                        width: "40%",
                         textAlign: "center",
                         alignContent: "center",
                         alignItems: "center",
