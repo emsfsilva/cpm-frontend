@@ -665,16 +665,6 @@
 }
 
 
-
-
-
-
-itemAlunoLi {
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-
 .userInfo {
   display: flex;
   gap: 10px;
