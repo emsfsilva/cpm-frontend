@@ -57,8 +57,21 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
+    const cookieStore = cookies();
+    const token = cookieStore.get("accessToken")?.value;
+
+    if (!token) {
+      return NextResponse.json(
+        { error: "Token não encontrado" },
+        { status: 401 },
+      );
+    }
+
     const response = await fetch(`${API_BASE_URL}/comentario`, {
       method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
 
     const data = await response.json();
@@ -71,16 +84,9 @@ export async function GET() {
     }
 
     return NextResponse.json(data, { status: 200 });
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      return NextResponse.json(
-        { error: "Erro interno", details: error.message },
-        { status: 500 },
-      );
-    }
-
+  } catch (error: any) {
     return NextResponse.json(
-      { error: "Erro interno", details: "Erro desconhecido" },
+      { error: "Erro interno", details: error.message },
       { status: 500 },
     );
   }

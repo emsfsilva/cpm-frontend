@@ -39,6 +39,7 @@ export default function Login() {
 
       if (response.ok) {
         router.push("/dashboard");
+        router.refresh(); // força o layout reler os cookies
       } else {
         setErrorMessage(data?.error || "Erro ao fazer login");
       }
