@@ -79,25 +79,16 @@ const getUserFromCookies = (): User | null => {
   try {
     let token = cookie.split("=")[1];
 
-    // Tenta decodificar duas vezes se necessário
-    for (let i = 0; i < 2; i++) {
-      try {
-        token = decodeURIComponent(token);
-      } catch {
-        break;
-      }
-    }
+    // Decodifica URL (encodeURIComponent)
+    token = decodeURIComponent(token);
 
-    // Tenta parsear como JWT
-    if (token.split(".").length === 3) {
-      const payloadBase64 = token.split(".")[1];
-      const payloadJson = atob(payloadBase64);
-      const payload = JSON.parse(payloadJson);
-      return payload as User;
-    }
+    // Decodifica Base64
+    const decoded = atob(token);
 
-    // Se não for JWT, tenta parsear direto como JSON
-    return JSON.parse(token) as User;
+    // Agora sim parseia o JSON
+    const user = JSON.parse(decoded) as User;
+
+    return user;
   } catch (err) {
     console.error("Erro ao parsear userData do cookie:", err);
     return null;
@@ -126,7 +117,7 @@ export default function TemplateLayout({
     if (userData) {
       setUser(userData);
     } else {
-      router.push("/login");
+      router.push("/login"); // agora vai redirecionar
     }
   }, [router]);
 
