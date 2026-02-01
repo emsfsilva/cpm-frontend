@@ -658,8 +658,8 @@
   flex: 1; /* faz cada span ocupar espaço igual */
   text-align: center; /* centraliza o texto */
   border-radius: 15px;
-  font-size: 12px;
-  padding: 5px 0; /* altura do botão */
+  font-size: 10px;
+  padding: 3px 0; /* altura do botão */
   border: 1px solid #c9c9c9;
   cursor: pointer; /* opcional: parece clicável */
 }
@@ -677,11 +677,11 @@
 
 .listdeAlunos li {
   color: rgb(68, 67, 67); /* Cor do texto */
-  margin-bottom: 5px; /* Espaço entre os itens */
+  margin-bottom: 3px; /* Espaço entre os itens */
   font-size: 8px; /* Tamanho da fonte */
   display: flex; /* Alinha ícone e texto horizontalmente */
   align-items: center; /* Alinha o ícone e o texto verticalmente */
-  padding: 10px; /* Espaçamento entre o conteúdo e a linha */
+  padding: 5px; /* Espaçamento entre o conteúdo e a linha */
 }
 
 .listdeAlunos li i {
@@ -961,8 +961,8 @@
 
 .alunoSemImagem {
   border-radius: 50%;
-  width: 50px;
-  height: 50px;
+  width: 40x;
+  height: 40px;
   padding: 3px;
   color: #757575;
   margin-right: 10px;
@@ -2137,7 +2137,7 @@
 /*fim tabela listar comunicação*/
 
 .inputBuscar {
-  padding: 0.5rem;
+  padding: 0.3rem;
   width: 100%;
   border-radius: 20px;
   color: #ccc;
@@ -2148,7 +2148,7 @@
 }
 .iconeAddUsuario {
   width: 10%;
-  font-size: 20px;
+  font-size: 12px;
   display: flex;
   align-items: center;
   justify-content: center;

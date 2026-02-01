@@ -114,35 +114,29 @@ export default function Dashboard() {
 
       {/* 🔥 Todos os ícones em um mesmo grid */}
       <div className={styles.iconGrid}>
-        <div className={styles.iconBox}>
+        <div
+          className={styles.iconBox}
+          onClick={() => router.push("/user")}
+          style={{ cursor: "pointer" }}
+        >
           <FaRegUser color="#125391" />
-          <div
-            onClick={() => router.push("/user")}
-            style={{ cursor: "pointer" }}
-            className={styles.iconLabel}
-          >
-            Usuários
-          </div>
+          <div className={styles.iconLabel}>Usuários</div>
         </div>
-        <div className={styles.iconBox}>
+        <div
+          className={styles.iconBox}
+          onClick={() => router.push("/autorizacao")}
+          style={{ cursor: "pointer" }}
+        >
           <FaRegIdCard color="#125391" />
-          <div
-            onClick={() => router.push("/autorizacao")}
-            style={{ cursor: "pointer" }}
-            className={styles.iconLabel}
-          >
-            Autorização
-          </div>
+          <div className={styles.iconLabel}>Autorização</div>
         </div>
-        <div className={styles.iconBox}>
+        <div
+          className={styles.iconBox}
+          onClick={() => router.push("/comunicacao")}
+          style={{ cursor: "pointer" }}
+        >
           <FaPencil color="#125391" />
-          <div
-            onClick={() => router.push("/comunicacao")}
-            style={{ cursor: "pointer" }}
-            className={styles.iconLabel}
-          >
-            Comunicação
-          </div>
+          <div className={styles.iconLabel}>Comunicação</div>
         </div>
         <div className={styles.iconBox}>
           <FaSearch color="#125391" />

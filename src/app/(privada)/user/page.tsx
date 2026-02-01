@@ -410,9 +410,8 @@ const UsuariosPage = () => {
     <div className={styles.alunosContainer}>
       {/* inicio da div da esquerda */}
       <div className={styles.listaEsquerda}>
-        <h1 className={styles.tituloListar}>Usuarios</h1>
         {error && <p style={{ color: "red" }}>Erro: {error}</p>}
-        <div style={{ display: "flex", marginBottom: "10px" }}>
+        <div style={{ display: "flex", marginBottom: "5px" }}>
           <div style={{ width: "90%" }}>
             <input
               className={styles.inputBuscar}
@@ -459,8 +458,8 @@ const UsuariosPage = () => {
                     <div className={styles.alunoListImg}>
                       {user?.imagemUrl ? (
                         <Image
-                          width={60}
-                          height={60}
+                          width={40}
+                          height={40}
                           src={`/${user.imagemUrl.replace(/\\/g, "/")}`}
                           alt="Foto de Usuario"
                           className={styles.usuarioImagemList}
@@ -471,7 +470,7 @@ const UsuariosPage = () => {
                     </div>
 
                     <div>
-                      <div style={{ fontSize: "14px" }}>
+                      <div style={{ fontSize: "10px" }}>
                         <strong>
                           {user.pg} {user.nomeGuerra} {user.aluno?.turma?.name}{" "}
                           {user.aluno?.turma?.cia?.name}
@@ -501,7 +500,7 @@ const UsuariosPage = () => {
                         <span
                           style={{
                             fontWeight: "bold",
-                            fontSize: "15px",
+                            fontSize: "10px",
                             color: "#135886",
                           }}
                         >
