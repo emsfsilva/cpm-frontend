@@ -17,6 +17,7 @@ export default function Login() {
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log("HANDLE SUBMIT DISPAROU");
     e.preventDefault();
     setErrorMessage("");
 
@@ -29,7 +30,12 @@ export default function Login() {
         body: JSON.stringify({ seduc, password }),
       });
 
+      console.log("STATUS =", response.status);
+      console.log("OK =", response.ok);
+
       const data = await response.json();
+
+      console.log("DATA =", data);
 
       if (response.ok) {
         router.push("/dashboard");
@@ -265,6 +271,7 @@ export default function Login() {
               </button>
 
               <button
+                type="button"
                 onClick={() => setShowModal(false)}
                 className={styles.button}
               >
