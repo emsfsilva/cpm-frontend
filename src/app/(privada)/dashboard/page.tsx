@@ -43,8 +43,8 @@ export default function Dashboard() {
 
     if (userData) {
       try {
-        const decoded = atob(decodeURIComponent(userData));
-        const parsedUser = JSON.parse(decoded);
+        // ✅ Apenas decodifica URI e parseia JSON
+        const parsedUser = JSON.parse(decodeURIComponent(userData));
         setUser(parsedUser);
       } catch (error) {
         console.error("Erro ao parsear os dados do usuário do cookie:", error);
