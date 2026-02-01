@@ -1,4 +1,4 @@
-// src/app/api/address/route.ts
+// src/app/api/comentario/route.ts
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
@@ -7,9 +7,12 @@ const API_BASE_URL =
 
 export const dynamic = "force-dynamic";
 
+/* =========================
+   POST /api/comentario
+========================= */
 export async function POST(request: Request) {
   try {
-    const cookieStore = await cookies();
+    const cookieStore = cookies(); // ❌ sem await
     const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
@@ -25,7 +28,7 @@ export async function POST(request: Request) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // ✅ Corrigido
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(body),
     });
@@ -34,7 +37,7 @@ export async function POST(request: Request) {
 
     if (!response.ok) {
       return NextResponse.json(
-        { error: "Erro ao cadastrar comentario", details: data },
+        { error: "Erro ao cadastrar comentário", details: data },
         { status: response.status },
       );
     }
@@ -55,9 +58,12 @@ export async function POST(request: Request) {
   }
 }
 
+/* =========================
+   GET /api/comentario
+========================= */
 export async function GET() {
   try {
-    const cookieStore = cookies();
+    const cookieStore = cookies(); // ❌ sem await
     const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
@@ -70,7 +76,7 @@ export async function GET() {
     const response = await fetch(`${API_BASE_URL}/comentario`, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`, // 🔥 ESSENCIAL
       },
     });
 
@@ -84,9 +90,16 @@ export async function GET() {
     }
 
     return NextResponse.json(data, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: "Erro interno", details: error.message },
+        { status: 500 },
+      );
+    }
+
     return NextResponse.json(
-      { error: "Erro interno", details: error.message },
+      { error: "Erro interno", details: "Erro desconhecido" },
       { status: 500 },
     );
   }
