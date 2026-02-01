@@ -77,17 +77,23 @@ const getUserFromCookies = (): User | null => {
   if (!cookie) return null;
 
   try {
-    let token = cookie.split("=")[1];
+    let value = cookie.split("=")[1];
+    value = decodeURIComponent(value);
 
-    // Decodifica URL (encodeURIComponent)
-    token = decodeURIComponent(token);
+    // 🔒 Proteção: JWT começa com eyJ
+    if (value.startsWith("eyJ")) {
+      console.warn("userData parece ser JWT, ignorando cookie inválido");
+      return null;
+    }
 
-    // Decodifica Base64
-    const decoded = atob(token);
+    // 🔒 Proteção Base64
+    if (!/^[A-Za-z0-9+/=]+$/.test(value)) {
+      console.warn("userData não é Base64 válido");
+      return null;
+    }
 
-    // Agora sim parseia o JSON
+    const decoded = atob(value);
     const user = JSON.parse(decoded) as User;
-
     return user;
   } catch (err) {
     console.error("Erro ao parsear userData do cookie:", err);

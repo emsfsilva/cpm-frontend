@@ -21,35 +21,34 @@ export async function POST(request: Request) {
     const data = await externalApiResponse.json();
 
     if (!externalApiResponse.ok) {
-      // Aqui repassamos a mensagem original da API externa
       return NextResponse.json(
         { error: data.message || "Erro ao autenticar" },
         { status: externalApiResponse.status },
       );
     }
 
+    // 🔐 Cria o cookie userData DEPOIS que data existe
+    const userPayload = JSON.stringify(data.user);
+    const encodedUser = Buffer.from(userPayload, "utf-8").toString("base64");
+
     const response = NextResponse.json(
       { message: "Autenticado com sucesso" },
       { status: 200 },
     );
 
-    // Setar token em cookie
+    // Cookie do token (segurança)
     response.cookies.set("accessToken", data.accessToken, {
       httpOnly: true,
-      secure: false, // 🔥 IMPORTANTE
+      secure: false,
       path: "/",
     });
 
-    // 💡 ADICIONE ISSO: salvar userData visível no lado do cliente
-    response.cookies.set(
-      "userData",
-      encodeURIComponent(btoa(JSON.stringify(data.user))),
-      {
-        httpOnly: false,
-        secure: false,
-        path: "/",
-      },
-    );
+    // Cookie do usuário (client-side)
+    response.cookies.set("userData", encodedUser, {
+      httpOnly: false,
+      secure: false,
+      path: "/",
+    });
 
     return response;
   } catch (error) {
