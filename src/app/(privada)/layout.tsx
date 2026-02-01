@@ -77,26 +77,10 @@ const getUserFromCookies = (): User | null => {
   if (!cookie) return null;
 
   try {
-    let value = cookie.split("=")[1];
-    value = decodeURIComponent(value);
-
-    // 🔒 Proteção: JWT começa com eyJ
-    if (value.startsWith("eyJ")) {
-      console.warn("userData parece ser JWT, ignorando cookie inválido");
-      return null;
-    }
-
-    // 🔒 Proteção Base64
-    if (!/^[A-Za-z0-9+/=]+$/.test(value)) {
-      console.warn("userData não é Base64 válido");
-      return null;
-    }
-
-    const decoded = atob(value);
-    const user = JSON.parse(decoded) as User;
-    return user;
+    const value = decodeURIComponent(cookie.split("=")[1]);
+    return JSON.parse(value) as User;
   } catch (err) {
-    console.error("Erro ao parsear userData do cookie:", err);
+    console.error("Erro ao ler userData:", err);
     return null;
   }
 };
