@@ -667,10 +667,9 @@
 
 
 
-/* parte adcionada agora */
 
 
-.itemAlunoLi {
+itemAlunoLi {
   display: flex;
   align-items: center;
   width: 100%;
@@ -686,41 +685,6 @@
   margin-left: auto;
   position: relative;
 }
-
-
-/* dropdown */
-.dropdownMenu {
-  position: absolute;
-  right: 0;
-  top: 20px;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 5px;
-  z-index: 10;
-}
-
-.dropdownMenu button {
-  display: block;
-  width: 100%;
-  background: none;
-  border: none;
-  padding: 5px 10px;
-  text-align: left;
-  cursor: pointer;
-}
-
-.dropdownMenu button:hover {
-  background-color: #f0f0f0;
-}
-
-
-/* parte adcionada agora */
-
-
-
-
-
 
 
 .listdeAlunos ul {
@@ -773,8 +737,8 @@
   font-size: 15px;
   cursor: pointer;
   position: absolute;
+  right: 10px;
   top: 5px;
-  right: 5;
   color: #333;
 }
 
