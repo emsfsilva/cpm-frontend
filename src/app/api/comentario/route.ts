@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 ========================= */
 export async function POST(request: Request) {
   try {
-    const cookieStore = cookies(); // ❌ sem await
+    const cookieStore = await cookies(); // ✅ COM await (sua versão)
     const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
 ========================= */
 export async function GET() {
   try {
-    const cookieStore = cookies(); // ❌ sem await
+    const cookieStore = await cookies(); // ✅ COM await
     const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
@@ -76,7 +76,7 @@ export async function GET() {
     const response = await fetch(`${API_BASE_URL}/comentario`, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${token}`, // 🔥 ESSENCIAL
+        Authorization: `Bearer ${token}`,
       },
     });
 
