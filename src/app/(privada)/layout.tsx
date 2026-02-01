@@ -74,10 +74,11 @@ const getUserFromCookies = (): User | null => {
       .find((row) => row.startsWith("userData="));
 
     if (userCookie) {
-      const userString = userCookie.split("=")[1];
+      const token = userCookie.split("=")[1];
       try {
-        const user = JSON.parse(decodeURIComponent(userString)); // Decodifica e parseia o cookie
-        return user;
+        // Se for JWT, você precisa decodificar o payload
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        return payload as User;
       } catch (error) {
         console.error("Erro ao parsear userData do cookie", error);
         return null;
