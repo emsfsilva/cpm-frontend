@@ -68,24 +68,40 @@ interface Comentario {
 }
 
 const getUserFromCookies = (): User | null => {
-  if (typeof window !== "undefined") {
-    const userCookie = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("userData="));
+  if (typeof window === "undefined") return null;
 
-    if (userCookie) {
-      const token = userCookie.split("=")[1];
+  const cookie = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith("userData="));
+
+  if (!cookie) return null;
+
+  try {
+    let token = cookie.split("=")[1];
+
+    // Tenta decodificar duas vezes se necessário
+    for (let i = 0; i < 2; i++) {
       try {
-        // Se for JWT, você precisa decodificar o payload
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        return payload as User;
-      } catch (error) {
-        console.error("Erro ao parsear userData do cookie", error);
-        return null;
+        token = decodeURIComponent(token);
+      } catch {
+        break;
       }
     }
+
+    // Tenta parsear como JWT
+    if (token.split(".").length === 3) {
+      const payloadBase64 = token.split(".")[1];
+      const payloadJson = atob(payloadBase64);
+      const payload = JSON.parse(payloadJson);
+      return payload as User;
+    }
+
+    // Se não for JWT, tenta parsear direto como JSON
+    return JSON.parse(token) as User;
+  } catch (err) {
+    console.error("Erro ao parsear userData do cookie:", err);
+    return null;
   }
-  return null;
 };
 
 export default function TemplateLayout({
