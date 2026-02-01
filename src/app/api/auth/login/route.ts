@@ -36,7 +36,7 @@ export async function POST(request: Request) {
     // Setar token em cookie
     response.cookies.set("accessToken", data.accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: false, // 🔥 IMPORTANTE
       path: "/",
     });
 
@@ -45,8 +45,8 @@ export async function POST(request: Request) {
       "userData",
       encodeURIComponent(btoa(JSON.stringify(data.user))),
       {
-        httpOnly: false, // importante: visível para o frontend
-        secure: process.env.NODE_ENV === "production",
+        httpOnly: false,
+        secure: false,
         path: "/",
       },
     );
