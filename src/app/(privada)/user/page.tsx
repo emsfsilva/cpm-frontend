@@ -454,91 +454,96 @@ const UsuariosPage = () => {
                 onClick={() => handleView(user.id)}
               >
                 <ul className={styles.itemAluno}>
-                  <li style={{ position: "relative" }}>
-                    <div className={styles.alunoListImg}>
-                      {user?.imagemUrl ? (
-                        <Image
-                          width={40}
-                          height={40}
-                          src={`/${user.imagemUrl.replace(/\\/g, "/")}`}
-                          alt="Foto de Usuario"
-                          className={styles.usuarioImagemList}
-                        />
-                      ) : (
-                        <FaUser className={styles.alunoSemImagem} />
-                      )}
-                    </div>
-
-                    <div>
-                      <div style={{ fontSize: "10px" }}>
-                        <strong>
-                          {user.pg} {user.nomeGuerra} {user.aluno?.turma?.name}{" "}
-                          {user.aluno?.turma?.cia?.name}
-                        </strong>
-                      </div>
-                      <div className={styles.divItensMeioUsuario}>
-                        <div className={styles.divItensMeioUsuarioTelefone}>
-                          <FaPhone />{" "}
-                          <span style={{ marginLeft: "5px" }}>
-                            {user.phone}
-                          </span>
-                        </div>
-
-                        <div className={styles.divItensMeioUsuarioMat}>
-                          <FaBarcode />{" "}
-                          <span style={{ marginLeft: "5px" }}>{user.mat}</span>
-                        </div>
-
-                        <div className={styles.divItensMeioUsuarioFuncao}>
-                          <FaUser />{" "}
-                          <span style={{ marginLeft: "5px" }}>
-                            {user.funcao}
-                          </span>
-                        </div>
-                      </div>
-                      <div>
-                        <span
-                          style={{
-                            fontWeight: "bold",
-                            fontSize: "10px",
-                            color: "#135886",
-                          }}
-                        >
-                          {user.seduc} | {user.orgao}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* início menu opções */}
-                    {
-                      // 👉 Se for typeUser 1, só mostra o menu no próprio usuário
-                      ((userLogin?.typeUser === 1 &&
-                        userLogin.id === user.id) ||
-                        // 👉 Caso contrário, mostra para todos os outros tipos de usuário (ex: 10, 5, 3, etc.)
-                        userLogin?.typeUser !== 1) && (
-                        <div>
-                          <FaEllipsisV
-                            className={styles.editIcon}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setUserMenuSelecionado(user);
-                              setMostrarMenuModal(true);
-                            }}
+                  <li className={styles.itemAlunoLi}>
+                    {/* ===== CONTEÚDO DO USUÁRIO (lado esquerdo) ===== */}
+                    <div className={styles.userInfo}>
+                      {/* inicio imagem do usuario */}
+                      <div className={styles.alunoListImg}>
+                        {user?.imagemUrl ? (
+                          <Image
+                            width={40}
+                            height={40}
+                            src={`/${user.imagemUrl.replace(/\\/g, "/")}`}
+                            alt="Foto de Usuario"
+                            className={styles.usuarioImagemList}
                           />
+                        ) : (
+                          <FaUser className={styles.alunoSemImagem} />
+                        )}
+                      </div>
+                      {/* fim imagem do usuario */}
 
-                          {/* 👈 aqui você coloca o dropdown */}
-                          {menuAbertoId === user.id && (
-                            <div className={styles.dropdownMenu}>
-                              <button>Editar</button>
-                              <button onClick={() => handleDelete(user.id)}>
-                                Excluir
-                              </button>
-                            </div>
-                          )}
+                      {/* inicio detalhes do usuario */}
+                      <div>
+                        <div style={{ fontSize: "10px" }}>
+                          <strong>
+                            {user.pg} {user.nomeGuerra}{" "}
+                            {user.aluno?.turma?.name}{" "}
+                            {user.aluno?.turma?.cia?.name}
+                          </strong>
                         </div>
-                      )
-                    }
-                    {/* fim menu opções */}
+
+                        <div className={styles.divItensMeioUsuario}>
+                          <div className={styles.divItensMeioUsuarioTelefone}>
+                            <FaPhone />
+                            <span style={{ marginLeft: "5px" }}>
+                              {user.phone}
+                            </span>
+                          </div>
+
+                          <div className={styles.divItensMeioUsuarioMat}>
+                            <FaBarcode />
+                            <span style={{ marginLeft: "5px" }}>
+                              {user.mat}
+                            </span>
+                          </div>
+
+                          <div className={styles.divItensMeioUsuarioFuncao}>
+                            <FaUser />
+                            <span style={{ marginLeft: "5px" }}>
+                              {user.funcao}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div>
+                          <span
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "10px",
+                              color: "#135886",
+                            }}
+                          >
+                            {user.seduc} | {user.orgao}
+                          </span>
+                        </div>
+                      </div>
+                      {/* fim detalhes do usuario */}
+                    </div>
+
+                    {/* ===== MENU DE OPÇÕES (lado direito) ===== */}
+                    {((userLogin?.typeUser === 1 && userLogin.id === user.id) ||
+                      userLogin?.typeUser !== 1) && (
+                      <div className={styles.menuWrapper}>
+                        <FaEllipsisV
+                          className={styles.editIcon}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setUserMenuSelecionado(user);
+                            setMostrarMenuModal(true);
+                          }}
+                        />
+
+                        {menuAbertoId === user.id && (
+                          <div className={styles.dropdownMenu}>
+                            <button>Editar</button>
+                            <button onClick={() => handleDelete(user.id)}>
+                              Excluir
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </li>
                 </ul>
               </div>
