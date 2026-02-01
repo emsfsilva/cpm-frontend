@@ -670,7 +670,7 @@
 /* parte adcionada agora */
 
 
-itemAlunoLi {
+.itemAlunoLi {
   display: flex;
   align-items: center;
   width: 100%;
