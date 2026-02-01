@@ -49,29 +49,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (authToken && !publicRoute) {
-    try {
-      const tokenString = String(authToken.value);
-      const { payload } = await jwtVerify(
-        tokenString,
-        new TextEncoder().encode(JWT_SECRET)
-      );
-
-      console.log("O payload em midleware é", payload);
-
-      // Crie um cookie com o usuário autenticado
-      const response = NextResponse.next();
-      response.cookies.set("userData", JSON.stringify(payload), {
-        httpOnly: false,
-        secure: process.env.NODE_ENV === "production",
-        path: "/", // Tornar o cookie acessível em todas as rotas
-      });
-      return response;
-    } catch (error) {
-      console.error("Erro ao verificar o token:", error);
-      const redirectUrl = request.nextUrl.clone();
-      redirectUrl.pathname = REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE;
-      return NextResponse.redirect(redirectUrl);
-    }
+    return NextResponse.next();
   }
 
   return NextResponse.next();
