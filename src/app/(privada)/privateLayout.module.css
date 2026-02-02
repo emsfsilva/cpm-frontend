@@ -2192,9 +2192,9 @@
 }
 
 .usuarioImagemList {
-  width: 60px;
-  height: 60px;
-  margin-right: 10px;
+  width: 45px;
+  height: 45px;
+  margin-right: 5px;
   border-radius: 50%;
   object-fit: cover;
 }
