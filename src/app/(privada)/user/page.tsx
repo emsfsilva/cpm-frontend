@@ -473,7 +473,7 @@ const UsuariosPage = () => {
 
                     {/* inicio detalhes do usuario */}
                     <div>
-                      <div style={{ fontSize: "10px" }}>
+                      <div style={{ fontSize: "12px" }}>
                         <strong>
                           {user.pg} {user.nomeGuerra} {user.aluno?.turma?.name}{" "}
                           {user.aluno?.turma?.cia?.name}

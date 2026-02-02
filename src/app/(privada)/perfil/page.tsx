@@ -370,7 +370,7 @@ export default function PerfilPage() {
               {alunosDependentes.map((dep, idx) => (
                 <div key={idx}>
                   <div className={styles.divimgDependentesPrincipal}>
-                    <div style={{ width: "10%" }}>
+                    <div style={{ width: "15%" }}>
                       {dep.imagemUrl ? (
                         <Image
                           width={40}
@@ -406,7 +406,7 @@ export default function PerfilPage() {
 
                     <div
                       style={{
-                        width: "60%",
+                        width: "55%",
                         textAlign: "center",
                         alignContent: "center",
                         alignItems: "center",

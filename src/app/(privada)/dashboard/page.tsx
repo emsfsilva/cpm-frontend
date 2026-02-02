@@ -75,6 +75,17 @@ export default function Dashboard() {
     },
   };
 
+  // Permitir somente esses typeUser
+  const allowedTypeUsers = [5, 6, 7, 8, 10];
+
+  const handleClickWithPermission = (path: string) => {
+    if (user && allowedTypeUsers.includes(user.typeUser)) {
+      router.push(path);
+    } else {
+      alert("Você não tem permissão");
+    }
+  };
+
   return (
     <div style={inlineStyles.dashboardContainer}>
       {/* Header */}
@@ -124,20 +135,22 @@ export default function Dashboard() {
         </div>
         <div
           className={styles.iconBox}
-          onClick={() => router.push("/autorizacao")}
+          onClick={() => handleClickWithPermission("/autorizacao")}
           style={{ cursor: "pointer" }}
         >
           <FaRegIdCard color="#125391" />
           <div className={styles.iconLabel}>Autorização</div>
         </div>
+
         <div
           className={styles.iconBox}
-          onClick={() => router.push("/comunicacao")}
+          onClick={() => handleClickWithPermission("/comunicacao")}
           style={{ cursor: "pointer" }}
         >
           <FaPencil color="#125391" />
           <div className={styles.iconLabel}>Comunicação</div>
         </div>
+
         <div className={styles.iconBox}>
           <FaSearch color="#125391" />
           <div className={styles.iconLabel}>Pesquisar</div>
