@@ -2463,6 +2463,15 @@
     border-radius: 4px;
   }
 
+
+  .scrollableTableWrapper {
+  padding-bottom: 40px;
+  }
+
+  .divtabelaComunicacao{
+    height: 50px;
+  }
+
 }
 
 /* INICIO TELA NOVA PERFIL DO USUARIO  */

@@ -245,6 +245,17 @@ export default function AutorizacaoPage() {
 
         {vigentes.length > 0 ? (
           <>
+            <h2
+              style={{
+                marginBottom: "10px",
+                color: "#202020",
+                fontSize: "12px",
+                fontFamily: "bold",
+              }}
+            >
+              Vigentes
+            </h2>
+
             {/* 🔹 Lista das autorizações Vigentes */}
             {vigentes.map((autorizacao) => (
               <div
@@ -255,15 +266,31 @@ export default function AutorizacaoPage() {
                     : ""
                 }`}
                 onClick={() => handleView(autorizacao.id)}
-                style={{ position: "relative" }} // necessário para o menu suspenso
               >
                 <ul className={styles.itemAluno}>
                   <li style={{ position: "relative" }}>
-                    {/* 👈 Div com infos do aluno */}
-                    <div style={{ width: "90%" }}>
+                    <div
+                      style={{ width: "10%", marginRight: "10px" }}
+                      className={styles.alunoListImg}
+                    >
+                      <div>
+                        <Image
+                          src="/assets/images/logo.png"
+                          alt="logo"
+                          width={40}
+                          height={40}
+                        />
+                        <div className={styles.divNumeroAutorizacao}>
+                          Nº {autorizacao.id}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ width: "80%" }}>
                       <div style={{ fontSize: "14px" }}>
                         <strong>{autorizacao.motivoAut}</strong>
                       </div>
+
                       <div className={styles.divItensMeioUsuario}>
                         <FaUser />
                         <span style={{ marginLeft: "5px", fontWeight: "bold" }}>
@@ -275,6 +302,7 @@ export default function AutorizacaoPage() {
                           {autorizacao.useraut?.funcao}
                         </span>
                       </div>
+
                       <div className={styles.divItensMeioUsuario}>
                         <FaGraduationCap />
                         <span style={{ marginLeft: "5px", fontWeight: "bold" }}>
@@ -286,53 +314,46 @@ export default function AutorizacaoPage() {
                           {autorizacao.alunoInfo?.cia?.name}
                         </span>
                       </div>
-                    </div>
 
-                    {/* 👈 Botão para abrir menu suspenso */}
-                    <div style={{ width: "10%" }}>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation(); // impede abrir detalhes
-                          setMenuAbertoId(
-                            menuAbertoId === autorizacao.id
-                              ? null
-                              : autorizacao.id,
-                          );
-                        }}
-                        style={{
-                          background: "transparent",
-                          border: "none",
-                          cursor: "pointer",
-                        }}
-                      >
-                        ⋮ {/* você pode trocar por ícone */}
-                      </button>
-
-                      {/* 👈 Menu suspenso */}
-                      {menuAbertoId === autorizacao.id && (
-                        <div
-                          ref={menuRef}
-                          className={styles.menuSuspenso}
+                      <div style={{ fontSize: "14px", color: "#868686" }}>
+                        Status:{" "}
+                        <span
                           style={{
-                            position: "absolute",
-                            top: "100%",
-                            right: 0,
-                            background: "#fff",
-                            border: "1px solid #ccc",
-                            borderRadius: "4px",
-                            padding: "5px",
-                            zIndex: 10,
+                            fontWeight: "bold",
+                            color:
+                              autorizacao.statusAut === "Autorizada"
+                                ? "#19d044"
+                                : autorizacao.statusAut ===
+                                    "Autorizada com restrição"
+                                  ? "#108444"
+                                  : autorizacao.statusAut === "Negada"
+                                    ? "#f44336"
+                                    : "#000000",
                           }}
                         >
-                          <p style={{ margin: 0, cursor: "pointer" }}>Editar</p>
-                          <p style={{ margin: 0, cursor: "pointer" }}>
-                            Excluir
-                          </p>
-                          <p style={{ margin: 0, cursor: "pointer" }}>
-                            Detalhes
-                          </p>
-                        </div>
-                      )}
+                          {autorizacao.statusAut}
+                        </span>
+                      </div>
+
+                      <div style={{ fontSize: "14px", color: "#868686" }}>
+                        Período:{" "}
+                        {new Date(
+                          autorizacao.dataInicio + "T00:00:00",
+                        ).toLocaleDateString()}{" "}
+                        a{" "}
+                        {new Date(
+                          autorizacao.dataFinal + "T00:00:00",
+                        ).toLocaleDateString()}
+                      </div>
+                    </div>
+
+                    <div
+                      style={{ width: "10%" }}
+                      className={styles.alunoListImg}
+                    >
+                      <div>
+                        <FaCheckSquare fontSize={20} color="#0e9169" />
+                      </div>
                     </div>
                   </li>
                 </ul>
@@ -370,7 +391,7 @@ export default function AutorizacaoPage() {
                 <ul className={styles.itemAluno}>
                   <li style={{ position: "relative" }}>
                     <div
-                      style={{ width: "10%" }}
+                      style={{ width: "10%", marginRight: "10px" }}
                       className={styles.alunoListImg}
                     >
                       <div>
