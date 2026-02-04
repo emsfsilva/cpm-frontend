@@ -285,7 +285,6 @@ export default function AutorizacaoPage() {
                         </div>
                       </div>
                     </div>
-
                     <div style={{ width: "80%" }}>
                       <div style={{ fontSize: "14px" }}>
                         <strong>{autorizacao.motivoAut}</strong>
@@ -346,7 +345,6 @@ export default function AutorizacaoPage() {
                         ).toLocaleDateString()}
                       </div>
                     </div>
-
                     <div
                       style={{ width: "10%" }}
                       className={styles.alunoListImg}
@@ -355,6 +353,53 @@ export default function AutorizacaoPage() {
                         <FaCheckSquare fontSize={20} color="#0e9169" />
                       </div>
                     </div>
+                    {/* 👈 Botão para abrir menu suspenso */}
+                    <div style={{ width: "10%" }}>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation(); // impede abrir detalhes
+                          setMenuAbertoId(
+                            menuAbertoId === autorizacao.id
+                              ? null
+                              : autorizacao.id,
+                          );
+                        }}
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          cursor: "pointer",
+                        }}
+                      >
+                        ⋮ {/* você pode trocar por ícone */}
+                      </button>
+
+                      {/* 👈 Menu suspenso */}
+                      {menuAbertoId === autorizacao.id && (
+                        <div
+                          ref={menuRef}
+                          className={styles.menuSuspenso}
+                          style={{
+                            position: "absolute",
+                            top: "100%",
+                            right: 0,
+                            background: "#fff",
+                            border: "1px solid #ccc",
+                            borderRadius: "4px",
+                            padding: "5px",
+                            zIndex: 10,
+                          }}
+                        >
+                          <p style={{ margin: 0, cursor: "pointer" }}>Editar</p>
+                          <p style={{ margin: 0, cursor: "pointer" }}>
+                            Excluir
+                          </p>
+                          <p style={{ margin: 0, cursor: "pointer" }}>
+                            Detalhes
+                          </p>
+                        </div>
+                      )}
+                    </div>{" "}
+                    {/* 👈 */}
                   </li>
                 </ul>
               </div>
