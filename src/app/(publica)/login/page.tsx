@@ -54,11 +54,11 @@ export default function Login() {
   });
 
   const images = [
-    "/assets/images/site/carrossel/carrossel_foto_01.jpg",
-    "/assets/images/site/carrossel/carrossel_foto_02.png",
-    "/assets/images/site/carrossel/carrossel_foto_03.png",
-    "/assets/images/site/carrossel/carrossel_foto_04.png",
-    "/assets/images/site/carrossel/carrossel_foto_05.png",
+    "/assets/images/site/carrossel/carrossel_foto_01.jpeg",
+    "/assets/images/site/carrossel/carrossel_foto_02.jpeg",
+    "/assets/images/site/carrossel/carrossel_foto_03.jpeg",
+    "/assets/images/site/carrossel/carrossel_foto_04.jpeg",
+    "/assets/images/site/carrossel/carrossel_foto_05.jpeg",
   ];
 
   return (
@@ -142,7 +142,7 @@ export default function Login() {
           <div className={styles.divItemSlid}>
             <div style={{ height: "60%" }}>
               <Image
-                src="/assets/images/site/slide/slide_foto_01.jpg"
+                src="/assets/images/site/slide/slide_foto_01.jpeg"
                 alt="Logo"
                 width={800}
                 height={880}
@@ -159,7 +159,7 @@ export default function Login() {
           <div className={styles.divItemSlid}>
             <div style={{ height: "60%" }}>
               <Image
-                src="/assets/images/site/slide/slide_foto_02.jpg"
+                src="/assets/images/site/slide/slide_foto_02.jpeg"
                 alt="Logo"
                 width={800}
                 height={880}
@@ -176,7 +176,7 @@ export default function Login() {
           <div className={styles.divItemSlid}>
             <div style={{ height: "60%" }}>
               <Image
-                src="/assets/images/site/slide/slide_foto_03.jpg"
+                src="/assets/images/site/slide/slide_foto_03.jpeg"
                 alt="Logo"
                 width={800}
                 height={880}
@@ -193,7 +193,7 @@ export default function Login() {
           <div className={styles.divItemSlid}>
             <div style={{ height: "60%" }}>
               <Image
-                src="/assets/images/site/slide/slide_foto_04.jpg"
+                src="/assets/images/site/slide/slide_foto_04.jpeg"
                 alt="Logo"
                 width={800}
                 height={880}
@@ -210,7 +210,7 @@ export default function Login() {
           <div className={styles.divItemSlid}>
             <div style={{ height: "60%" }}>
               <Image
-                src="/assets/images/site/slide/slide_foto_05.jpg"
+                src="/assets/images/site/slide/slide_foto_10.jpeg"
                 alt="Logo"
                 width={800}
                 height={880}

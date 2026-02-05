@@ -11,10 +11,12 @@ import {
   FaArchive,
   FaCheckSquare,
   FaEdit,
+  FaFrown,
   FaGraduationCap,
   FaRegSquare,
   FaUser,
 } from "react-icons/fa";
+import { FaTriangleExclamation } from "react-icons/fa6";
 
 interface User {
   id: number;
@@ -82,6 +84,9 @@ export default function AutorizacaoPage() {
   const [autorizacaoSelecionada, setAutorizacaoSelecionada] =
     useState<Autorizacao | null>(null);
 
+  const [despachoSelecionado, setDespachoSelecionado] =
+    useState<Autorizacao | null>(null);
+
   useEffect(() => {
     const fetchAutorizacoes = async () => {
       try {
@@ -108,6 +113,45 @@ export default function AutorizacaoPage() {
     fetchAutorizacoes();
   }, []);
 
+  // ✅👇 ESTE É O NOVO: atualiza as autorizações filtrados com base na busca
+  useEffect(() => {
+    const termoBusca = searchTerm.trim().toLowerCase();
+
+    const filtrados = autorizacoes.filter((aut) => {
+      // 🔹 FILTRO DE STATUS (corrigido)
+      let statusMatch = true;
+
+      if (filtroFuncao === "Pendente") {
+        statusMatch = aut.statusAut === "Pendente";
+      }
+
+      if (filtroFuncao === "Negada") {
+        statusMatch = aut.statusAut === "Negada";
+      }
+
+      if (filtroFuncao === "Autorizada") {
+        statusMatch =
+          aut.statusAut === "Autorizada" ||
+          aut.statusAut === "Autorizada com restrição";
+      }
+
+      // 🔹 FILTRO DE BUSCA
+      const nomeAluno = aut.useralaut?.nomeGuerra?.toLowerCase() || "";
+      const nomeSolicitante = aut.useraut?.nomeGuerra?.toLowerCase() || "";
+      const motivo = aut.motivoAut?.toLowerCase() || "";
+
+      const buscaMatch =
+        !termoBusca ||
+        nomeAluno.includes(termoBusca) ||
+        nomeSolicitante.includes(termoBusca) ||
+        motivo.includes(termoBusca);
+
+      return statusMatch && buscaMatch;
+    });
+
+    setFilteredAutorizacoes(filtrados);
+  }, [searchTerm, filtroFuncao, autorizacoes]);
+
   // 👇 Este aqui fecha o menu suspenso ao clicar fora
   useEffect(() => {
     const handleClickFora = (event: MouseEvent) => {
@@ -120,27 +164,6 @@ export default function AutorizacaoPage() {
       document.removeEventListener("mousedown", handleClickFora);
     };
   }, []);
-
-  // ✅👇 ESTE É O NOVO: atualiza as autorizações filtrados com base na busca
-  useEffect(() => {
-    const termoBusca = searchTerm.toLowerCase();
-    const filtroFuncaoLower = filtroFuncao.toLowerCase();
-
-    const filtrados = autorizacoes.filter((aut) => {
-      const statusMatch =
-        filtroFuncao === "Todos" ||
-        aut.statusAut.toLowerCase() === filtroFuncaoLower;
-      const buscaMatch =
-        aut.statusAut.toLowerCase().includes(termoBusca) ||
-        aut.motivoAut.toLowerCase().includes(termoBusca) ||
-        aut.useraut?.nomeGuerra.toLowerCase().includes(termoBusca) ||
-        aut.useralaut?.nomeGuerra.toLowerCase().includes(termoBusca);
-
-      return statusMatch && buscaMatch;
-    });
-
-    setFilteredAutorizacoes(filtrados);
-  }, [searchTerm, filtroFuncao, autorizacoes]);
 
   //INICIO ABRIR DETALHES DA AUTORIZAÇÃO
   const handleView = async (id: number) => {
@@ -203,12 +226,34 @@ export default function AutorizacaoPage() {
   if (loading) return <p>Carregando autorizações...</p>;
   if (error) return <p>Erro: {error}</p>;
 
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+
+  const isExpirada = (dataFinal: string) => {
+    const data = new Date(dataFinal + "T00:00:00");
+    return data < hoje;
+  };
+
   // 🔹 Separar e ordenar por situacaoAtual
   const vigentes = filteredAutorizacoes
-    .filter((a) => a.situacaoAtual === "Vigente")
-    .sort((a, b) => b.id - a.id); // opcional: mais recentes primeiro
+    .filter(
+      (a) =>
+        !isExpirada(a.dataFinal) &&
+        (a.statusAut === "Autorizada" ||
+          a.statusAut === "Autorizada com restrição"),
+    )
+    .sort((a, b) => b.id - a.id);
+
+  const pendentes = filteredAutorizacoes
+    .filter((a) => !isExpirada(a.dataFinal) && a.statusAut === "Pendente")
+    .sort((a, b) => b.id - a.id);
+
+  const negadas = filteredAutorizacoes
+    .filter((a) => !isExpirada(a.dataFinal) && a.statusAut === "Negada")
+    .sort((a, b) => b.id - a.id);
+
   const expiradas = filteredAutorizacoes
-    .filter((a) => a.situacaoAtual === "Expirada")
+    .filter((a) => isExpirada(a.dataFinal))
     .sort((a, b) => b.id - a.id);
 
   return (
@@ -217,6 +262,7 @@ export default function AutorizacaoPage() {
       <div className={styles.listaEsquerda}>
         <h1 className={styles.tituloListar}>Autorizações</h1>
         {error && <p style={{ color: "red" }}>Erro: {error}</p>}
+
         <div style={{ display: "flex", marginBottom: "10px" }}>
           <div style={{ width: "100%" }}>
             <input
@@ -230,308 +276,612 @@ export default function AutorizacaoPage() {
         </div>
 
         <div className={styles.divFiltroUsuarios}>
-          {["Pendente", "Autorizada", "Negada"].map((label) => (
+          {["Todos", "Pendente", "Autorizada", "Negada"].map((label) => (
             <span
               key={label}
               className={`${styles.spanFiltroUsuarios} ${
                 filtroFuncao === label ? styles.filtroAtivo : ""
               }`}
-              onClick={() => setFiltroFuncao(label)}
+              onClick={() =>
+                setFiltroFuncao((prev) => (prev === label ? "Todos" : label))
+              }
             >
               {label}
             </span>
           ))}
         </div>
 
-        {vigentes.length > 0 ? (
+        {filteredAutorizacoes.length > 0 ? (
           <>
-            <h2
-              style={{
-                marginBottom: "10px",
-                color: "#202020",
-                fontSize: "12px",
-                fontFamily: "bold",
-              }}
-            >
-              Vigentes
-            </h2>
-
-            {/* 🔹 Lista das autorizações Vigentes */}
-            {vigentes.map((autorizacao) => (
-              <div
-                key={autorizacao.id}
-                className={`${styles.listdeAlunos} ${
-                  autorizacaoSelecionada?.id === autorizacao.id
-                    ? styles.alunoSelecionado
-                    : ""
-                }`}
-                onClick={() => handleView(autorizacao.id)}
-              >
-                <ul className={styles.itemAluno}>
-                  <li style={{ position: "relative" }}>
-                    <div
-                      style={{ width: "10%", marginRight: "10px" }}
-                      className={styles.alunoListImg}
-                    >
-                      <div>
-                        <Image
-                          src="/assets/images/logo.png"
-                          alt="logo"
-                          width={40}
-                          height={40}
-                        />
-                        <div className={styles.divNumeroAutorizacao}>
-                          Nº {autorizacao.id}
-                        </div>
-                      </div>
-                    </div>
-                    <div style={{ width: "80%" }}>
-                      <div style={{ fontSize: "14px" }}>
-                        <strong>{autorizacao.motivoAut}</strong>
-                      </div>
-
-                      <div className={styles.divItensMeioUsuario}>
-                        <FaUser />
-                        <span style={{ marginLeft: "5px", fontWeight: "bold" }}>
-                          Solicitante:
-                        </span>
-                        <span style={{ marginLeft: "5px" }}>
-                          {autorizacao.useraut?.pg}{" "}
-                          {autorizacao.useraut?.nomeGuerra} |{" "}
-                          {autorizacao.useraut?.funcao}
-                        </span>
-                      </div>
-
-                      <div className={styles.divItensMeioUsuario}>
-                        <FaGraduationCap />
-                        <span style={{ marginLeft: "5px", fontWeight: "bold" }}>
-                          Aluno:
-                        </span>
-                        <span style={{ marginLeft: "5px" }}>
-                          {autorizacao.useralaut?.nomeGuerra} |{" "}
-                          {autorizacao.alunoInfo?.turma?.name} -{" "}
-                          {autorizacao.alunoInfo?.cia?.name}
-                        </span>
-                      </div>
-
-                      <div style={{ fontSize: "14px", color: "#868686" }}>
-                        Status:{" "}
-                        <span
-                          style={{
-                            fontWeight: "bold",
-                            color:
-                              autorizacao.statusAut === "Autorizada"
-                                ? "#19d044"
-                                : autorizacao.statusAut ===
-                                    "Autorizada com restrição"
-                                  ? "#108444"
-                                  : autorizacao.statusAut === "Negada"
-                                    ? "#f44336"
-                                    : "#000000",
-                          }}
-                        >
-                          {autorizacao.statusAut}
-                        </span>
-                      </div>
-
-                      <div style={{ fontSize: "14px", color: "#868686" }}>
-                        Período:{" "}
-                        {new Date(
-                          autorizacao.dataInicio + "T00:00:00",
-                        ).toLocaleDateString()}{" "}
-                        a{" "}
-                        {new Date(
-                          autorizacao.dataFinal + "T00:00:00",
-                        ).toLocaleDateString()}
-                      </div>
-                    </div>
-                    <div
-                      style={{ width: "10%" }}
-                      className={styles.alunoListImg}
-                    >
-                      <div>
-                        <FaCheckSquare fontSize={20} color="#0e9169" />
-                      </div>
-                    </div>
-                    {/* 👈 Botão para abrir menu suspenso */}
-                    <div style={{ width: "10%" }}>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation(); // impede abrir detalhes
-                          setMenuAbertoId(
-                            menuAbertoId === autorizacao.id
-                              ? null
-                              : autorizacao.id,
-                          );
-                        }}
-                        style={{
-                          background: "transparent",
-                          border: "none",
-                          cursor: "pointer",
-                        }}
-                      >
-                        ⋮ {/* você pode trocar por ícone */}
-                      </button>
-
-                      {/* 👈 Menu suspenso */}
-                      {menuAbertoId === autorizacao.id && (
+            {/* Filtrando por status */}
+            {vigentes.length > 0 && (
+              <>
+                <h2
+                  style={{
+                    marginBottom: "10px",
+                    color: "#202020",
+                    fontSize: "12px",
+                    fontFamily: "bold",
+                  }}
+                >
+                  Vigentes
+                </h2>
+                {vigentes.map((autorizacao) => (
+                  <div
+                    key={autorizacao.id}
+                    className={`${styles.listdeAlunos} ${autorizacaoSelecionada?.id === autorizacao.id ? styles.alunoSelecionado : ""}`}
+                    onClick={() => handleView(autorizacao.id)}
+                  >
+                    <ul className={styles.itemAluno}>
+                      <li style={{ position: "relative" }}>
                         <div
-                          ref={menuRef}
-                          className={styles.menuSuspenso}
-                          style={{
-                            position: "absolute",
-                            top: "100%",
-                            right: 0,
-                            background: "#fff",
-                            border: "1px solid #ccc",
-                            borderRadius: "4px",
-                            padding: "5px",
-                            zIndex: 10,
-                          }}
+                          style={{ width: "10%", marginRight: "10px" }}
+                          className={styles.alunoListImg}
                         >
-                          <p style={{ margin: 0, cursor: "pointer" }}>Editar</p>
-                          <p style={{ margin: 0, cursor: "pointer" }}>
-                            Excluir
-                          </p>
-                          <p style={{ margin: 0, cursor: "pointer" }}>
-                            Detalhes
-                          </p>
+                          <div>
+                            <Image
+                              src="/assets/images/logo.png"
+                              alt="logo"
+                              width={40}
+                              height={40}
+                            />
+                            <div className={styles.divNumeroAutorizacao}>
+                              Nº {autorizacao.id}
+                            </div>
+                          </div>
                         </div>
-                      )}
-                    </div>{" "}
-                    {/* 👈 */}
-                  </li>
-                </ul>
-              </div>
-            ))}
+                        <div style={{ width: "80%" }}>
+                          <div style={{ fontSize: "14px" }}>
+                            <strong>{autorizacao.motivoAut}</strong>
+                          </div>
 
-            {/* 🔻 Título das Expiradas */}
-            {expiradas.length > 0 && (
-              <h2
-                style={{
-                  marginTop: "25px",
-                  marginBottom: "10px",
-                  color: "#202020",
-                  fontSize: "12px",
-                  fontFamily: "bold",
-                  borderTop: "1px solid #ddd",
-                  paddingTop: "10px",
-                }}
-              >
-                Expiradas
-              </h2>
+                          <div className={styles.divItensMeioUsuario}>
+                            <FaUser />
+                            <span
+                              style={{ marginLeft: "5px", fontWeight: "bold" }}
+                            >
+                              Solicitante:
+                            </span>
+                            <span style={{ marginLeft: "5px" }}>
+                              {autorizacao.useraut?.pg}{" "}
+                              {autorizacao.useraut?.nomeGuerra} |{" "}
+                              {autorizacao.useraut?.funcao}
+                            </span>
+                          </div>
+
+                          <div className={styles.divItensMeioUsuario}>
+                            <FaGraduationCap />
+                            <span
+                              style={{ marginLeft: "5px", fontWeight: "bold" }}
+                            >
+                              Aluno:
+                            </span>
+                            <span style={{ marginLeft: "5px" }}>
+                              {autorizacao.useralaut?.nomeGuerra} |{" "}
+                              {autorizacao.alunoInfo?.turma?.name} -{" "}
+                              {autorizacao.alunoInfo?.cia?.name}
+                            </span>
+                          </div>
+
+                          <div
+                            style={{
+                              width: "200px",
+                              fontSize: "12px",
+                              padding: "3px",
+                              borderRadius: "15px",
+                              color: "#ffffff",
+                              textAlign: "center",
+                              background:
+                                autorizacao.statusAut === "Autorizada"
+                                  ? "#19d044"
+                                  : autorizacao.statusAut ===
+                                      "Autorizada com restrição"
+                                    ? "#108444"
+                                    : autorizacao.statusAut === "Negada"
+                                      ? "#f44336"
+                                      : "#000000",
+                            }}
+                          >
+                            <span
+                              onClick={() =>
+                                setDespachoSelecionado(autorizacao)
+                              }
+                            >
+                              {autorizacao.statusAut}
+                            </span>
+                          </div>
+
+                          <div style={{ fontSize: "14px", color: "#868686" }}>
+                            Período:{" "}
+                            {new Date(
+                              autorizacao.dataInicio + "T00:00:00",
+                            ).toLocaleDateString()}{" "}
+                            a{" "}
+                            {new Date(
+                              autorizacao.dataFinal + "T00:00:00",
+                            ).toLocaleDateString()}
+                          </div>
+                        </div>
+                        <div
+                          style={{ width: "10%" }}
+                          className={styles.alunoListImg}
+                        >
+                          <div>
+                            <FaCheckSquare
+                              onClick={(e) => {
+                                e.stopPropagation(); // impede abrir detalhes
+                                setMenuAbertoId(
+                                  menuAbertoId === autorizacao.id
+                                    ? null
+                                    : autorizacao.id,
+                                );
+                              }}
+                              fontSize={40}
+                              color="#0e916a88"
+                            />
+                          </div>
+                        </div>
+                        {/* 👈 Botão para abrir menu suspenso */}
+                      </li>
+                    </ul>
+                  </div>
+                ))}
+              </>
             )}
 
-            {/* 🔹 Lista das Expiradas */}
-            {expiradas.map((autorizacao) => (
-              <div
-                key={autorizacao.id}
-                className={`${styles.listdeAlunos} ${
-                  autorizacaoSelecionada?.id === autorizacao.id
-                    ? styles.alunoSelecionado
-                    : ""
-                }`}
-                onClick={() => handleView(autorizacao.id)}
-              >
-                <ul className={styles.itemAluno}>
-                  <li style={{ position: "relative" }}>
-                    <div
-                      style={{ width: "10%", marginRight: "10px" }}
-                      className={styles.alunoListImg}
-                    >
-                      <div>
-                        <Image
-                          src="/assets/images/logo.png"
-                          alt="logo"
-                          width={40}
-                          height={40}
-                        />
-                        <div className={styles.divNumeroAutorizacao}>
-                          Nº {autorizacao.id}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div style={{ width: "80%" }}>
-                      <div style={{ fontSize: "14px" }}>
-                        <strong>{autorizacao.motivoAut}</strong>
-                      </div>
-
-                      <div className={styles.divItensMeioUsuario}>
-                        <FaUser />
-                        <span style={{ marginLeft: "5px", fontWeight: "bold" }}>
-                          Solicitante:
-                        </span>
-                        <span style={{ marginLeft: "5px" }}>
-                          {autorizacao.useraut?.pg}{" "}
-                          {autorizacao.useraut?.nomeGuerra} |{" "}
-                          {autorizacao.useraut?.funcao}
-                        </span>
-                      </div>
-
-                      <div className={styles.divItensMeioUsuario}>
-                        <FaGraduationCap />
-                        <span style={{ marginLeft: "5px", fontWeight: "bold" }}>
-                          Aluno:
-                        </span>
-                        <span style={{ marginLeft: "5px" }}>
-                          {autorizacao.useralaut?.nomeGuerra} |{" "}
-                          {autorizacao.alunoInfo?.turma?.name} -{" "}
-                          {autorizacao.alunoInfo?.cia?.name}
-                        </span>
-                      </div>
-
-                      <div style={{ fontSize: "14px", color: "#868686" }}>
-                        Status:{" "}
-                        <span
-                          style={{
-                            fontWeight: "bold",
-                            color:
-                              autorizacao.statusAut === "Autorizada"
-                                ? "#19d044"
-                                : autorizacao.statusAut ===
-                                    "Autorizada com restrição"
-                                  ? "#108444"
-                                  : autorizacao.statusAut === "Negada"
-                                    ? "#f44336"
-                                    : "#000000",
-                          }}
+            {pendentes.length > 0 && (
+              <>
+                <h2
+                  style={{
+                    marginTop: "25px",
+                    marginBottom: "10px",
+                    color: "#da9b14",
+                    fontSize: "12px",
+                    fontFamily: "bold",
+                    borderTop: "1px solid #ddd",
+                    paddingTop: "10px",
+                  }}
+                >
+                  Pendentes
+                </h2>
+                {pendentes.map((autorizacao) => (
+                  <div
+                    key={autorizacao.id}
+                    className={`${styles.listdeAlunos} ${autorizacaoSelecionada?.id === autorizacao.id ? styles.alunoSelecionado : ""}`}
+                    onClick={() => handleView(autorizacao.id)}
+                  >
+                    <ul className={styles.itemAluno}>
+                      <li style={{ position: "relative" }}>
+                        <div
+                          style={{ width: "10%", marginRight: "10px" }}
+                          className={styles.alunoListImg}
                         >
-                          {autorizacao.statusAut}
-                        </span>
-                      </div>
+                          <div>
+                            <Image
+                              src="/assets/images/logo.png"
+                              alt="logo"
+                              width={40}
+                              height={40}
+                            />
+                            <div className={styles.divNumeroAutorizacao}>
+                              Nº {autorizacao.id}
+                            </div>
+                          </div>
+                        </div>
 
-                      <div style={{ fontSize: "14px", color: "#868686" }}>
-                        Período:{" "}
-                        {new Date(
-                          autorizacao.dataInicio + "T00:00:00",
-                        ).toLocaleDateString()}{" "}
-                        a{" "}
-                        {new Date(
-                          autorizacao.dataFinal + "T00:00:00",
-                        ).toLocaleDateString()}
-                      </div>
-                    </div>
+                        <div style={{ width: "80%" }}>
+                          <div style={{ fontSize: "14px" }}>
+                            <strong>{autorizacao.motivoAut}</strong>
+                          </div>
 
-                    <div
-                      style={{ width: "10%" }}
-                      className={styles.alunoListImg}
-                    >
-                      <div>
-                        <FaArchive fontSize={20} color="#b0b0b0" />
-                      </div>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-            ))}
+                          <div className={styles.divItensMeioUsuario}>
+                            <FaUser />
+                            <span
+                              style={{ marginLeft: "5px", fontWeight: "bold" }}
+                            >
+                              Solicitante:
+                            </span>
+                            <span style={{ marginLeft: "5px" }}>
+                              {autorizacao.useraut?.pg}{" "}
+                              {autorizacao.useraut?.nomeGuerra} |{" "}
+                              {autorizacao.useraut?.funcao}
+                            </span>
+                          </div>
+
+                          <div className={styles.divItensMeioUsuario}>
+                            <FaGraduationCap />
+                            <span
+                              style={{ marginLeft: "5px", fontWeight: "bold" }}
+                            >
+                              Aluno:
+                            </span>
+                            <span style={{ marginLeft: "5px" }}>
+                              {autorizacao.useralaut?.nomeGuerra} |{" "}
+                              {autorizacao.alunoInfo?.turma?.name} -{" "}
+                              {autorizacao.alunoInfo?.cia?.name}
+                            </span>
+                          </div>
+
+                          <div
+                            style={{
+                              width: "200px",
+                              fontSize: "12px",
+                              padding: "3px",
+                              borderRadius: "15px",
+                              color: "#ffffff",
+                              textAlign: "center",
+                              background:
+                                autorizacao.statusAut === "Pendente"
+                                  ? "#d09f19"
+                                  : "#868686",
+                            }}
+                          >
+                            <span
+                              onClick={() =>
+                                setDespachoSelecionado(autorizacao)
+                              }
+                            >
+                              {autorizacao.statusAut}
+                            </span>
+                          </div>
+
+                          <div style={{ fontSize: "14px", color: "#868686" }}>
+                            Período:{" "}
+                            {new Date(
+                              autorizacao.dataInicio + "T00:00:00",
+                            ).toLocaleDateString()}{" "}
+                            a{" "}
+                            {new Date(
+                              autorizacao.dataFinal + "T00:00:00",
+                            ).toLocaleDateString()}
+                          </div>
+                        </div>
+
+                        <div
+                          style={{ width: "10%" }}
+                          className={styles.alunoListImg}
+                        >
+                          <div>
+                            <FaTriangleExclamation
+                              fontSize={40}
+                              color="#ecb41a7a"
+                            />
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                ))}
+              </>
+            )}
+
+            {negadas.length > 0 && (
+              <>
+                <h2
+                  style={{
+                    marginTop: "25px",
+                    marginBottom: "10px",
+                    color: "#f44336",
+                    fontSize: "12px",
+                    fontFamily: "bold",
+                    borderTop: "1px solid #ddd",
+                    paddingTop: "10px",
+                  }}
+                >
+                  Negadas
+                </h2>
+                {negadas.map((autorizacao) => (
+                  <div
+                    key={autorizacao.id}
+                    className={`${styles.listdeAlunos} ${autorizacaoSelecionada?.id === autorizacao.id ? styles.alunoSelecionado : ""}`}
+                    onClick={() => handleView(autorizacao.id)}
+                  >
+                    <ul className={styles.itemAluno}>
+                      <li style={{ position: "relative" }}>
+                        {/* Ícone + número */}
+                        <div
+                          style={{ width: "10%", marginRight: "10px" }}
+                          className={styles.alunoListImg}
+                        >
+                          <div>
+                            <Image
+                              src="/assets/images/logo.png"
+                              alt="logo"
+                              width={40}
+                              height={40}
+                            />
+                            <div className={styles.divNumeroAutorizacao}>
+                              Nº {autorizacao.id}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Conteúdo principal */}
+                        <div style={{ width: "80%" }}>
+                          <div style={{ fontSize: "14px" }}>
+                            <strong>{autorizacao.motivoAut}</strong>
+                          </div>
+
+                          <div className={styles.divItensMeioUsuario}>
+                            <FaUser />
+                            <span
+                              style={{ marginLeft: "5px", fontWeight: "bold" }}
+                            >
+                              Solicitante:
+                            </span>
+                            <span style={{ marginLeft: "5px" }}>
+                              {autorizacao.useraut?.pg}{" "}
+                              {autorizacao.useraut?.nomeGuerra} |{" "}
+                              {autorizacao.useraut?.funcao}
+                            </span>
+                          </div>
+
+                          <div className={styles.divItensMeioUsuario}>
+                            <FaGraduationCap />
+                            <span
+                              style={{ marginLeft: "5px", fontWeight: "bold" }}
+                            >
+                              Aluno:
+                            </span>
+                            <span style={{ marginLeft: "5px" }}>
+                              {autorizacao.useralaut?.nomeGuerra} |{" "}
+                              {autorizacao.alunoInfo?.turma?.name} -{" "}
+                              {autorizacao.alunoInfo?.cia?.name}
+                            </span>
+                          </div>
+
+                          {/* Status */}
+
+                          <div
+                            style={{
+                              width: "200px",
+                              fontSize: "12px",
+                              padding: "3px",
+                              borderRadius: "15px",
+                              color: "#ffffff",
+                              textAlign: "center",
+                              background:
+                                autorizacao.statusAut === "Negada"
+                                  ? "#f44336"
+                                  : "#868686",
+                            }}
+                          >
+                            <span
+                              onClick={() =>
+                                setDespachoSelecionado(autorizacao)
+                              }
+                            >
+                              {autorizacao.statusAut}
+                            </span>
+                          </div>
+
+                          {/* Período */}
+                          <div style={{ fontSize: "14px", color: "#868686" }}>
+                            Período:{" "}
+                            {new Date(
+                              autorizacao.dataInicio + "T00:00:00",
+                            ).toLocaleDateString()}{" "}
+                            a{" "}
+                            {new Date(
+                              autorizacao.dataFinal + "T00:00:00",
+                            ).toLocaleDateString()}
+                          </div>
+                        </div>
+
+                        {/* Ícone lateral */}
+                        <div
+                          style={{ width: "10%" }}
+                          className={styles.alunoListImg}
+                        >
+                          <div>
+                            <FaFrown fontSize={40} color="#f4433681" />
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                ))}
+              </>
+            )}
+
+            {expiradas.length > 0 && (
+              <>
+                <h2
+                  style={{
+                    marginTop: "25px",
+                    marginBottom: "10px",
+                    color: "#202020",
+                    fontSize: "12px",
+                    fontFamily: "bold",
+                    borderTop: "1px solid #ddd",
+                    paddingTop: "10px",
+                  }}
+                >
+                  Expiradas
+                </h2>
+                {expiradas.map((autorizacao) => (
+                  <div
+                    key={autorizacao.id}
+                    className={`${styles.listdeAlunos} ${autorizacaoSelecionada?.id === autorizacao.id ? styles.alunoSelecionado : ""}`}
+                    onClick={() => handleView(autorizacao.id)}
+                  >
+                    <ul className={styles.itemAluno}>
+                      <li style={{ position: "relative" }}>
+                        <div
+                          style={{ width: "10%", marginRight: "10px" }}
+                          className={styles.alunoListImg}
+                        >
+                          <div>
+                            <Image
+                              src="/assets/images/logo.png"
+                              alt="logo"
+                              width={40}
+                              height={40}
+                            />
+                            <div className={styles.divNumeroAutorizacao}>
+                              Nº {autorizacao.id}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div style={{ width: "80%" }}>
+                          <div style={{ fontSize: "14px" }}>
+                            <strong>{autorizacao.motivoAut}</strong>
+                          </div>
+
+                          <div className={styles.divItensMeioUsuario}>
+                            <FaUser />
+                            <span
+                              style={{ marginLeft: "5px", fontWeight: "bold" }}
+                            >
+                              Solicitante:
+                            </span>
+                            <span style={{ marginLeft: "5px" }}>
+                              {autorizacao.useraut?.pg}{" "}
+                              {autorizacao.useraut?.nomeGuerra} |{" "}
+                              {autorizacao.useraut?.funcao}
+                            </span>
+                          </div>
+
+                          <div className={styles.divItensMeioUsuario}>
+                            <FaGraduationCap />
+                            <span
+                              style={{ marginLeft: "5px", fontWeight: "bold" }}
+                            >
+                              Aluno:
+                            </span>
+                            <span style={{ marginLeft: "5px" }}>
+                              {autorizacao.useralaut?.nomeGuerra} |{" "}
+                              {autorizacao.alunoInfo?.turma?.name} -{" "}
+                              {autorizacao.alunoInfo?.cia?.name}
+                            </span>
+                          </div>
+
+                          <div
+                            style={{
+                              width: "200px",
+                              fontSize: "12px",
+                              padding: "3px",
+                              borderRadius: "15px",
+                              color: "#ffffff",
+                              textAlign: "center",
+                              background:
+                                autorizacao.statusAut === "Autorizada"
+                                  ? "#b9beba"
+                                  : autorizacao.statusAut ===
+                                      "Autorizada com restrição"
+                                    ? "#b9beba"
+                                    : autorizacao.statusAut === "Negada"
+                                      ? "#b9beba"
+                                      : "#b9beba",
+                            }}
+                          >
+                            <span
+                              onClick={() =>
+                                setDespachoSelecionado(autorizacao)
+                              }
+                            >
+                              {autorizacao.statusAut}
+                            </span>
+                          </div>
+
+                          <div style={{ fontSize: "14px", color: "#868686" }}>
+                            Período:{" "}
+                            {new Date(
+                              autorizacao.dataInicio + "T00:00:00",
+                            ).toLocaleDateString()}{" "}
+                            a{" "}
+                            {new Date(
+                              autorizacao.dataFinal + "T00:00:00",
+                            ).toLocaleDateString()}
+                          </div>
+                        </div>
+
+                        <div
+                          style={{ width: "10%" }}
+                          className={styles.alunoListImg}
+                        >
+                          <div>
+                            <FaArchive fontSize={40} color="#b0b0b083" />
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                ))}
+              </>
+            )}
           </>
         ) : !error ? (
           <p>Não existem autorizações cadastradas</p>
         ) : (
           <p style={{ color: "red" }}>Erro ao buscar Autorizações</p>
         )}
+
+        {despachoSelecionado && (
+          <div
+            onClick={() => setDespachoSelecionado(null)}
+            className={styles.divModalAutorizacaoPrincipal}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className={styles.divModalAutorizacaoSecundaria}
+            >
+              <div
+                style={{
+                  background: "#273c75",
+                  height: "40px",
+                  alignContent: "center",
+                }}
+              >
+                <h3
+                  style={{
+                    color: "#ffffff",
+                    fontSize: "20px",
+                    textAlign: "center",
+                  }}
+                >
+                  CORPO DE ALUNOS | C.A.
+                </h3>
+              </div>
+
+              <p
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  fontSize: "15px",
+                  lineHeight: "1.6",
+                  color: "#333",
+                  wordWrap: "break-word",
+                  padding: "20px",
+                  whiteSpace: "pre-wrap",
+                  marginBottom: "20px",
+                }}
+              >
+                <Image
+                  src="/assets/images/logo.png"
+                  alt="logo"
+                  width={80}
+                  height={80}
+                />
+                <span style={{ textAlign: "right", flex: 1, fontSize: "16px" }}>
+                  {despachoSelecionado.despacho ||
+                    "Nenhum despacho disponível."}
+                  <br />
+                  {despachoSelecionado.datadespacho
+                    ? new Date(despachoSelecionado.datadespacho).toLocaleString(
+                        "pt-BR",
+                        { timeZone: "America/Sao_Paulo" },
+                      )
+                    : ""}
+                </span>
+              </p>
+            </div>
+          </div>
+        )}
       </div>
+
       {/* fim da div da esquerda */}
 
       {/* inicio da div da direita */}
