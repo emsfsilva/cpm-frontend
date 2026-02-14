@@ -63,6 +63,8 @@ export default function AutorizacaoPage() {
     useState<Autorizacao | null>(null);
 
   useEffect(() => {
+    console.log("API URL atual:", process.env.NEXT_PUBLIC_API_BASE_URL);
+
     const fetchData = async () => {
       setLoading(true);
       try {
