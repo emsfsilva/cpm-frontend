@@ -99,9 +99,8 @@ export default function AutorizacaoPage() {
 
           if (!alunoData) throw new Error("Aluno não encontrado no array");
 
-          // 🔹 Criar objeto Usuario para o state
           usuarioData = {
-            id: String(alunoData.userId), // ✅ conversão
+            id: String(alunoData.userId),
             name: alunoData.name || alunoData.nomeGuerra || "Aluno",
             imagemUrl: alunoData.imagemUrl || "",
           };
