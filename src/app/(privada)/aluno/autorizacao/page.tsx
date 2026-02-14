@@ -101,7 +101,7 @@ export default function AutorizacaoPage() {
 
           // 🔹 Criar objeto Usuario para o state
           usuarioData = {
-            id: alunoData.userId,
+            id: String(alunoData.userId), // ✅ conversão
             name: alunoData.name || alunoData.nomeGuerra || "Aluno",
             imagemUrl: alunoData.imagemUrl || "",
           };
