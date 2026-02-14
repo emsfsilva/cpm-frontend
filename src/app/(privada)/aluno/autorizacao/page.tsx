@@ -16,7 +16,7 @@ import Image from "next/image";
 
 // 🔹 Tipos
 interface Usuario {
-  id: number; // ✅ mudar para number
+  id: string;
   name: string;
   imagemUrl?: string;
 }
@@ -66,7 +66,7 @@ export default function AutorizacaoPage() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        let idToFetch: number | null = userIdQuery ? Number(userIdQuery) : null; // pode ser userId do dependente ou null
+        let idToFetch = userIdQuery; // pode ser userId do dependente ou null
         let usuarioData: Usuario | null = null;
 
         if (!idToFetch) {
@@ -94,7 +94,7 @@ export default function AutorizacaoPage() {
 
           // 🔹 Encontrar o aluno correto pelo userId da query
           const alunoData = alunoDataArray.find(
-            (a) => a.userId === Number(idToFetch),
+            (a: any) => a.userId === Number(idToFetch),
           );
 
           if (!alunoData) throw new Error("Aluno não encontrado no array");

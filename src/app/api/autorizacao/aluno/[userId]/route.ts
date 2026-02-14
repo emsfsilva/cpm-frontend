@@ -6,9 +6,14 @@ const API_BASE_URL =
 
 export const dynamic = "force-dynamic";
 
+// 🔹 Tipagem do que vem da API externa
+interface AutorizacaoAPI {
+  userIdAlAut: number;
+  [key: string]: unknown; // permite outras propriedades sem usar any
+}
+
 export async function GET(req: NextRequest) {
   try {
-    // 🔹 Extrair o userId manualmente do pathname
     const url = new URL(req.url);
     const pathParts = url.pathname.split("/");
     const userId = Number(pathParts[pathParts.indexOf("aluno") + 1]);
@@ -17,7 +22,6 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "userId inválido" }, { status: 400 });
     }
 
-    // 🔹 Token do cookie
     const cookieStore = await cookies();
     const token = cookieStore.get("accessToken")?.value;
 
@@ -28,7 +32,6 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // 🔹 Buscar autorizações de dependentes
     const response = await fetch(`${API_BASE_URL}/autorizacao/dependentes`, {
       headers: {
         "Content-Type": "application/json",
@@ -36,41 +39,26 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    const rawData: unknown = await response.json();
+    const data: AutorizacaoAPI[] = await response.json();
 
     if (!response.ok) {
-      return NextResponse.json(rawData, { status: response.status });
+      return NextResponse.json(data, { status: response.status });
     }
 
-    // 🔹 Garantir que é array
-    if (!Array.isArray(rawData)) {
+    const filtradas = data.filter((aut) => aut.userIdAlAut === userId);
+
+    return NextResponse.json(filtradas);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error(error.message);
       return NextResponse.json(
-        { error: "Formato inválido da API" },
+        { error: "Erro interno", details: error.message },
         { status: 500 },
       );
     }
 
-    // 🔹 Filtrar apenas autorizações do aluno (sem any)
-    const filtradas = rawData.filter((aut) => {
-      if (
-        typeof aut === "object" &&
-        aut !== null &&
-        "userIdAlAut" in aut &&
-        typeof (aut as { userIdAlAut: unknown }).userIdAlAut === "number"
-      ) {
-        return (aut as { userIdAlAut: number }).userIdAlAut === userId;
-      }
-      return false;
-    });
-
-    return NextResponse.json(filtradas);
-  } catch (err: unknown) {
-    console.error(err);
-
-    const message = err instanceof Error ? err.message : "Erro desconhecido";
-
     return NextResponse.json(
-      { error: "Erro interno", details: message },
+      { error: "Erro interno", details: "Erro desconhecido" },
       { status: 500 },
     );
   }
