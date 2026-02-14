@@ -679,8 +679,14 @@ const UsuariosPage = () => {
                             {endereco.complement} - {endereco.numberAddress}
                           </div>
                           <div>
-                            {endereco.city.name}, {endereco.city.state?.name},
-                            CEP: {endereco.cep}
+                            {endereco.city
+                              ? `${endereco.city.name}${
+                                  endereco.city.state
+                                    ? `, ${endereco.city.state.name}`
+                                    : ""
+                                }`
+                              : "Cidade não informada"}
+                            , CEP: {endereco.cep}
                           </div>
                         </div>
                       ))}

@@ -11,20 +11,13 @@ import {
   FaTimes,
   FaUser,
 } from "react-icons/fa";
-import styles from "../../privateLayout.module.css";
+import styles from "../../../privateLayout.module.css";
 import Image from "next/image";
 
 // 🔹 Tipos
 interface Usuario {
   id: string;
   name: string;
-  imagemUrl?: string;
-}
-
-interface AlunoAPI {
-  userId: number;
-  name?: string;
-  nomeGuerra?: string;
   imagemUrl?: string;
 }
 
@@ -35,7 +28,7 @@ type StatusAut =
   | "Pendente";
 
 interface Autorizacao {
-  id: string;
+  id: number;
   motivoAut: string;
   statusAut: StatusAut;
   dataInicio: string;
@@ -52,9 +45,11 @@ interface Autorizacao {
   datadespacho?: string;
 }
 
-export default function AutorizacaoPage() {
+export default function AutorizacaoDependentePage() {
   const searchParams = useSearchParams();
-  const userIdQuery = searchParams.get("userId"); // userId do dependente (se acessado pelo responsável)
+  const userIdQuery = searchParams.get("userId"); // id do dependente clicado
+
+  console.log("Esse é o id do dependente", userIdQuery);
 
   const [userSelecionado, setUserSelecionado] = useState<Usuario | null>(null);
   const [autorizacoes, setAutorizacoes] = useState<Autorizacao[]>([]);
@@ -66,7 +61,7 @@ export default function AutorizacaoPage() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        let idToFetch = userIdQuery; // pode ser userId do dependente ou null
+        let idToFetch = userIdQuery;
         let usuarioData: Usuario | null = null;
 
         if (!idToFetch) {
@@ -74,43 +69,38 @@ export default function AutorizacaoPage() {
           const userCookie = document.cookie
             .split("; ")
             .find((row) => row.startsWith("userData="));
-          if (!userCookie) return;
+          if (!userCookie)
+            throw new Error("Usuário não encontrado nos cookies");
 
-          const userString = userCookie.split("=")[1];
-          const userData: Usuario = JSON.parse(decodeURIComponent(userString));
-          usuarioData = userData;
-          idToFetch = userData.id;
-        } else {
-          // 🔹 Dependente: buscar dados do aluno correto
-          const resAluno = await fetch(`/api/aluno?id=${idToFetch}`);
-          if (!resAluno.ok) throw new Error("Erro ao buscar dados do aluno");
-
-          const alunoDataArray: AlunoAPI[] = await resAluno.json();
-          console.log("A variavel alunoDataArray é", alunoDataArray);
-
-          if (!alunoDataArray || alunoDataArray.length === 0) {
-            throw new Error("Nenhum dado de aluno encontrado");
-          }
-
-          // 🔹 Encontrar o aluno correto pelo userId da query
-          const alunoData = alunoDataArray.find(
-            (a) => a.userId === Number(idToFetch),
+          const parsedUser = JSON.parse(
+            decodeURIComponent(userCookie.split("=")[1]),
           );
+          idToFetch = parsedUser.id;
 
-          if (!alunoData) throw new Error("Aluno não encontrado no array");
-
-          // 🔹 Criar objeto Usuario para o state
           usuarioData = {
-            id: alunoData.userId,
-            name: alunoData.name || alunoData.nomeGuerra || "Aluno",
-            imagemUrl: alunoData.imagemUrl || "",
+            id: parsedUser.id,
+            name: parsedUser.name || parsedUser.nomeGuerra || "Aluno",
+            imagemUrl: parsedUser.imagemUrl || "",
+          };
+        } else {
+          // 🔹 Dependente: buscar dados do backend via API route
+          const res = await fetch(`/api/user/${idToFetch}`);
+          if (!res.ok) throw new Error("Erro ao buscar usuário");
+
+          const data = await res.json();
+
+          usuarioData = {
+            id: data.id,
+            name: data.name || data.nomeGuerra || "Aluno",
+            imagemUrl: data.imagemUrl || "",
           };
         }
 
         setUserSelecionado(usuarioData);
 
-        // 🔹 Buscar autorizações do aluno
+        // 🔹 Buscar autorizações do aluno (continua igual)
         const resAut = await fetch(`/api/aluno/autorizacao?id=${idToFetch}`);
+        if (!resAut.ok) throw new Error("Erro ao buscar autorizações");
         const dataAut: Autorizacao[] = await resAut.json();
         setAutorizacoes(dataAut);
       } catch (err) {
@@ -132,6 +122,12 @@ export default function AutorizacaoPage() {
   );
   const negadas = autorizacoes.filter((a) => a.statusAut === "Negada");
   const pendentes = autorizacoes.filter((a) => a.statusAut === "Pendente");
+
+  const formatarData = (dataStr: string) => {
+    if (!dataStr) return "";
+    const data = new Date(dataStr);
+    return data.toLocaleDateString("pt-BR", { timeZone: "UTC" });
+  };
 
   const renderDias = (aut: Autorizacao) => {
     const dias: (keyof Autorizacao)[] = [
@@ -192,12 +188,6 @@ export default function AutorizacaoPage() {
     );
   };
 
-  const formatarData = (dataStr: string) => {
-    if (!dataStr) return "";
-    const data = new Date(dataStr);
-    return data.toLocaleDateString("pt-BR", { timeZone: "UTC" });
-  };
-
   const renderAutorizacao = (aut: Autorizacao, tipo: StatusAut) => {
     let IconComp;
     let corBg;
@@ -244,6 +234,7 @@ export default function AutorizacaoPage() {
               width: "95%",
               background: corBg,
               borderRadius: "15px",
+              cursor: "pointer",
             }}
           >
             <span
@@ -271,80 +262,74 @@ export default function AutorizacaoPage() {
 
   return (
     <div style={{ padding: "10px" }}>
-      {userSelecionado ? (
-        <>
-          {/* Cabeçalho */}
-          <div className={styles.divPrincipalUsuarioPerfil}>
-            <div>
-              <FaAngleLeft size={30} />
-            </div>
-            <div className={styles.tituloPerfil}>
-              <span>Autorizações</span>
-            </div>
-            <div>
-              <FaSearch size={20} />
-            </div>
+      {/* Cabeçalho */}
+      <div className={styles.divPrincipalUsuarioPerfil}>
+        <FaAngleLeft size={30} />
+        <span className={styles.tituloPerfil}>Autorizações</span>
+        <FaSearch size={20} />
+      </div>
+
+      {userSelecionado && (
+        <div className={styles.itemMenuPerfilPrincipal}>
+          <div style={{ width: "60px", height: "60px", marginRight: "10px" }}>
+            {userSelecionado.imagemUrl ? (
+              <Image
+                width={40}
+                height={40}
+                src={`/${userSelecionado.imagemUrl.replace(/\\/g, "/")}`}
+                alt="Foto do aluno"
+                onError={(e) => {
+                  const img = e.currentTarget as HTMLImageElement;
+                  img.src = "/assets/images/avatar-aluno.png"; // fallback local
+                }}
+              />
+            ) : (
+              <FaUser
+                size={40}
+                className={styles.semImagemUsuarioPerfilDependente}
+              />
+            )}
           </div>
 
-          {/* Nome e imagem */}
-          <div
-            className={styles.itemMenuPerfilPrincipal}
-            style={{ marginBottom: "20px" }}
-          >
-            <div>
-              {userSelecionado.imagemUrl ? (
-                <Image
-                  width={40}
-                  height={40}
-                  src={`/${userSelecionado.imagemUrl.replace(/\\/g, "/")}`}
-                  alt="Foto do usuário"
-                  className={styles.imagemUsuarioPerfilDependente}
-                />
-              ) : (
-                <FaUser className={styles.semImagemUsuarioPerfilDependente} />
-              )}
-            </div>
-            <div className={styles.itemMenuPerfilSecundaria}>
-              <div className={styles.itemMenuPerfilLabel}>Nome Completo</div>
-              <div className={styles.itemMenuPerfilNome}>
-                {userSelecionado.name}
-              </div>
+          <div>
+            <div className={styles.itemMenuPerfilLabel}>Nome Completo</div>
+            <div className={styles.itemMenuPerfilNome}>
+              {userSelecionado.name}
             </div>
           </div>
-
-          {/* Seções de autorizações */}
-          <div style={{ paddingTop: "20px" }}>
-            <h3 className={styles.divEnderecoPerfilTitulo}>Válidas</h3>
-            <div style={{ paddingBottom: "40px" }}>
-              {validas.length === 0 && autorizadacomrestricao.length === 0 ? (
-                <span>Nenhuma autorização válida.</span>
-              ) : (
-                <>
-                  {validas.map((a) => renderAutorizacao(a, "Autorizada"))}
-                  {autorizadacomrestricao.map((a) =>
-                    renderAutorizacao(a, "Autorizada com restrição"),
-                  )}
-                </>
-              )}
-            </div>
-
-            <h3 className={styles.divEnderecoPerfilTitulo}>Negadas</h3>
-            <div style={{ paddingBottom: "40px" }}>
-              {negadas.length > 0
-                ? negadas.map((a) => renderAutorizacao(a, "Negada"))
-                : "Nenhuma autorização negada."}
-            </div>
-
-            <h3 className={styles.divEnderecoPerfilTitulo}>Pendentes</h3>
-            {pendentes.length > 0
-              ? pendentes.map((a) => renderAutorizacao(a, "Pendente"))
-              : "Nenhuma autorização pendente."}
-          </div>
-        </>
-      ) : (
-        <div>Carregando dados do usuário...</div>
+        </div>
       )}
 
+      {/* Seções de autorizações */}
+      <div style={{ paddingTop: "20px" }}>
+        <h3 className={styles.divEnderecoPerfilTitulo}>Válidas</h3>
+        <div style={{ paddingBottom: "40px" }}>
+          {validas.length === 0 && autorizadacomrestricao.length === 0 ? (
+            <span>Nenhuma autorização válida.</span>
+          ) : (
+            <>
+              {validas.map((a) => renderAutorizacao(a, "Autorizada"))}
+              {autorizadacomrestricao.map((a) =>
+                renderAutorizacao(a, "Autorizada com restrição"),
+              )}
+            </>
+          )}
+        </div>
+
+        <h3 className={styles.divEnderecoPerfilTitulo}>Negadas</h3>
+        <div style={{ paddingBottom: "40px" }}>
+          {negadas.length > 0
+            ? negadas.map((a) => renderAutorizacao(a, "Negada"))
+            : "Nenhuma autorização negada."}
+        </div>
+
+        <h3 className={styles.divEnderecoPerfilTitulo}>Pendentes</h3>
+        {pendentes.length > 0
+          ? pendentes.map((a) => renderAutorizacao(a, "Pendente"))
+          : "Nenhuma autorização pendente."}
+      </div>
+
+      {/* Modal despacho */}
       {despachoSelecionado && (
         <div
           onClick={() => setDespachoSelecionado(null)}

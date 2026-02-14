@@ -3,13 +3,11 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  FaAngleLeft,
   FaBarcode,
   FaChartLine,
   FaGraduationCap,
   FaMapMarker,
   FaPhone,
-  FaSearch,
   FaUser,
 } from "react-icons/fa";
 import styles from "../privateLayout.module.css";
@@ -77,7 +75,32 @@ export default function PerfilPage() {
   const [alunosDependentes, setAlunosDependentes] = useState<User[]>([]);
   const [responsaveisDoAluno, setResponsaveisDoAluno] = useState<User[]>([]);
 
+  const [editPhone, setEditPhone] = useState(false);
+  const [phoneTemp, setPhoneTemp] = useState("");
+
   const router = useRouter();
+
+  async function handleSavePhone() {
+    if (!userSelecionado) return;
+
+    const res = await fetch(`/api/user/${userSelecionado.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone: phoneTemp }),
+    });
+
+    if (!res.ok) {
+      alert("Erro ao atualizar telefone");
+      return;
+    }
+
+    setUserSelecionado({
+      ...userSelecionado,
+      phone: phoneTemp,
+    });
+
+    setEditPhone(false);
+  }
 
   // Busca o ID do usuário logado via cookie e busca os dados completos
   useEffect(() => {
@@ -171,19 +194,7 @@ export default function PerfilPage() {
     <div style={{ padding: "10px", maxHeight: "800px", overflowY: "auto" }}>
       {userSelecionado ? (
         <>
-          <div style={{ marginBottom: "20px" }}>
-            <div className={styles.divPrincipalUsuarioPerfil}>
-              <div>
-                <FaAngleLeft size={30} />
-              </div>
-              <div className={styles.tituloPerfil}>
-                <span>Perfil</span>
-              </div>
-              <div>
-                <FaSearch size={20} />
-              </div>
-            </div>
-          </div>
+          <div style={{ marginBottom: "20px" }}></div>
 
           {/* nome comeplto */}
           <div className={styles.itemMenuPerfilPrincipal}>
@@ -270,10 +281,84 @@ export default function PerfilPage() {
             <div className={styles.itemMenuPerfilIcone}>
               <FaPhone />
             </div>
-            <div className={styles.itemMenuPerfilSecundaria}>
-              <div className={styles.itemMenuPerfilLabel}>Telefone</div>
-              <div className={styles.itemMenuPerfilNome}>
-                {userSelecionado.phone}
+            <div
+              style={{ width: "100%" }}
+              className={styles.itemMenuPerfilSecundaria}
+            >
+              <div className={styles.itemMenuPerfilLabel}>
+                Telefone (WhatsApp)
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  width: "100%",
+                  gap: "10px",
+                }}
+              >
+                {!editPhone ? (
+                  <>
+                    <div className={styles.itemMenuPerfilNome}>
+                      {userSelecionado.phone}
+                    </div>
+
+                    <span
+                      className={styles.divGrupoBotaoDependentes}
+                      onClick={() => {
+                        setPhoneTemp(userSelecionado.phone || "");
+                        setEditPhone(true);
+                      }}
+                      style={{
+                        background: "#0ea860",
+                        color: "#fff",
+                        padding: "5px",
+                        borderRadius: "15px",
+                        fontSize: "9px",
+                        textAlign: "center",
+                        width: "50px",
+                        marginLeft: "auto",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Editar
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <input
+                      value={phoneTemp}
+                      onChange={(e) => setPhoneTemp(e.target.value)}
+                      style={{ flex: 1, padding: "5px" }}
+                    />
+
+                    <span
+                      onClick={handleSavePhone}
+                      style={{
+                        background: "#0ea860",
+                        color: "#fff",
+                        padding: "5px",
+                        borderRadius: "10px",
+                        fontSize: "9px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Salvar
+                    </span>
+
+                    <span
+                      onClick={() => setEditPhone(false)}
+                      style={{
+                        background: "#ccc",
+                        padding: "5px",
+                        borderRadius: "10px",
+                        fontSize: "9px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Cancelar
+                    </span>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -293,9 +378,19 @@ export default function PerfilPage() {
                 }}
               >
                 <div className={styles.itemMenuPerfilIcone}>
-                  <FaMapMarker />
+                  <FaMapMarker
+                    onClick={() => {}}
+                    style={{
+                      color: "#737675",
+                      marginLeft: "auto",
+                      fontSize: "23px",
+                    }}
+                  />
                 </div>
-                <div className={styles.itemMenuPerfilSecundaria}>
+                <div
+                  style={{ fontFamily: "auto" }}
+                  className={styles.itemMenuPerfilSecundaria}
+                >
                   {userSelecionado.addresses[0].complement}, Nº{" "}
                   {userSelecionado.addresses[0].numberAddress} -{" "}
                   {userSelecionado.addresses[0].city.name},{" "}
@@ -432,7 +527,10 @@ export default function PerfilPage() {
                       <span
                         className={styles.divGrupoBotaoDependentes}
                         onClick={() => {
-                          router.push(`/aluno/autorizacao?id=${dep.id}`);
+                          if (!dep.aluno?.userId) return;
+                          router.push(
+                            `/aluno/autorizacao/dependente?userId=${dep.aluno.userId}`,
+                          );
                         }}
                         style={{
                           background: "#0e44a8",
