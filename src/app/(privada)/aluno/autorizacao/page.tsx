@@ -94,7 +94,7 @@ export default function AutorizacaoPage() {
 
           // 🔹 Encontrar o aluno correto pelo userId da query
           const alunoData = alunoDataArray.find(
-            (a: any) => a.userId === Number(idToFetch),
+            (a) => a.userId === Number(idToFetch),
           );
 
           if (!alunoData) throw new Error("Aluno não encontrado no array");
