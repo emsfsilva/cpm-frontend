@@ -16,7 +16,7 @@ import Image from "next/image";
 
 // 🔹 Tipos
 interface Usuario {
-  id: string;
+  id: number; // ✅ mudar para number
   name: string;
   imagemUrl?: string;
 }
