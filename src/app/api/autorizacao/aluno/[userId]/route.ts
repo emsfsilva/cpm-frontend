@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
   try {
     // 🔹 Extrair o userId manualmente do pathname
     const url = new URL(req.url);
-    const pathParts = url.pathname.split("/"); // ['', 'api', 'autorizacao', 'aluno', '2']
+    const pathParts = url.pathname.split("/");
     const userId = Number(pathParts[pathParts.indexOf("aluno") + 1]);
 
     if (Number.isNaN(userId)) {
@@ -36,14 +36,32 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    const data = await response.json();
+    const rawData: unknown = await response.json();
 
     if (!response.ok) {
-      return NextResponse.json(data, { status: response.status });
+      return NextResponse.json(rawData, { status: response.status });
     }
 
-    // 🔹 Filtra apenas as autorizações do aluno
-    const filtradas = data.filter((aut: any) => aut.userIdAlAut === userId);
+    // 🔹 Garantir que é array
+    if (!Array.isArray(rawData)) {
+      return NextResponse.json(
+        { error: "Formato inválido da API" },
+        { status: 500 },
+      );
+    }
+
+    // 🔹 Filtrar apenas autorizações do aluno (sem any)
+    const filtradas = rawData.filter((aut) => {
+      if (
+        typeof aut === "object" &&
+        aut !== null &&
+        "userIdAlAut" in aut &&
+        typeof (aut as { userIdAlAut: unknown }).userIdAlAut === "number"
+      ) {
+        return (aut as { userIdAlAut: number }).userIdAlAut === userId;
+      }
+      return false;
+    });
 
     return NextResponse.json(filtradas);
   } catch (err: unknown) {
