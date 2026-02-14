@@ -66,7 +66,7 @@ export default function AutorizacaoPage() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        let idToFetch = userIdQuery; // pode ser userId do dependente ou null
+        let idToFetch: number | null = userIdQuery ? Number(userIdQuery) : null; // pode ser userId do dependente ou null
         let usuarioData: Usuario | null = null;
 
         if (!idToFetch) {
