@@ -63,8 +63,6 @@ export default function AutorizacaoPage() {
     useState<Autorizacao | null>(null);
 
   useEffect(() => {
-    console.log("API URL atual:", process.env.NEXT_PUBLIC_API_BASE_URL);
-
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -88,7 +86,6 @@ export default function AutorizacaoPage() {
           if (!resAluno.ok) throw new Error("Erro ao buscar dados do aluno");
 
           const alunoDataArray: AlunoAPI[] = await resAluno.json();
-          console.log("A variavel alunoDataArray é", alunoDataArray);
 
           if (!alunoDataArray || alunoDataArray.length === 0) {
             throw new Error("Nenhum dado de aluno encontrado");
