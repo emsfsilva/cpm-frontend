@@ -47,10 +47,7 @@ interface Autorizacao {
 
 export default function AutorizacaoDependentePage() {
   const searchParams = useSearchParams();
-  const userIdQuery = searchParams.get("userId"); // id do dependente clicado
-
-  console.log("Esse é o id do dependente", userIdQuery);
-
+  const userIdQuery = searchParams.get("userId");
   const [userSelecionado, setUserSelecionado] = useState<Usuario | null>(null);
   const [autorizacoes, setAutorizacoes] = useState<Autorizacao[]>([]);
   const [loading, setLoading] = useState(true);
