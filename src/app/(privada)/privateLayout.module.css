@@ -485,6 +485,7 @@
 
 .divImgComentario {
   position: absolute;
+  top: 180px;
   bottom: 10px;
   justify-items: center;
   right: 10px;

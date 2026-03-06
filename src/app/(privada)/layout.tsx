@@ -520,7 +520,7 @@ export default function TemplateLayout({
                     {/* FIM BOTOES DO ALUNO */}
 
                     {/* INICIO BOTOES DO MONITOR */}
-                    {user?.typeUser === 10 && (
+                    {user?.typeUser >= 3 && user?.typeUser <= 10 && (
                       <div>
                         <div className={styles.divTabPrincipalBotoes}>
                           {/* INICIO BOTAO MEUS DADOS*/}
