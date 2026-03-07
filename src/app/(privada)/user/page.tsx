@@ -360,7 +360,19 @@ const UsuariosPage = () => {
   const enviarAutorizacao = async (dados: AutorizacaoInput) => {
     if (!userLogin) return;
 
-    await axios.post(`/api/autorizacao/criar?userIdAut=${userLogin.id}`, dados);
+    try {
+      await axios.post(
+        `/api/autorizacao/criar?userIdAut=${userLogin.id}`,
+        dados,
+      );
+
+      toast.success("Autorização criada com sucesso");
+
+      setModalAutorizacaoAberta(false);
+    } catch (error) {
+      console.error(error);
+      toast.error("Erro ao criar autorização");
+    }
   };
 
   //FIM MODAL AUTORIZACAO
@@ -1035,12 +1047,13 @@ const UsuariosPage = () => {
         />
       )}
 
-      {modalAutorizacaoAberta && userAlvo && (
+      {modalAutorizacaoAberta && userAlvo && userLogin && (
         <AutorizacaoModal
           isOpen={modalAutorizacaoAberta}
           onClose={() => setModalAutorizacaoAberta(false)}
           onSubmit={enviarAutorizacao}
           userAlvo={userAlvo}
+          userLogado={userLogin}
         />
       )}
 

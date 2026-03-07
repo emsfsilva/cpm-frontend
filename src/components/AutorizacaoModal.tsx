@@ -4,6 +4,7 @@ import { useState } from "react";
 import styles from "@/app/(privada)/privateLayout.module.css";
 import { FaUser } from "react-icons/fa";
 import Image from "next/image";
+import { toast } from "sonner";
 
 interface Turma {
   name: string;
@@ -23,6 +24,11 @@ interface UserAlvo {
   orgao?: string;
   nomeGuerra?: string;
   aluno?: Aluno;
+}
+
+interface UserLogado {
+  id: number;
+  typeUser: number;
 }
 
 interface AutorizacaoModalProps {
@@ -45,6 +51,7 @@ interface AutorizacaoModalProps {
     dom: string;
   }) => void;
   userAlvo?: UserAlvo | null;
+  userLogado: UserLogado;
 }
 
 export default function AutorizacaoModal({
@@ -52,6 +59,7 @@ export default function AutorizacaoModal({
   onClose,
   onSubmit,
   userAlvo,
+  userLogado,
 }: AutorizacaoModalProps) {
   const [motivoAut, setMotivoAut] = useState("");
   const [obsAut, setObsAut] = useState("");
@@ -79,25 +87,43 @@ export default function AutorizacaoModal({
 
   const handleSalvar = () => {
     if (!motivoAut || !obsAut || !dataInicio || !horaInicio || !dataFinal) {
-      alert("Preencha todos os campos obrigatórios.");
+      toast.warning("Preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    const hoje = new Date().toISOString().split("T")[0];
+
+    if (dataInicio < hoje) {
+      toast.error("A data inicial não pode ser anterior a hoje.");
+      return;
+    }
+
+    if (dataFinal < dataInicio) {
+      toast.error("A data final não pode ser menor que a data inicial.");
       return;
     }
 
     if (!isOpen || !userAlvo) return null;
 
+    // 🔐 Verificação aluno
+    if (userLogado.typeUser === 1 && userLogado.id !== userAlvo.id) {
+      toast.error("Aluno só pode criar autorização para si mesmo.");
+      return;
+    }
+
     onSubmit({
       motivoAut,
       obsAut,
-      userIdAut: 0, // será sobrescrito no caller
+      userIdAut: 0,
       userIdAlAut: userAlvo.id,
       dataInicio,
       horaInicio,
       dataFinal,
       ...dias,
     });
-
-    onClose();
   };
+
+  const hoje = new Date().toISOString().split("T")[0];
 
   return (
     <div className={styles.modalOverlayCadComunicacao} onClick={onClose}>
@@ -186,6 +212,7 @@ export default function AutorizacaoModal({
                   type="date"
                   className={styles.input}
                   value={dataInicio}
+                  min={hoje}
                   onChange={(e) => setDataInicio(e.target.value)}
                 />
               </div>
@@ -199,6 +226,7 @@ export default function AutorizacaoModal({
                   type="date"
                   className={styles.input}
                   value={dataFinal}
+                  min={dataInicio || hoje}
                   onChange={(e) => setDataFinal(e.target.value)}
                 />
               </div>
