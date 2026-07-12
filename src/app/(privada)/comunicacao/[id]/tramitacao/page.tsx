@@ -12,7 +12,6 @@ import ModalParecerCmtCa from "@/components/ModalParecerCmtCa";
 import ModalParecerSubComando from "@/components/ModalParecerSubComando";
 import ModalArquivamento from "@/components/ModalArquivamento";
 import { useRef } from "react";
-//import html2pdf from "html2pdf.js";
 
 interface ComunicacaoResp {
   id: number;
@@ -194,6 +193,8 @@ const ComunicacaoRespPage = () => {
 
   const [isModalOpenArquivamento, setIsModalOpenArquivamento] = useState(false);
   const [motivoArquivamento, setmotivoArquivamento] = useState("");
+
+  const [gerandoPdf, setGerandoPdf] = useState(false);
 
   //Busca a cominicação apos o clique
   useEffect(() => {
@@ -632,30 +633,47 @@ const ComunicacaoRespPage = () => {
     }
   };
 
-  /*
-
-  const gerarPdf = () => {
-    if (!pdfRef.current) {
-      console.error("PDF ref não encontrada");
+  const gerarPdf = async () => {
+    if (!comunicacao) {
+      alert("Comunicação não encontrada.");
       return;
     }
-    const element = pdfRef.current;
 
-    const opt = {
-      margin: [10, 10, 10, 10],
-      filename: `comunicacao_${comunicacao?.id}.pdf`,
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: {
-        unit: "mm",
-        format: "a4",
-        orientation: "portrait",
-      },
-    } as const;
+    setGerandoPdf(true);
+    try {
+      const response = await fetch(`/api/comunicacao/${comunicacao.id}/pdf`);
 
-    html2pdf().set(opt).from(element).save();
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        alert(
+          `Erro ao gerar PDF. Código: ${response.status}${errorData?.error ? " - " + errorData.error : ""}`,
+        );
+        return;
+      }
+
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+
+      // Abre em nova aba para visualização
+      const novaAba = window.open(blobUrl, "_blank");
+
+      // Garante o nome certo caso o usuário salve pelo visualizador,
+      // e também deixa pronto um link de download com o nome correto
+      if (!novaAba) {
+        const link = document.createElement("a");
+        link.href = blobUrl;
+        link.download = `Comunicação nº ${comunicacao.id}.pdf`;
+        link.click();
+      }
+
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
+    } catch (error) {
+      console.error("Erro ao gerar PDF:", error);
+      alert("Erro ao conectar com o servidor.");
+    } finally {
+      setGerandoPdf(false);
+    }
   };
-  */
 
   if (!comunicacao) return <div>Carregando...</div>;
   return (
@@ -664,13 +682,15 @@ const ComunicacaoRespPage = () => {
       {userLogin?.typeUser != null && [10, 5].includes(userLogin.typeUser) && (
         <div className={styles.menuBotoesComunicacaoVer}>
           {/* inicio gerar pdf */}
-          <button className={styles.botoesComunicacaoVer}>
-            {" "}
-            {/* colocar dentro do botao: onClick={gerarPdf} */}
+          <button
+            className={styles.botoesComunicacaoVer}
+            onClick={gerarPdf}
+            disabled={gerandoPdf}
+          >
             <i
               className={`fa fa-file-pdf ${styles.menuIconsComunicacaoVer}`}
-              title="Gerar Pdf"
-              style={{ color: "#ff3300" }}
+              title={gerandoPdf ? "Gerando..." : "Gerar Pdf"}
+              style={{ color: "#ff3300", opacity: gerandoPdf ? 0.5 : 1 }}
             ></i>
           </button>
 
