@@ -1341,7 +1341,7 @@ const ComunicacaoRespPage = () => {
                     color: "#000000",
                   }}
                 >
-                  ALDO JOSÉ BEZERRA DE OLIVEIRA - TEN CEL QOPM <br></br>
+                  VALDECLEYTON CAVALCANTE MENDES - TEN CEL QOPM <br></br>
                   Comandante do Colegio da Policia Militar - CPM
                 </p>
               </div>
