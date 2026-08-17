@@ -14,6 +14,7 @@ import ModalParecerSubComando from "@/components/ModalParecerSubComando";
 import ModalArquivamento from "@/components/ModalArquivamento";
 import ModalPublicacao from "@/components/ModalPublicacao";
 import { useRef } from "react";
+import { toast } from "sonner";
 
 interface ComunicacaoResp {
   id: number;
@@ -263,17 +264,17 @@ const ComunicacaoRespPage = () => {
   //INICIO FUNÇÃO ENQUADRAMENTO
   const handleSubmitEnquadramento = async () => {
     if (!comunicacao) {
-      alert("Comunicação não encontrada.");
+      toast.error("Comunicação não encontrada.");
       return;
     }
 
     if (!grauMotivo.trim()) {
-      alert("O valor do Grau não pode ser vazio.");
+      toast.error("O valor do Grau não pode ser vazio.");
       return;
     }
 
     if (!enquadramento.trim()) {
-      alert("O valor do enquadramento não pode estar vazio.");
+      toast.error("O valor do enquadramento não pode estar vazio.");
       return;
     }
 
@@ -295,26 +296,25 @@ const ComunicacaoRespPage = () => {
 
       if (!response.ok) {
         if (response.status === 404) {
-          alert("Erro 404: Comunicação não encontrada no backend.");
+          toast.error("Erro 404: Comunicação não encontrada no backend.");
         } else {
-          alert(`Erro ao enviar. Código: ${response.status}`);
+          toast.error(`Erro ao enviar. Código: ${response.status}`);
         }
         return;
       }
 
-      // Após PUT, refaz o GET para atualizar a comunicação completamente
       const getResponse = await fetch(`/api/comunicacao/${comunicacao.id}`);
       const updatedData = await getResponse.json();
       setComunicacao(updatedData);
 
-      alert("Enquadramento enviado com sucesso!");
+      toast.success("Enquadramento enviado com sucesso!");
       setIsModalOpenEnquadramento(false);
       setgrauMotivo("");
       setnatureza("");
       setenquadramento("");
     } catch (error) {
       console.error("Erro ao enviar o Enquadramento:", error);
-      alert("Erro ao conectar com o servidor.");
+      toast.error("Erro ao conectar com o servidor.");
     }
   };
   //FIM FUNÇÃO ENQUADRAMENTO
@@ -322,17 +322,17 @@ const ComunicacaoRespPage = () => {
   //Inicio Resposta do aluno
   const handleSubmitResposta = async () => {
     if (!comunicacao) {
-      alert("Comunicação não encontrada.");
+      toast.error("Comunicação não encontrada.");
       return;
     }
 
     if (!userLogin) {
-      alert("Usuário logado não identificado.");
+      toast.error("Usuário logado não identificado.");
       return;
     }
 
     if (!resposta.trim()) {
-      alert("A resposta não pode estar vazia.");
+      toast.error("A resposta não pode estar vazia.");
       return;
     }
 
@@ -350,26 +350,25 @@ const ComunicacaoRespPage = () => {
 
       if (!response.ok) {
         if (response.status === 404) {
-          alert("Erro 404: Comunicação não encontrada.");
+          toast.error("Erro 404: Comunicação não encontrada.");
         } else {
-          alert(`Erro ao enviar resposta. Código: ${response.status}`);
+          toast.error(`Erro ao enviar resposta. Código: ${response.status}`);
         }
         return;
       }
 
       const data = await response.json();
-      alert("Resposta enviada com sucesso!");
+      toast.success("Resposta enviada com sucesso!");
       setIsModalOpenResponder(false);
       setResposta("");
       setComunicacao(data);
 
-      // Atualiza os dados da comunicação
       fetch(`/api/comunicacao/${comunicacao.id}`)
         .then((res) => res.json())
         .then((dataAtualizada) => setComunicacao(dataAtualizada));
     } catch (error) {
       console.error("Erro ao enviar resposta:", error);
-      alert("Erro ao conectar com o servidor.");
+      toast.error("Erro ao conectar com o servidor.");
     }
   };
   //Fim Resposta do aluno
@@ -386,22 +385,21 @@ const ComunicacaoRespPage = () => {
 
       if (!response.ok) {
         if (response.status === 404) {
-          alert("Erro 404: Comunicação não encontrada no backend.");
+          toast.error("Erro 404: Comunicação não encontrada no backend.");
         } else {
-          alert(`Erro ao enviar. Código: ${response.status}`);
+          toast.error(`Erro ao enviar. Código: ${response.status}`);
         }
         return;
       }
 
-      // Refaz GET para atualizar os dados
       const getResponse = await fetch(`/api/comunicacao/${id}`);
       const updatedData = await getResponse.json();
       setComunicacao(updatedData);
 
-      alert("Comunicação Enviada ao Cmt da Cia");
+      toast.success("Comunicação enviada ao Cmt da Cia");
     } catch (error) {
       console.error("Erro ao enviar ao Cmt da Cia:", error);
-      alert("Erro ao conectar com o servidor.");
+      toast.error("Erro ao conectar com o servidor.");
     }
   };
 
@@ -409,9 +407,10 @@ const ComunicacaoRespPage = () => {
 
   //Inicio parecer cmt da cia
   const handleSubmitparecerCmtCia = async () => {
-    if (!comunicacao) return alert("Comunicação não encontrada.");
-    if (!userLogin) return alert("Usuário logado não identificado.");
-    if (!parecerCmtCia.trim()) return alert("O Parecer não pode estar vazio.");
+    if (!comunicacao) return toast.error("Comunicação não encontrada.");
+    if (!userLogin) return toast.error("Usuário logado não identificado.");
+    if (!parecerCmtCia.trim())
+      return toast.error("O Parecer não pode estar vazio.");
 
     try {
       const response = await fetch(
@@ -426,26 +425,27 @@ const ComunicacaoRespPage = () => {
       );
 
       if (!response.ok) {
-        alert(`Erro ao enviar o Parecer. Código: ${response.status}`);
+        toast.error(`Erro ao enviar o Parecer. Código: ${response.status}`);
         return;
       }
 
       const data = await response.json();
-      alert("Parecer enviado com sucesso!");
+      toast.success("Parecer enviado com sucesso!");
       setIsModalOpenParecerCia(false);
       setparecerCmtCia("");
       setComunicacao(data);
     } catch (error) {
       console.error("Erro ao enviar Parecer:", error);
-      alert("Erro ao conectar com o servidor.");
+      toast.error("Erro ao conectar com o servidor.");
     }
   };
   //fim parecer cmt da cia
 
   const handleSubmitparecerCa = async () => {
-    if (!comunicacao) return alert("Comunicação não encontrada.");
-    if (!userLogin) return alert("Usuário logado não identificado.");
-    if (!parecerCa.trim()) return alert("O Parecer não pode estar vazio.");
+    if (!comunicacao) return toast.error("Comunicação não encontrada.");
+    if (!userLogin) return toast.error("Usuário logado não identificado.");
+    if (!parecerCa.trim())
+      return toast.error("O Parecer não pode estar vazio.");
 
     try {
       const response = await fetch(
@@ -460,26 +460,26 @@ const ComunicacaoRespPage = () => {
       );
 
       if (!response.ok) {
-        alert(`Erro ao enviar parecer do CA. Código: ${response.status}`);
+        toast.error(`Erro ao enviar parecer do CA. Código: ${response.status}`);
         return;
       }
 
       const data = await response.json();
-      alert("Parecer do CA enviado com sucesso!");
+      toast.success("Parecer do CA enviado com sucesso!");
       setIsModalOpenParecerCa(false);
       setparecerCa("");
       setComunicacao(data);
     } catch (error) {
       console.error("Erro ao enviar parecer do CA:", error);
-      alert("Erro ao conectar com o servidor.");
+      toast.error("Erro ao conectar com o servidor.");
     }
   };
 
   const handleSubmitparecerResponsavel = async () => {
-    if (!comunicacao) return alert("Comunicação não encontrada.");
-    if (!userLogin) return alert("Usuário logado não identificado.");
+    if (!comunicacao) return toast.error("Comunicação não encontrada.");
+    if (!userLogin) return toast.error("Usuário logado não identificado.");
     if (!parecerResponsavel.trim())
-      return alert("O comentário não pode estar vazio.");
+      return toast.error("O comentário não pode estar vazio.");
 
     try {
       const response = await fetch(
@@ -495,7 +495,7 @@ const ComunicacaoRespPage = () => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
-        alert(
+        toast.error(
           `Erro ao enviar comentário. Código: ${response.status}${
             errorData?.error ? " - " + errorData.error : ""
           }`,
@@ -504,30 +504,30 @@ const ComunicacaoRespPage = () => {
       }
 
       const data = await response.json();
-      alert("Comentário enviado com sucesso!");
+      toast.success("Comentário enviado com sucesso!");
       setIsModalOpenParecerResponsavel(false);
       setparecerResponsavel("");
       setComunicacao(data);
     } catch (error) {
       console.error("Erro ao enviar comentário do responsável:", error);
-      alert("Erro ao conectar com o servidor.");
+      toast.error("Erro ao conectar com o servidor.");
     }
   };
 
   //Inicio parecer subcomando
   const handleSubmitparecerSubcom = async () => {
     if (!comunicacao) {
-      alert("Comunicação não encontrada.");
+      toast.error("Comunicação não encontrada.");
       return;
     }
 
     if (!userLogin) {
-      alert("Usuário logado não identificado.");
+      toast.error("Usuário logado não identificado.");
       return;
     }
 
     if (!parecerSubcom || parecerSubcom.trim() === "") {
-      alert("O Parecer não pode estar vazio.");
+      toast.error("O Parecer não pode estar vazio.");
       return;
     }
 
@@ -548,18 +548,18 @@ const ComunicacaoRespPage = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        alert(`Erro ao enviar parecer do Subcom: ${errorData.error}`);
+        toast.error(`Erro ao enviar parecer do Subcom: ${errorData.error}`);
         return;
       }
 
       const data = await response.json();
-      alert("Parecer do Subcom enviado com sucesso!");
+      toast.success("Parecer do Subcom enviado com sucesso!");
       setIsModalOpenParecerSubcom(false);
       setparecerSubcom("");
       setComunicacao(data);
     } catch (error) {
       console.error("Erro ao enviar parecer do Subcom:", error);
-      alert("Erro ao conectar com o servidor.");
+      toast.error("Erro ao conectar com o servidor.");
     }
   };
   //Inicio parecer subcomando
@@ -567,12 +567,12 @@ const ComunicacaoRespPage = () => {
   // inicio função publicação
   const handleSubmitPublicacao = async () => {
     if (!comunicacao) {
-      alert("Comunicação não encontrada.");
+      toast.error("Comunicação não encontrada.");
       return;
     }
 
     if (!userLogin) {
-      alert("Usuário logado não identificado.");
+      toast.error("Usuário logado não identificado.");
       return;
     }
 
@@ -593,19 +593,19 @@ const ComunicacaoRespPage = () => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
-        alert(`Erro ao publicar: ${errorData?.error || response.status}`);
+        toast.error(`Erro ao publicar: ${errorData?.error || response.status}`);
         return;
       }
 
       const data = await response.json();
 
-      alert("Comunicação publicada com sucesso!");
+      toast.success("Comunicação publicada com sucesso!");
       setComunicacao(data);
       setIsModalOpenPublicacao(false);
       setobservacaoPublicacao("");
     } catch (error) {
       console.error("Erro ao publicar:", error);
-      alert("Erro ao conectar com o servidor.");
+      toast.error("Erro ao conectar com o servidor.");
     }
   };
   // fim função publicação
@@ -613,11 +613,11 @@ const ComunicacaoRespPage = () => {
   //Inicio função Arquivamenteo
   const handleViewArquivarComunicacao = async (id: number) => {
     if (!motivoArquivamento.trim()) {
-      alert("Informe o motivo do arquivamento");
+      toast.error("Informe o motivo do arquivamento");
       return;
     }
     if (!comunicacao) {
-      alert("Comunicação não encontrada.");
+      toast.error("Comunicação não encontrada.");
       return;
     }
 
@@ -629,7 +629,7 @@ const ComunicacaoRespPage = () => {
     }
 
     if (!userLogin) {
-      alert("Usuário não está logado");
+      toast.error("Usuário não está logado");
       return;
     }
 
@@ -647,19 +647,19 @@ const ComunicacaoRespPage = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        alert(`Erro ao arquivar: ${errorData.error}`);
+        toast.error(`Erro ao arquivar: ${errorData.error}`);
         return;
       }
 
       const updatedData = await response.json();
       setComunicacao(updatedData);
 
-      alert("Arquivamento realizado com sucesso!");
+      toast.success("Arquivamento realizado com sucesso!");
       setIsModalOpenArquivamento(false);
       setmotivoArquivamento("");
     } catch (error) {
       console.error("Erro ao tentar arquivar a comunicação:", error);
-      alert("Erro ao conectar com o servidor.");
+      toast.error("Erro ao conectar com o servidor.");
     }
   };
 
@@ -695,21 +695,21 @@ const ComunicacaoRespPage = () => {
       if (!response.ok) {
         const erro = await response.json();
         console.error("Erro ao excluir:", erro);
-        alert("Erro ao excluir a comunicação.");
+        toast.error("Erro ao excluir a comunicação.");
         return;
       }
 
-      alert("Comunicação excluída com sucesso.");
+      toast.success("Comunicação excluída com sucesso.");
       window.location.href = "/comunicacao";
     } catch (error) {
       console.error("Erro na exclusão:", error);
-      alert("Erro inesperado ao excluir.");
+      toast.error("Erro inesperado ao excluir.");
     }
   };
 
   const gerarPdf = async () => {
     if (!comunicacao) {
-      alert("Comunicação não encontrada.");
+      toast.error("Comunicação não encontrada.");
       return;
     }
 
@@ -719,7 +719,7 @@ const ComunicacaoRespPage = () => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
-        alert(
+        toast.error(
           `Erro ao gerar PDF. Código: ${response.status}${errorData?.error ? " - " + errorData.error : ""}`,
         );
         return;
@@ -728,11 +728,8 @@ const ComunicacaoRespPage = () => {
       const blob = await response.blob();
       const blobUrl = URL.createObjectURL(blob);
 
-      // Abre em nova aba para visualização
       const novaAba = window.open(blobUrl, "_blank");
 
-      // Garante o nome certo caso o usuário salve pelo visualizador,
-      // e também deixa pronto um link de download com o nome correto
       if (!novaAba) {
         const link = document.createElement("a");
         link.href = blobUrl;
@@ -743,7 +740,7 @@ const ComunicacaoRespPage = () => {
       setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
-      alert("Erro ao conectar com o servidor.");
+      toast.error("Erro ao conectar com o servidor.");
     } finally {
       setGerandoPdf(false);
     }
@@ -768,7 +765,7 @@ const ComunicacaoRespPage = () => {
 
   const abrirWhatsapp = (telefone: string | null, mensagem: string) => {
     if (!telefone) {
-      alert("Nenhum telefone cadastrado para este contato.");
+      toast.error("Nenhum telefone cadastrado para este contato.");
       return;
     }
 
@@ -778,7 +775,7 @@ const ComunicacaoRespPage = () => {
     const novaAba = window.open(url, "_blank");
 
     if (!novaAba) {
-      alert(
+      toast.error(
         "O navegador bloqueou a abertura do WhatsApp. Permita pop-ups para este site e tente novamente.",
       );
     }
