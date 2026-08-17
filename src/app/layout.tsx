@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import styles from "./(privada)/privateLayout.module.css";
 import { Toaster } from "sonner";
+import RegisterServiceWorker from "@/components/RegisterServiceWorker";
 
 export const metadata: Metadata = {
   title: "Atos",
@@ -45,6 +46,7 @@ export default function RootLayout({
         <div className={styles.imgbackground}></div>
         <div className={styles.imgbackgroundMedia}></div>
         <Toaster richColors position="top-right" />
+        <RegisterServiceWorker />
         {children}
       </body>
     </html>
