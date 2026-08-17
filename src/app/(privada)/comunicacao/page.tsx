@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from ".././privateLayout.module.css";
 import {
+  FaArchive,
   FaCube,
   FaCubes,
   FaGraduationCap,
@@ -33,6 +34,7 @@ interface Comunicacao {
   status: string;
   dtAtualizacaoStatus: string | null;
   useral?: {
+    name: string;
     pg: string;
     nomeGuerra: string;
     funcao: string;
@@ -91,6 +93,12 @@ const ComunicacaosPage = () => {
   const [contagem, setContagem] = useState<ContagemStatusCia[]>([]);
   const [contagemCia, setContagemCia] = useState<ContagemCia[]>([]);
 
+  const [filtroCia, setFiltroCia] = useState<string | null>(null);
+  const [filtroNomeAluno, setFiltroNomeAluno] = useState("");
+  const [filtroStatus, setFiltroStatus] = useState<"ativas" | "arquivadas">(
+    "ativas",
+  );
+
   useEffect(() => {
     const fetchDados = async () => {
       try {
@@ -145,15 +153,17 @@ const ComunicacaosPage = () => {
   const getStatusColor = (status: string): string => {
     switch (status) {
       case "Aguardando notificar aluno":
-        return "red";
+        return "#ea573a";
       case "Aguardando resposta do aluno":
-        return "green";
+        return "#33ae48";
       case "Aguardando parecer do Cmt da Cia":
-        return "purple";
+        return "#ac60a4";
       case "Aguardando parecer do Cmt do CA":
-        return "orange";
+        return "#d09c0d";
       case "Aguardando parecer do Subcomando":
-        return "yellow";
+        return "#e4e80b";
+      case "Aguardando publicação":
+        return "#0d84bb";
       case "Comunicação publicada":
         return "black";
       case "Comunicação arquivada":
@@ -171,6 +181,33 @@ const ComunicacaosPage = () => {
   const getTotalPorCiaEStatus = (cia: string, status: string): number => {
     const item = contagem.find((c) => c.ciaName === cia && c.status === status);
     return item ? item.total : 0;
+  };
+
+  const comunicacoesFiltradas = comunicacoes.filter((comunicacao) => {
+    const passaStatus =
+      filtroStatus === "arquivadas"
+        ? comunicacao.status === "Comunicação arquivada"
+        : comunicacao.status !== "Comunicação arquivada";
+
+    if (!passaStatus) return false;
+
+    if (filtroNomeAluno.trim()) {
+      const nomeAluno = (comunicacao.useral?.name || "").toLowerCase();
+      const termo = filtroNomeAluno.trim().toLowerCase();
+      if (!nomeAluno.includes(termo)) return false;
+    }
+
+    // Filtro por CIA
+    if (filtroCia) {
+      const ciaAluno = comunicacao.useral?.aluno?.turma?.cia?.name;
+      if (ciaAluno !== filtroCia) return false;
+    }
+
+    return true;
+  });
+
+  const handleFiltrarCia = (cia: string) => {
+    setFiltroCia((atual) => (atual === cia ? null : cia));
   };
 
   if (loading) return <p>Carregando comunicações...</p>;
@@ -198,12 +235,66 @@ const ComunicacaosPage = () => {
               {/* Menu da 1ª cia */}
               <div className={styles.ciaBox}>
                 <div style={{ display: "flex", flex: "1" }}>
-                  <div className={styles.divBotoesCia}>1ª CIA</div>
-                  <div style={{ background: "#1a7bbc", width: "70%" }}>
-                    <div className={styles.divTotal}>
-                      {getTotalPorCia("1ª CIA")}
+                  <div
+                    className={styles.divBotoesCia}
+                    onClick={() => handleFiltrarCia("1ª CIA")}
+                    style={{
+                      cursor: "pointer",
+                      outline:
+                        filtroCia === "1ª CIA" ? "3px solid #ffee01" : "none",
+                      outlineOffset: "-3px",
+                    }}
+                    title="Clique para filtrar comunicações da 1ª CIA"
+                  >
+                    1ª CIA
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      background: "#1a7bbc",
+                      width: "70%",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <div>
+                      <div className={styles.divTotal}>
+                        {getTotalPorCia("1ª CIA")}
+                      </div>
+                      <div className={styles.divTextoTotais}>Comunicações</div>
                     </div>
-                    <div className={styles.divTextoTotais}>Comunicações</div>
+
+                    <div
+                      style={{
+                        width: "60px",
+                        justifyContent: "center",
+                        alignContent: "center",
+                      }}
+                    >
+                      <div
+                        style={{
+                          fontSize: "10px",
+                        }}
+                      >
+                        Arquivadas
+                      </div>
+                      <div
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <div style={{ fontSize: "12px" }}>
+                          {getTotalPorCiaEStatus(
+                            "1ª CIA",
+                            "Comunicação arquivada",
+                          )}
+                        </div>
+                        <div className={styles.divIcone}>
+                          <FaArchive fontSize={18} color="#2d312d" />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div className={styles.divBotoesPrincipal}>
@@ -228,6 +319,26 @@ const ComunicacaosPage = () => {
 
                     <div className={styles.divBotoesSuperiores}>
                       <div className={styles.divIcone}>
+                        <FaCubes fontSize={20} color="#e1860e" />
+                      </div>
+
+                      <div style={{ marginLeft: "10px", width: "50%" }}>
+                        <div style={{ fontSize: "12px" }}>
+                          {getTotalPorCiaEStatus(
+                            "1ª CIA",
+                            "Aguardando parecer do Cmt do CA",
+                          )}
+                        </div>
+                        <div style={{ fontSize: "11px" }}>CMT CA</div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* primeira coluna */}
+
+                  {/* segunda coluna */}
+                  <div style={{ flex: "1" }}>
+                    <div className={styles.divBotoesSuperiores}>
+                      <div className={styles.divIcone}>
                         <FaGraduationCap fontSize={20} color="#1aa615" />
                       </div>
 
@@ -241,10 +352,26 @@ const ComunicacaosPage = () => {
                         <div style={{ fontSize: "11px" }}>ALUNO</div>
                       </div>
                     </div>
-                  </div>
-                  {/* primeira coluna */}
 
+                    <div className={styles.divBotoesSuperiores}>
+                      <div className={styles.divIcone}>
+                        <FaStar fontSize={20} color="#ead80f" />
+                      </div>
+
+                      <div style={{ marginLeft: "10px", width: "50%" }}>
+                        <div style={{ fontSize: "12px" }}>
+                          {getTotalPorCiaEStatus(
+                            "1ª CIA",
+                            "Aguardando parecer do Subcomando",
+                          )}
+                        </div>
+                        <div style={{ fontSize: "11px" }}>SUBCOMANDO</div>
+                      </div>
+                    </div>
+                  </div>
                   {/* segunda coluna */}
+
+                  {/* terceria coluna */}
                   <div style={{ flex: "1" }}>
                     <div className={styles.divBotoesSuperiores}>
                       <div className={styles.divIcone}>
@@ -264,53 +391,17 @@ const ComunicacaosPage = () => {
 
                     <div className={styles.divBotoesSuperiores}>
                       <div className={styles.divIcone}>
-                        <FaCubes fontSize={20} color="#e1860e" />
+                        <FaFolderClosed fontSize={20} color="#4b7bc9" />
                       </div>
 
                       <div style={{ marginLeft: "10px", width: "50%" }}>
                         <div style={{ fontSize: "12px" }}>
                           {getTotalPorCiaEStatus(
                             "1ª CIA",
-                            "Aguardando parecer do Cmt do CA",
+                            "Aguardando publicação",
                           )}
                         </div>
-                        <div style={{ fontSize: "11px" }}>CMT CA</div>
-                      </div>
-                    </div>
-                  </div>
-                  {/* segunda coluna */}
-
-                  {/* terceria coluna */}
-                  <div style={{ flex: "1" }}>
-                    <div className={styles.divBotoesSuperiores}>
-                      <div className={styles.divIcone}>
-                        <FaStar fontSize={20} color="#ead80f" />
-                      </div>
-
-                      <div style={{ marginLeft: "10px", width: "50%" }}>
-                        <div style={{ fontSize: "12px" }}>
-                          {getTotalPorCiaEStatus(
-                            "1ª CIA",
-                            "Aguardando parecer do Subcomando",
-                          )}
-                        </div>
-                        <div style={{ fontSize: "11px" }}>SUBCOMANDO</div>
-                      </div>
-                    </div>
-
-                    <div className={styles.divBotoesSuperiores}>
-                      <div className={styles.divIcone}>
-                        <FaFolderClosed fontSize={20} color="#2d312d" />
-                      </div>
-
-                      <div style={{ marginLeft: "10px", width: "50%" }}>
-                        <div style={{ fontSize: "12px" }}>
-                          {getTotalPorCiaEStatus(
-                            "1ª CIA",
-                            "Aguardando arquivada",
-                          )}
-                        </div>
-                        <div style={{ fontSize: "11px" }}>ARQUIVADAS</div>
+                        <div style={{ fontSize: "11px" }}>PUBLICAÇÃO</div>
                       </div>
                     </div>
                   </div>
@@ -322,12 +413,66 @@ const ComunicacaosPage = () => {
               {/* Menu da 2ª cia */}
               <div className={styles.ciaBox}>
                 <div style={{ display: "flex", flex: "1" }}>
-                  <div className={styles.divBotoesCia}>2ª CIA</div>
-                  <div style={{ background: "#1a7bbc", width: "70%" }}>
-                    <div className={styles.divTotal}>
-                      {getTotalPorCia("2ª CIA")}
+                  <div
+                    className={styles.divBotoesCia}
+                    onClick={() => handleFiltrarCia("2ª CIA")}
+                    style={{
+                      cursor: "pointer",
+                      outline:
+                        filtroCia === "2ª CIA" ? "3px solid #ffee01" : "none",
+                      outlineOffset: "-3px",
+                    }}
+                    title="Clique para filtrar comunicações da 2ª CIA"
+                  >
+                    2ª CIA
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      background: "#1a7bbc",
+                      width: "70%",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <div>
+                      <div className={styles.divTotal}>
+                        {getTotalPorCia("2ª CIA")}
+                      </div>
+                      <div className={styles.divTextoTotais}>Comunicações</div>
                     </div>
-                    <div className={styles.divTextoTotais}>Comunicações</div>
+
+                    <div
+                      style={{
+                        width: "60px",
+                        justifyContent: "center",
+                        alignContent: "center",
+                      }}
+                    >
+                      <div
+                        style={{
+                          fontSize: "10px",
+                        }}
+                      >
+                        Arquivadas
+                      </div>
+                      <div
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <div style={{ fontSize: "12px" }}>
+                          {getTotalPorCiaEStatus(
+                            "2ª CIA",
+                            "Comunicação arquivada",
+                          )}
+                        </div>
+                        <div className={styles.divIcone}>
+                          <FaArchive fontSize={18} color="#2d312d" />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div className={styles.divBotoesPrincipal}>
@@ -352,6 +497,26 @@ const ComunicacaosPage = () => {
 
                     <div className={styles.divBotoesSuperiores}>
                       <div className={styles.divIcone}>
+                        <FaCubes fontSize={20} color="#e1860e" />
+                      </div>
+
+                      <div style={{ marginLeft: "10px", width: "50%" }}>
+                        <div style={{ fontSize: "12px" }}>
+                          {getTotalPorCiaEStatus(
+                            "2ª CIA",
+                            "Aguardando parecer do Cmt do CA",
+                          )}
+                        </div>
+                        <div style={{ fontSize: "11px" }}>CMT CA</div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* primeira coluna */}
+
+                  {/* segunda coluna */}
+                  <div style={{ flex: "1" }}>
+                    <div className={styles.divBotoesSuperiores}>
+                      <div className={styles.divIcone}>
                         <FaGraduationCap fontSize={20} color="#1aa615" />
                       </div>
 
@@ -365,10 +530,26 @@ const ComunicacaosPage = () => {
                         <div style={{ fontSize: "11px" }}>ALUNO</div>
                       </div>
                     </div>
-                  </div>
-                  {/* primeira coluna */}
 
+                    <div className={styles.divBotoesSuperiores}>
+                      <div className={styles.divIcone}>
+                        <FaStar fontSize={20} color="#ead80f" />
+                      </div>
+
+                      <div style={{ marginLeft: "10px", width: "50%" }}>
+                        <div style={{ fontSize: "12px" }}>
+                          {getTotalPorCiaEStatus(
+                            "2ª CIA",
+                            "Aguardando parecer do Subcomando",
+                          )}
+                        </div>
+                        <div style={{ fontSize: "11px" }}>SUBCOMANDO</div>
+                      </div>
+                    </div>
+                  </div>
                   {/* segunda coluna */}
+
+                  {/* terceria coluna */}
                   <div style={{ flex: "1" }}>
                     <div className={styles.divBotoesSuperiores}>
                       <div className={styles.divIcone}>
@@ -388,53 +569,17 @@ const ComunicacaosPage = () => {
 
                     <div className={styles.divBotoesSuperiores}>
                       <div className={styles.divIcone}>
-                        <FaCubes fontSize={20} color="#e1860e" />
+                        <FaFolderClosed fontSize={20} color="#4b7bc9" />
                       </div>
 
                       <div style={{ marginLeft: "10px", width: "50%" }}>
                         <div style={{ fontSize: "12px" }}>
                           {getTotalPorCiaEStatus(
                             "2ª CIA",
-                            "Aguardando parecer do Cmt do CA",
+                            "Aguardando publicação",
                           )}
                         </div>
-                        <div style={{ fontSize: "11px" }}>CMT CA</div>
-                      </div>
-                    </div>
-                  </div>
-                  {/* segunda coluna */}
-
-                  {/* terceria coluna */}
-                  <div style={{ flex: "1" }}>
-                    <div className={styles.divBotoesSuperiores}>
-                      <div className={styles.divIcone}>
-                        <FaStar fontSize={20} color="#ead80f" />
-                      </div>
-
-                      <div style={{ marginLeft: "10px", width: "50%" }}>
-                        <div style={{ fontSize: "12px" }}>
-                          {getTotalPorCiaEStatus(
-                            "2ª CIA",
-                            "Aguardando parecer do Subcomando",
-                          )}
-                        </div>
-                        <div style={{ fontSize: "11px" }}>SUBCOMANDO</div>
-                      </div>
-                    </div>
-
-                    <div className={styles.divBotoesSuperiores}>
-                      <div className={styles.divIcone}>
-                        <FaFolderClosed fontSize={20} color="#2d312d" />
-                      </div>
-
-                      <div style={{ marginLeft: "10px", width: "50%" }}>
-                        <div style={{ fontSize: "12px" }}>
-                          {getTotalPorCiaEStatus(
-                            "2ª CIA",
-                            "Aguardando arquivada",
-                          )}
-                        </div>
-                        <div style={{ fontSize: "11px" }}>ARQUIVADAS</div>
+                        <div style={{ fontSize: "11px" }}>PUBLICAÇÃO</div>
                       </div>
                     </div>
                   </div>
@@ -444,14 +589,69 @@ const ComunicacaosPage = () => {
               {/* Menu da 2ª cia */}
 
               {/* Menu da 3ª cia */}
+              {/* Menu da 1ª cia */}
               <div className={styles.ciaBox}>
                 <div style={{ display: "flex", flex: "1" }}>
-                  <div className={styles.divBotoesCia}>3ª CIA</div>
-                  <div style={{ background: "#1a7bbc", width: "70%" }}>
-                    <div className={styles.divTotal}>
-                      {getTotalPorCia("3ª CIA")}
+                  <div
+                    className={styles.divBotoesCia}
+                    onClick={() => handleFiltrarCia("3ª CIA")}
+                    style={{
+                      cursor: "pointer",
+                      outline:
+                        filtroCia === "3ª CIA" ? "3px solid #ffee01" : "none",
+                      outlineOffset: "-3px",
+                    }}
+                    title="Clique para filtrar comunicações da 3ª CIA"
+                  >
+                    3ª CIA
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      background: "#1a7bbc",
+                      width: "70%",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <div>
+                      <div className={styles.divTotal}>
+                        {getTotalPorCia("3ª CIA")}
+                      </div>
+                      <div className={styles.divTextoTotais}>Comunicações</div>
                     </div>
-                    <div className={styles.divTextoTotais}>Comunicações</div>
+
+                    <div
+                      style={{
+                        width: "60px",
+                        justifyContent: "center",
+                        alignContent: "center",
+                      }}
+                    >
+                      <div
+                        style={{
+                          fontSize: "10px",
+                        }}
+                      >
+                        Arquivadas
+                      </div>
+                      <div
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <div style={{ fontSize: "12px" }}>
+                          {getTotalPorCiaEStatus(
+                            "3ª CIA",
+                            "Comunicação arquivada",
+                          )}
+                        </div>
+                        <div className={styles.divIcone}>
+                          <FaArchive fontSize={18} color="#2d312d" />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div className={styles.divBotoesPrincipal}>
@@ -476,6 +676,26 @@ const ComunicacaosPage = () => {
 
                     <div className={styles.divBotoesSuperiores}>
                       <div className={styles.divIcone}>
+                        <FaCubes fontSize={20} color="#e1860e" />
+                      </div>
+
+                      <div style={{ marginLeft: "10px", width: "50%" }}>
+                        <div style={{ fontSize: "12px" }}>
+                          {getTotalPorCiaEStatus(
+                            "3ª CIA",
+                            "Aguardando parecer do Cmt do CA",
+                          )}
+                        </div>
+                        <div style={{ fontSize: "11px" }}>CMT CA</div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* primeira coluna */}
+
+                  {/* segunda coluna */}
+                  <div style={{ flex: "1" }}>
+                    <div className={styles.divBotoesSuperiores}>
+                      <div className={styles.divIcone}>
                         <FaGraduationCap fontSize={20} color="#1aa615" />
                       </div>
 
@@ -489,10 +709,26 @@ const ComunicacaosPage = () => {
                         <div style={{ fontSize: "11px" }}>ALUNO</div>
                       </div>
                     </div>
-                  </div>
-                  {/* primeira coluna */}
 
+                    <div className={styles.divBotoesSuperiores}>
+                      <div className={styles.divIcone}>
+                        <FaStar fontSize={20} color="#ead80f" />
+                      </div>
+
+                      <div style={{ marginLeft: "10px", width: "50%" }}>
+                        <div style={{ fontSize: "12px" }}>
+                          {getTotalPorCiaEStatus(
+                            "3ª CIA",
+                            "Aguardando parecer do Subcomando",
+                          )}
+                        </div>
+                        <div style={{ fontSize: "11px" }}>SUBCOMANDO</div>
+                      </div>
+                    </div>
+                  </div>
                   {/* segunda coluna */}
+
+                  {/* terceria coluna */}
                   <div style={{ flex: "1" }}>
                     <div className={styles.divBotoesSuperiores}>
                       <div className={styles.divIcone}>
@@ -512,53 +748,17 @@ const ComunicacaosPage = () => {
 
                     <div className={styles.divBotoesSuperiores}>
                       <div className={styles.divIcone}>
-                        <FaCubes fontSize={20} color="#e1860e" />
+                        <FaFolderClosed fontSize={20} color="#4b7bc9" />
                       </div>
 
                       <div style={{ marginLeft: "10px", width: "50%" }}>
                         <div style={{ fontSize: "12px" }}>
                           {getTotalPorCiaEStatus(
                             "3ª CIA",
-                            "Aguardando parecer do Cmt do CA",
+                            "Aguardando publicação",
                           )}
                         </div>
-                        <div style={{ fontSize: "11px" }}>CMT CA</div>
-                      </div>
-                    </div>
-                  </div>
-                  {/* segunda coluna */}
-
-                  {/* terceria coluna */}
-                  <div style={{ flex: "1" }}>
-                    <div className={styles.divBotoesSuperiores}>
-                      <div className={styles.divIcone}>
-                        <FaStar fontSize={20} color="#ead80f" />
-                      </div>
-
-                      <div style={{ marginLeft: "10px", width: "50%" }}>
-                        <div style={{ fontSize: "12px" }}>
-                          {getTotalPorCiaEStatus(
-                            "3ª CIA",
-                            "Aguardando parecer do Subcomando",
-                          )}
-                        </div>
-                        <div style={{ fontSize: "11px" }}>SUBCOMANDO</div>
-                      </div>
-                    </div>
-
-                    <div className={styles.divBotoesSuperiores}>
-                      <div className={styles.divIcone}>
-                        <FaFolderClosed fontSize={20} color="#2d312d" />
-                      </div>
-
-                      <div style={{ marginLeft: "10px", width: "50%" }}>
-                        <div style={{ fontSize: "12px" }}>
-                          {getTotalPorCiaEStatus(
-                            "3ª CIA",
-                            "Aguardando arquivada",
-                          )}
-                        </div>
-                        <div style={{ fontSize: "11px" }}>ARQUIVADAS</div>
+                        <div style={{ fontSize: "11px" }}>PUBLICAÇÃO</div>
                       </div>
                     </div>
                   </div>
@@ -577,234 +777,322 @@ const ComunicacaosPage = () => {
             >
               COMUNICAÇÃO DE ALUNO
             </h1>
+
+            {/* Barra de filtros */}
+            <div
+              style={{
+                display: "flex",
+                gap: "12px",
+                alignItems: "center",
+                marginTop: "15px",
+                marginBottom: "10px",
+                flexWrap: "wrap",
+              }}
+            >
+              <input
+                type="text"
+                placeholder="Filtrar por nome do aluno..."
+                value={filtroNomeAluno}
+                onChange={(e) => setFiltroNomeAluno(e.target.value)}
+                style={{
+                  padding: "8px 12px",
+                  borderRadius: "4px",
+                  border: "1px solid #ccc",
+                  minWidth: "260px",
+                  fontSize: "14px",
+                }}
+              />
+
+              <select
+                value={filtroStatus}
+                onChange={(e) =>
+                  setFiltroStatus(e.target.value as "ativas" | "arquivadas")
+                }
+                style={{
+                  padding: "8px 12px",
+                  borderRadius: "4px",
+                  border: "1px solid #ccc",
+                  fontSize: "14px",
+                  cursor: "pointer",
+                }}
+              >
+                <option value="ativas">Comunicações ativas</option>
+                <option value="arquivadas">ARQUIVADAS</option>
+              </select>
+
+              {filtroCia && (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    background: "#1a7bbc",
+                    color: "#fff",
+                    padding: "6px 10px",
+                    borderRadius: "4px",
+                    fontSize: "13px",
+                  }}
+                >
+                  Filtrando: <strong>{filtroCia}</strong>
+                  <button
+                    onClick={() => setFiltroCia(null)}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      color: "#fff",
+                      cursor: "pointer",
+                      fontWeight: "bold",
+                      fontSize: "14px",
+                      lineHeight: 1,
+                    }}
+                    title="Remover filtro de CIA"
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
+
+              <span style={{ fontSize: "13px", color: "#666" }}>
+                {comunicacoesFiltradas.length} comunicação(ões) encontrada(s)
+              </span>
+            </div>
+            {/* Fim barra de filtros */}
           </div>
 
           <div className={styles.scrollableTableWrapper}>
-            <table className={styles.tabelaComunicacao}>
-              <tbody>
-                {comunicacoes.map((comunicacao) => (
-                  <React.Fragment key={comunicacao.id}>
-                    {/* Linha de título */}
+            {comunicacoesFiltradas.length === 0 ? (
+              <p style={{ padding: "20px" }}>
+                Nenhuma comunicação encontrada para os filtros selecionados.
+              </p>
+            ) : (
+              <table className={styles.tabelaComunicacao}>
+                <tbody>
+                  {comunicacoesFiltradas.map((comunicacao) => (
+                    <React.Fragment key={comunicacao.id}>
+                      {/* Linha de título */}
 
-                    {/* Linha com os dados da comunicação */}
-                    <tr
-                      style={{ borderBottom: "2px solid #000000" }}
-                      onClick={() => handleView(comunicacao.id)}
-                    >
-                      <td
-                        style={{
-                          background: getStatusColor(comunicacao.status),
-                          width: "5%",
-                        }}
+                      {/* Linha com os dados da comunicação */}
+                      <tr
+                        style={{ borderBottom: "2px solid #000000" }}
+                        onClick={() => handleView(comunicacao.id)}
                       >
-                        <div className={styles.tdDivIdComunicacao}>
-                          <div>Nº</div>
-                          <div>{comunicacao.id}</div>
-                        </div>
-                        <div style={{ color: "#ffffff", marginTop: "10px" }}>
-                          <strong>
-                            {comunicacao.useral?.aluno?.turma.cia.name}
-                          </strong>
-                        </div>
-                      </td>
+                        <td
+                          style={{
+                            background: getStatusColor(comunicacao.status),
+                            width: "5%",
+                          }}
+                        >
+                          <div className={styles.tdDivIdComunicacao}>
+                            <div>Nº</div>
+                            <div>{comunicacao.id}</div>
+                          </div>
+                          <div style={{ color: "#ffffff", marginTop: "10px" }}>
+                            <strong>
+                              {comunicacao.useral?.aluno?.turma.cia.name}
+                            </strong>
+                          </div>
+                        </td>
 
-                      {/* Comunicante */}
-                      <td style={{ padding: "8px", verticalAlign: "top" }}>
-                        <div className={styles.divtabelaComunicacao}>
-                          <div>
-                            <FaUserCircle fontSize={18} />
-                          </div>
-                          <div style={{ lineHeight: 1.2 }}>
-                            <p style={{ margin: 0, fontSize: "0.7rem" }}>
-                              <strong>
-                                {comunicacao.usercom?.pg}{" "}
-                                {comunicacao.usercom?.nomeGuerra} |{" "}
-                                {comunicacao.usercom?.funcao}
-                              </strong>
-                            </p>
-                          </div>
-                        </div>
-                        <div>
-                          <div>
-                            <strong>Motivo:</strong> {comunicacao.motivo}
+                        {/* Comunicante */}
+                        <td style={{ padding: "8px", verticalAlign: "top" }}>
+                          <div className={styles.divtabelaComunicacao}>
+                            <div>
+                              <FaUserCircle fontSize={18} />
+                            </div>
+                            <div style={{ lineHeight: 1.2 }}>
+                              <p style={{ margin: 0, fontSize: "0.7rem" }}>
+                                <strong>
+                                  {comunicacao.usercom?.pg}{" "}
+                                  {comunicacao.usercom?.nomeGuerra} |{" "}
+                                  {comunicacao.usercom?.funcao}
+                                </strong>
+                              </p>
+                            </div>
                           </div>
                           <div>
-                            <strong>Grau:</strong> {comunicacao.natureza} |{" "}
-                            {comunicacao.grauMotivo}
+                            <div>
+                              <strong>Motivo:</strong> {comunicacao.motivo}
+                            </div>
+                            <div>
+                              <strong>Grau:</strong> {comunicacao.natureza} |{" "}
+                              {comunicacao.grauMotivo}
+                            </div>
+                            <div>
+                              <strong>Data:</strong>{" "}
+                              {new Date(
+                                comunicacao.dataInicio,
+                              ).toLocaleDateString("pt-BR")}{" "}
+                              às {comunicacao.horaInicio}
+                            </div>
                           </div>
-                          <div>
-                            <strong>Data:</strong>{" "}
-                            {new Date(
-                              comunicacao.dataInicio,
-                            ).toLocaleDateString("pt-BR")}{" "}
-                            às {comunicacao.horaInicio}
-                          </div>
-                        </div>
-                      </td>
+                        </td>
 
-                      {/* Aluno */}
-                      <td style={{ padding: "8px", verticalAlign: "top" }}>
-                        <div className={styles.divtabelaComunicacao}>
-                          <div>
-                            <FaUserCircle fontSize={18} />
-                          </div>
-                          <div style={{ lineHeight: 1.2 }}>
-                            <p style={{ margin: 0, fontSize: "0.7rem" }}>
-                              <strong>
-                                {comunicacao.useral?.pg}{" "}
-                                {comunicacao.useral?.nomeGuerra} |{" "}
-                                {comunicacao.useral?.funcao}
-                              </strong>
-                            </p>
-                          </div>
-                        </div>
-                        <div>
-                          <div>
-                            <strong>Resposta:</strong>{" "}
-                            {comunicacao.resposta
-                              ? truncateText(comunicacao.resposta, 50)
-                              : "-"}
+                        {/* Aluno */}
+                        <td style={{ padding: "8px", verticalAlign: "top" }}>
+                          <div className={styles.divtabelaComunicacao}>
+                            <div>
+                              <FaUserCircle fontSize={18} />
+                            </div>
+                            <div style={{ lineHeight: 1.2 }}>
+                              <p style={{ margin: 0, fontSize: "0.7rem" }}>
+                                <strong>
+                                  {comunicacao.useral?.pg}{" "}
+                                  {comunicacao.useral?.nomeGuerra} |{" "}
+                                  {comunicacao.useral?.funcao}
+                                </strong>
+                              </p>
+                            </div>
                           </div>
                           <div>
-                            <strong>Data:</strong>{" "}
-                            {comunicacao.dataResp
-                              ? new Date(comunicacao.dataResp).toLocaleString()
-                              : ""}
+                            <div>
+                              <strong>Resposta:</strong>{" "}
+                              {comunicacao.resposta
+                                ? truncateText(comunicacao.resposta, 50)
+                                : "-"}
+                            </div>
+                            <div>
+                              <strong>Data:</strong>{" "}
+                              {comunicacao.dataResp
+                                ? new Date(
+                                    comunicacao.dataResp,
+                                  ).toLocaleString()
+                                : ""}
+                            </div>
                           </div>
-                        </div>
-                      </td>
+                        </td>
 
-                      {/* Cmt Cia */}
-                      <td style={{ padding: "8px", verticalAlign: "top" }}>
-                        <div className={styles.divtabelaComunicacao}>
-                          <div>
-                            <FaUserCircle fontSize={18} />
-                          </div>
-                          <div style={{ lineHeight: 1.2 }}>
-                            <p style={{ margin: 0, fontSize: "0.7rem" }}>
-                              <strong>
-                                {comunicacao.usercmtcia?.pg}{" "}
-                                {comunicacao.usercmtcia?.nomeGuerra} |{" "}
-                                {comunicacao.usercmtcia?.funcao}
-                              </strong>
-                            </p>
-                          </div>
-                        </div>
-                        <div>
-                          <div>
-                            <strong>Parecer:</strong>{" "}
-                            {comunicacao.parecerCmtCia
-                              ? truncateText(comunicacao.parecerCmtCia, 60)
-                              : "Aguardando..."}
+                        {/* Cmt Cia */}
+                        <td style={{ padding: "8px", verticalAlign: "top" }}>
+                          <div className={styles.divtabelaComunicacao}>
+                            <div>
+                              <FaUserCircle fontSize={18} />
+                            </div>
+                            <div style={{ lineHeight: 1.2 }}>
+                              <p style={{ margin: 0, fontSize: "0.7rem" }}>
+                                <strong>
+                                  {comunicacao.usercmtcia?.pg}{" "}
+                                  {comunicacao.usercmtcia?.nomeGuerra} |{" "}
+                                  {comunicacao.usercmtcia?.funcao}
+                                </strong>
+                              </p>
+                            </div>
                           </div>
                           <div>
-                            <strong>Data:</strong>{" "}
-                            {comunicacao.dataParecerCmtCia
-                              ? new Date(
-                                  comunicacao.dataParecerCmtCia,
-                                ).toLocaleString()
-                              : ""}
+                            <div>
+                              <strong>Parecer:</strong>{" "}
+                              {comunicacao.parecerCmtCia
+                                ? truncateText(comunicacao.parecerCmtCia, 60)
+                                : "Aguardando..."}
+                            </div>
+                            <div>
+                              <strong>Data:</strong>{" "}
+                              {comunicacao.dataParecerCmtCia
+                                ? new Date(
+                                    comunicacao.dataParecerCmtCia,
+                                  ).toLocaleString()
+                                : ""}
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      {/* Cmt Cia */}
+                        </td>
+                        {/* Cmt Cia */}
 
-                      {/* Cmt CA */}
-                      <td style={{ padding: "8px", verticalAlign: "top" }}>
-                        <div className={styles.divtabelaComunicacao}>
-                          <div>
-                            <FaUserCircle fontSize={18} />
-                          </div>
-                          <div style={{ lineHeight: 1.2 }}>
-                            <p style={{ margin: 0, fontSize: "0.7rem" }}>
-                              <strong>
-                                {comunicacao.userca?.pg}{" "}
-                                {comunicacao.userca?.nomeGuerra} |{" "}
-                                {comunicacao.userca?.funcao}
-                              </strong>
-                            </p>
-                          </div>
-                        </div>
-                        <div>
-                          <div>
-                            <strong>Parecer:</strong>{" "}
-                            {comunicacao.parecerCa
-                              ? truncateText(comunicacao.parecerCa, 60)
-                              : "Aguardando..."}
+                        {/* Cmt CA */}
+                        <td style={{ padding: "8px", verticalAlign: "top" }}>
+                          <div className={styles.divtabelaComunicacao}>
+                            <div>
+                              <FaUserCircle fontSize={18} />
+                            </div>
+                            <div style={{ lineHeight: 1.2 }}>
+                              <p style={{ margin: 0, fontSize: "0.7rem" }}>
+                                <strong>
+                                  {comunicacao.userca?.pg}{" "}
+                                  {comunicacao.userca?.nomeGuerra} |{" "}
+                                  {comunicacao.userca?.funcao}
+                                </strong>
+                              </p>
+                            </div>
                           </div>
                           <div>
-                            <strong>Data:</strong>{" "}
-                            {comunicacao.dataParecerCa
-                              ? new Date(
-                                  comunicacao.dataParecerCa,
-                                ).toLocaleString()
-                              : ""}
+                            <div>
+                              <strong>Parecer:</strong>{" "}
+                              {comunicacao.parecerCa
+                                ? truncateText(comunicacao.parecerCa, 60)
+                                : "Aguardando..."}
+                            </div>
+                            <div>
+                              <strong>Data:</strong>{" "}
+                              {comunicacao.dataParecerCa
+                                ? new Date(
+                                    comunicacao.dataParecerCa,
+                                  ).toLocaleString()
+                                : ""}
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      {/* Cmt CA */}
+                        </td>
+                        {/* Cmt CA */}
 
-                      {/* SubComando */}
-                      <td style={{ padding: "8px", verticalAlign: "top" }}>
-                        <div className={styles.divtabelaComunicacao}>
-                          <div>
-                            <FaUserCircle fontSize={18} />
-                          </div>
-                          <div style={{ lineHeight: 1.2 }}>
-                            <p style={{ margin: 0, fontSize: "0.7rem" }}>
-                              <strong>
-                                {comunicacao.usersubcom?.pg}{" "}
-                                {comunicacao.usersubcom?.nomeGuerra} |{" "}
-                                {comunicacao.usersubcom?.funcao}
-                              </strong>
-                            </p>
-                          </div>
-                        </div>
-                        <div>
-                          <div>
-                            <strong>Parecer:</strong>{" "}
-                            {comunicacao.parecerSubcom
-                              ? truncateText(comunicacao.parecerSubcom, 60)
-                              : "Aguardando..."}
+                        {/* SubComando */}
+                        <td style={{ padding: "8px", verticalAlign: "top" }}>
+                          <div className={styles.divtabelaComunicacao}>
+                            <div>
+                              <FaUserCircle fontSize={18} />
+                            </div>
+                            <div style={{ lineHeight: 1.2 }}>
+                              <p style={{ margin: 0, fontSize: "0.7rem" }}>
+                                <strong>
+                                  {comunicacao.usersubcom?.pg}{" "}
+                                  {comunicacao.usersubcom?.nomeGuerra} |{" "}
+                                  {comunicacao.usersubcom?.funcao}
+                                </strong>
+                              </p>
+                            </div>
                           </div>
                           <div>
-                            <strong>Data:</strong>{" "}
-                            {comunicacao.dataParecerSubcom
-                              ? new Date(
-                                  comunicacao.dataParecerSubcom,
-                                ).toLocaleString()
-                              : ""}
+                            <div>
+                              <strong>Parecer:</strong>{" "}
+                              {comunicacao.parecerSubcom
+                                ? truncateText(comunicacao.parecerSubcom, 60)
+                                : "Aguardando..."}
+                            </div>
+                            <div>
+                              <strong>Data:</strong>{" "}
+                              {comunicacao.dataParecerSubcom
+                                ? new Date(
+                                    comunicacao.dataParecerSubcom,
+                                  ).toLocaleString()
+                                : ""}
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      {/* SubComando */}
+                        </td>
+                        {/* SubComando */}
 
-                      {/* Status */}
-                      <td style={{ padding: "8px", verticalAlign: "top" }}>
-                        <div className={styles.divtabelaComunicacao}>
-                          <strong> SITUAÇÃO DA COMUNICAÇÃO</strong>
-                        </div>
-                        <div>
-                          <div>
-                            <strong>Status:</strong>{" "}
-                            {comunicacao.status ? comunicacao.status : "-"}
+                        {/* Status */}
+                        <td style={{ padding: "8px", verticalAlign: "top" }}>
+                          <div className={styles.divtabelaComunicacao}>
+                            <strong> SITUAÇÃO DA COMUNICAÇÃO</strong>
                           </div>
                           <div>
-                            <strong>Data:</strong>{" "}
-                            {comunicacao.dtAtualizacaoStatus
-                              ? new Date(
-                                  comunicacao.dtAtualizacaoStatus,
-                                ).toLocaleString()
-                              : "-"}
+                            <div>
+                              <strong>Status:</strong>{" "}
+                              {comunicacao.status ? comunicacao.status : "-"}
+                            </div>
+                            <div>
+                              <strong>Data:</strong>{" "}
+                              {comunicacao.dtAtualizacaoStatus
+                                ? new Date(
+                                    comunicacao.dtAtualizacaoStatus,
+                                  ).toLocaleString()
+                                : "-"}
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      {/* Status */}
-                    </tr>
-                  </React.Fragment>
-                ))}
-              </tbody>
-            </table>
+                        </td>
+                        {/* Status */}
+                      </tr>
+                    </React.Fragment>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
       )}

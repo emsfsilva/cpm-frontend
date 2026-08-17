@@ -65,7 +65,7 @@ interface User {
   seduc?: string;
   imagemUrl?: string;
   aluno?: Aluno;
-  addresses?: Address[]; // ✅ Adicionado
+  addresses?: Address[];
   iat?: number;
   exp?: number;
 }
@@ -194,87 +194,6 @@ export default function PerfilPage() {
     <div style={{ padding: "10px", maxHeight: "800px", overflowY: "auto" }}>
       {userSelecionado ? (
         <>
-          <div style={{ marginBottom: "20px" }}></div>
-
-          {/* Upload de foto de perfil */}
-          <div className={styles.itemMenuPerfilPrincipal}>
-            <div className={styles.itemMenuPerfilIcone}>
-              <FaUser />
-            </div>
-            <div className={styles.itemMenuPerfilSecundaria}>
-              <div className={styles.itemMenuPerfilLabel}>Foto de Perfil</div>
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "12px" }}
-              >
-                {/* Preview da imagem atual */}
-                {userSelecionado.imagemUrl ? (
-                  <Image
-                    src={`/${userSelecionado.imagemUrl}`}
-                    alt="Avatar"
-                    width={48}
-                    height={48}
-                    style={{ borderRadius: "50%", objectFit: "cover" }}
-                  />
-                ) : (
-                  <FaUser style={{ fontSize: "40px", color: "#aaa" }} />
-                )}
-
-                {/* Input oculto + botão estilizado */}
-                <label
-                  htmlFor="avatarInput"
-                  style={{
-                    background: "#0ea860",
-                    color: "#fff",
-                    padding: "5px 10px",
-                    borderRadius: "15px",
-                    fontSize: "11px",
-                    cursor: "pointer",
-                  }}
-                >
-                  Alterar foto
-                </label>
-                <input
-                  id="avatarInput"
-                  type="file"
-                  accept="image/*"
-                  style={{ display: "none" }}
-                  onChange={async (e) => {
-                    const file = e.target.files?.[0];
-                    if (!file || !userSelecionado?.id) return;
-
-                    const formData = new FormData();
-                    formData.append("file", file);
-
-                    const res = await fetch(
-                      `/api/user/${userSelecionado.id}/avatar`,
-                      {
-                        method: "POST",
-                        body: formData,
-                      },
-                    );
-
-                    if (!res.ok) {
-                      alert("Erro ao enviar foto");
-                      return;
-                    }
-
-                    const data = await res.json();
-
-                    // Força recarregar a imagem quebrando o cache
-                    setUserSelecionado((prev) =>
-                      prev
-                        ? {
-                            ...prev,
-                            imagemUrl: data.imagemUrl + "?t=" + Date.now(),
-                          }
-                        : prev,
-                    );
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-
           {/* nome comeplto */}
           <div className={styles.itemMenuPerfilPrincipal}>
             <div className={styles.itemMenuPerfilIcone}>
@@ -575,6 +494,13 @@ export default function PerfilPage() {
                       <div style={{ fontSize: "11px", color: "#606060" }}>
                         Turma: {dep.aluno?.turma?.name || "N/A"} |{" "}
                         {dep.aluno?.turma?.cia?.name || "N/A"}
+                      </div>
+                      <div style={{ fontSize: "11px", color: "#606060" }}>
+                        Grau Atual:{" "}
+                        {dep.aluno?.grauAtual !== undefined &&
+                        dep.aluno?.grauAtual !== null
+                          ? dep.aluno.grauAtual
+                          : "N/A"}
                       </div>
                     </div>
 

@@ -7,11 +7,14 @@ const API_BASE_URL =
 
 export async function PUT(request: NextRequest) {
   try {
-    // Extrai o ID da URL
+    // Extrai id da URL
     const url = new URL(request.url);
     const pathParts = url.pathname.split("/");
     // ['', 'api', 'comunicacao', '123', 'publicacao']
     const id = pathParts[pathParts.indexOf("comunicacao") + 1];
+
+    // Pega os dados do body
+    const { userIdPublicacao, observacaoPublicacao } = await request.json();
 
     const cookieStore = await cookies();
     const token = cookieStore.get("accessToken")?.value;
@@ -23,13 +26,13 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Chamada ao backend
     const response = await fetch(`${API_BASE_URL}/comunicacao/publicar/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
+      body: JSON.stringify({ userIdPublicacao, observacaoPublicacao }),
     });
 
     const data = await response.json();

@@ -10,12 +10,12 @@
   height: 100vh;
   overflow: hidden;
   position: absolute;
-  content: '';
+  content: "";
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url('../../../public/assets/images/logo.png');
+  background-image: url("../../../public/assets/images/logo.png");
   background-size: 40%; /* Ajuste o tamanho da imagem */
   background-position: center;
   background-repeat: no-repeat;
@@ -35,19 +35,18 @@
 }
 
 .logoTextPrimeiraParte {
-    padding-left: 8px;
-    font-size: 20px;
-    color: #0e5a94;
+  padding-left: 8px;
+  font-size: 20px;
+  color: #0e5a94;
 }
-
 
 .divHeaderUserDetalhe {
   display: flex;
   justify-content: left;
   padding: 10px;
   align-items: center;
-  width: 100%;      
-  height: 60px;     
+  width: 100%;
+  height: 60px;
   margin-bottom: 10px;
 }
 
@@ -66,8 +65,6 @@
   margin-right: 10px;
   border: 1px solid #757575;
 }
-
-
 
 /* Navegação do menu */
 .nav {
@@ -231,7 +228,7 @@
   font-size: 1rem;
   margin-right: 8px;
   min-width: 25px;
-  border-radius:50%;
+  border-radius: 50%;
 }
 
 /* Texto do item (aparece só quando aberto) */
@@ -267,8 +264,6 @@
   padding-right: 12px;
   margin-top: 3px;
 }
-
-
 
 /* Mobile: mostra o wrapper e esconde o ícone direto */
 @media screen and (max-width: 768px) {
@@ -362,89 +357,90 @@
 }
 
 .geralSenhaPjes {
-  font-size:10px;
-  text-align:left;
-  margin-left:1px;
+  font-size: 10px;
+  text-align: left;
+  margin-left: 1px;
 }
 
 .imgUserModal {
-  width:60px;
+  width: 60px;
   height: 60px;
   border-radius: 50%;
   color: #dad7d7;
   padding: 5px;
   object-fit: cover;
-  border:1px solid #ccc;
+  border: 1px solid #ccc;
 }
 
 .imgUserModalComentario {
-  width:50px;
+  width: 50px;
   height: 50px;
   border-radius: 50%;
   color: #dad7d7;
   padding: 5px;
   object-fit: cover;
-  border:1px solid #ccc;
+  border: 1px solid #ccc;
 }
 
 .imgUserModalAlteracao {
-  width:25px;
+  width: 25px;
   height: 23px;
   border-radius: 50%;
   color: #dad7d7;
 }
 
 .identificacaoUser {
-  margin-bottom:1rem;
+  margin-bottom: 1rem;
   font-size: 15px;
-  text-align:left;
+  text-align: left;
 }
 
 .seiFuncaoTelEmail {
-  text-align:left;
-  display:flex;
-  flex-direction:column;
-  gap:0.5rem;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .divSeiFuncaoTelEmail {
-  display:flex; align-items:center;
+  display: flex;
+  align-items: center;
 }
 
 .faSeiFuncaoTelEmail {
-  margin-right:8px;
+  margin-right: 8px;
 }
 
 .hrSeiFuncaoTelEmail {
-  border:none;
-  border-top:1px solid #ccc;
-  margin-top:2rem;
+  border: none;
+  border-top: 1px solid #ccc;
+  margin-top: 2rem;
 }
 
 .divTabGeral {
-  display:flex;
-  flex-direction:column;
-  height:100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .divTabGeralBotoes {
   flex: 1;
   overflow-y: auto;
   padding-right: 10px;
-  padding-bottom:1rem;
+  padding-bottom: 1rem;
 }
 
 .divTabPrincipalBotoes {
-  display:flex;
+  display: flex;
   gap: 10px;
-  margin-top:10px;
+  margin-top: 10px;
 }
 
 .divTabBotoes {
   flex: 1;
   padding: 30px;
   background: #f5f5f5;
-  border-radius:20px;
+  border-radius: 20px;
 }
 
 .divPrincipalComentario {
@@ -454,33 +450,31 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content:space-between;
+  justify-content: space-between;
 }
 
 .labelComentario {
-    color: #333;
-    font-size: 15px;
-    background: #f0f3f3;
-    flex-grow: 1;
-    margin-top: 10px;
-    padding: 5px;
-    margin-bottom: 10px;
-    line-height: 1.5;
-    border-radius: 10px;
-
+  color: #333;
+  font-size: 15px;
+  background: #f0f3f3;
+  flex-grow: 1;
+  margin-top: 10px;
+  padding: 5px;
+  margin-bottom: 10px;
+  line-height: 1.5;
+  border-radius: 10px;
 }
 
 .labelDataComentario {
-  color:#333;
+  color: #333;
   font-size: 10px;
-
 }
 
 .divAspasDireita {
-  font-size:30px;
+  font-size: 30px;
   color: #6d6868;
   align-self: flex-end;
-  padding-right:120px;
+  padding-right: 120px;
 }
 
 .divImgComentario {
@@ -497,11 +491,10 @@
 }
 
 .divDesconectar {
-
 }
 
 .imgSenhaModal {
-  width:100px;
+  width: 100px;
   height: 100px;
   color: #dad7d7;
   object-fit: cover;
@@ -519,8 +512,8 @@
   cursor: pointer;
   transition: background-color 0.2s;
   border-radius: 4px;
-  background-color:#2e53b1;
-  color:#ffffff;
+  background-color: #2e53b1;
+  color: #ffffff;
 }
 
 .profileFooterItem:hover {
@@ -544,12 +537,8 @@
     transform: translateY(0);
     opacity: 1;
   }
-  
 }
 /* fim Menu perfil na sidebar */
-
-
-
 
 /* Conteúdo da página */
 .conteudoPagina {
@@ -582,7 +571,7 @@
   border-radius: 4px;
   overflow: hidden;
   z-index: 2000;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .headerDropdown div {
@@ -596,7 +585,6 @@
 .headerDropdown div:hover {
   background-color: #cbd0dd;
 }
-
 
 /* Rodapé fixo na sidebar (modo desktop) */
 .sidebarFooter {
@@ -619,7 +607,6 @@
 
 /* FIM DO TEMPLATE PRINCIPAL */
 
-
 /* INICIO TELA NOVA USUARIOS */
 .alunosContainer {
   display: flex;
@@ -629,14 +616,14 @@
 
 /* Div esquerda (lista de alunos) */
 .listaEsquerda {
-  width: 25%;
+  width: 30%;
   padding: 5px;
   border-right: 1px solid #dadee3;
 }
 
 /* Div direita (detalhes do aluno) */
 .detalhesDesktop {
-  width: 75%;
+  width: 70%;
   padding: 5px;
 }
 
@@ -649,7 +636,6 @@
 
   gap: 6px; /* opcional: espaçamento entre spans */
 }
-
 
 .divUsuarios {
   height: 100%;
@@ -667,7 +653,6 @@
   cursor: pointer; /* opcional: parece clicável */
 }
 
-
 .userInfo {
   display: flex;
   gap: 10px;
@@ -678,7 +663,6 @@
   margin-left: auto;
   position: relative;
 }
-
 
 .listdeAlunos ul {
   padding: 0;
@@ -709,7 +693,6 @@
   margin-left: auto; /* Alinha o ícone à direita */
   font-size: 10px; /* Tamanho do ícone */
   color: black; /* Cor do ícone à direita */
-
 }
 
 .alunoListImg {
@@ -723,7 +706,7 @@
 
 .alunoSelecionado {
   background-color: #e3e6ebb1;
-  border-radius:5px;
+  border-radius: 5px;
 }
 
 .editIcon {
@@ -767,7 +750,6 @@
   background-color: #f0f0f0;
 }
 
-
 .modalOverlayCadAluno {
   position: fixed;
   top: 0;
@@ -783,7 +765,6 @@
   padding-top: 110px;
 }
 
-
 .imgCadAluno {
   border-radius: 50%;
   width: 60px;
@@ -794,11 +775,9 @@
   border: 1px solid #757575;
 }
 
-
 .menuIcon {
   margin-right: 5px;
 }
-
 
 .cadAlunoModal {
   background-color: #fff;
@@ -811,7 +790,7 @@
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
   position: relative;
   z-index: 3001;
-  animation: slideDown  0.1s ease-out;
+  animation: slideDown 0.1s ease-out;
   overflow: hidden;
 }
 
@@ -841,10 +820,9 @@
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
   position: relative;
   z-index: 3001;
-  animation: slideDown  0.1s ease-out;
+  animation: slideDown 0.1s ease-out;
   overflow: hidden;
 }
-
 
 .modalOverlayCadEndereco {
   position: fixed;
@@ -872,10 +850,9 @@
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
   position: relative;
   z-index: 3001;
-  animation: slideDown  0.1s ease-out;
+  animation: slideDown 0.1s ease-out;
   overflow: hidden;
 }
-
 
 .modalOverlayCadComunicacao {
   position: fixed;
@@ -903,10 +880,9 @@
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
   position: relative;
   z-index: 3001;
-  animation: slideDown  0.3s ease-out;
+  animation: slideDown 0.3s ease-out;
   overflow: auto;
 }
-
 
 @keyframes slideDown {
   from {
@@ -925,7 +901,6 @@
   background-color: #fff;
   overflow-y: auto;
 }
-
 
 .inputCadAlunoApenasinput {
   width: 95%;
@@ -946,8 +921,8 @@
   cursor: pointer;
   transition: background-color 0.2s;
   border-radius: 4px;
-  background-color:#3c8114;
-  color:#ffffff;
+  background-color: #3c8114;
+  color: #ffffff;
 }
 
 .botaoFooterCadAluno:hover {
@@ -964,8 +939,8 @@
   cursor: pointer;
   transition: background-color 0.2s;
   border-radius: 4px;
-  background-color:#b13914;
-  color:#ffffff;
+  background-color: #b13914;
+  color: #ffffff;
 }
 
 .alunoSemImagem {
@@ -979,27 +954,27 @@
 }
 
 .divItensMeioUsuario {
-  font-size:14px;
-  color:#89899b;
-  display:flex;
+  font-size: 14px;
+  color: #89899b;
+  display: flex;
 }
 
 .divItensMeioUsuarioTelefone {
   display: flex;
-  margin-right:15px;
+  margin-right: 15px;
   align-items: center;
 }
 
 .divItensMeioUsuarioMat {
-  display:flex;
-  margin-right:5px;
-  align-items:center;
+  display: flex;
+  margin-right: 5px;
+  align-items: center;
 }
 
 .divItensMeioUsuarioFuncao {
-  display:flex;
-  margin-left:10px;
-  align-items:center;
+  display: flex;
+  margin-left: 10px;
+  align-items: center;
 }
 
 .divDadosBasicosUserPrincipal {
@@ -1014,8 +989,6 @@
   border: 1px solid #d4d0d0;
   margin-top: 5px;
 }
-
-
 
 /* mobile */
 @media (max-width: 768px) {
@@ -1067,7 +1040,6 @@
     padding-left: 0px;
     width: 90%;
   }
-
 }
 
 /* DESKTOP */
@@ -1078,7 +1050,6 @@
 }
 
 /* FIM TELA NOVA USUARIOS */
-
 
 /* INICIO TELA LISTA DE COMUNICAÇÃO ALUNOS */
 
@@ -1105,59 +1076,34 @@
 }
 
 .comunicacaoAlunoListImg i {
-  color: white;        /* cor branca */
-  font-size: 18px;     /* aumenta o tamanho do ícone, ajuste como quiser */
+  color: white; /* cor branca */
+  font-size: 18px; /* aumenta o tamanho do ícone, ajuste como quiser */
 }
 
 .divComunicacaoRodape {
   display: flex;
   flex-direction: column; /* Alinha os itens em coluna */
-  align-items: center;     /* Centraliza horizontalmente */
+  align-items: center; /* Centraliza horizontalmente */
   justify-content: center; /* Centraliza verticalmente (opcional) */
-  text-align: center;      /* Centraliza o texto */
-  padding: 5px;       /* Opcional: dá um espaçamento interno */
+  text-align: center; /* Centraliza o texto */
+  padding: 5px; /* Opcional: dá um espaçamento interno */
   height: 100%;
   margin-top: 50px;
   margin-bottom: 30px;
 }
-
 
 /* FIM TELA LISTA DE COMUNICAÇÃO ALUNOS */
 
 .divUserImagePerfil {
   display: flex;
   flex-direction: column; /* Alinha os itens em coluna */
-  align-items: center;     /* Centraliza horizontalmente */
+  align-items: center; /* Centraliza horizontalmente */
   justify-content: center; /* Centraliza verticalmente (opcional) */
-  text-align: center;      /* Centraliza o texto */
-  padding: 5px;       /* Opcional: dá um espaçamento interno */
-  height: 100%;            /* Se quiser centralizar verticalmente, garanta altura */
+  text-align: center; /* Centraliza o texto */
+  padding: 5px; /* Opcional: dá um espaçamento interno */
+  height: 100%; /* Se quiser centralizar verticalmente, garanta altura */
   margin-bottom: 10px;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /* Tabela de usuário */
 .userTable {
@@ -1177,14 +1123,14 @@
   background-color: #f4f4f4;
 }
 
-
 .tabelaUsuarios {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
 }
 
-.tabelaUsuarios th, .tabelaUsuarios td {
+.tabelaUsuarios th,
+.tabelaUsuarios td {
   padding: 10px;
   text-align: left; /* Alinha os outros dados à esquerda */
 }
@@ -1208,11 +1154,11 @@
   object-fit: cover; /* Garante que a imagem não distorça e preencha a área definida */
   border-radius: 50%; /* Deixa a imagem arredondada */
 }
-.usertableCom td{
+.usertableCom td {
   text-align: center;
   padding: 0;
 }
-.motivotableCom td{
+.motivotableCom td {
   text-align: left;
   padding: 0;
 }
@@ -1333,7 +1279,6 @@
   margin-left: auto; /* Alinha o ícone à direita */
   font-size: 12px; /* Tamanho do ícone */
   color: black; /* Cor do ícone à direita */
-
 }
 
 .divConteudoComunicacao {
@@ -1359,13 +1304,8 @@
   margin-left: auto; /* Alinha o ícone à direita */
   font-size: 12px; /* Tamanho do ícone */
   color: black; /* Cor do ícone à direita */
-
 }
 /* PAGINA COMUNICAÇÃO cad e ver,  */
-
-
-
-
 
 .comunicacaoAlunoList ul {
   padding: 0;
@@ -1397,9 +1337,7 @@
   margin-left: auto; /* Alinha o ícone à direita */
   font-size: 10px; /* Tamanho do ícone */
   color: black; /* Cor do ícone à direita */
-
 }
-
 
 /* Conteúdo da página (ajustado à direita da sidebar) */
 .comunicacaoPagina {
@@ -1427,7 +1365,6 @@
   font-size: 18px;
   margin-bottom: 5px;
 }
-
 
 .itensTituloListar {
   flex-grow: 1; /* Faz com que o conteúdo ocupe o restante da tela */
@@ -1457,7 +1394,6 @@
   color: #4b4a4a;
 }
 
-
 /* Alunos | Turma... */
 .tituloComunicacao {
   display: flex;
@@ -1479,7 +1415,7 @@
 
 .divUserAlunoComunicacao {
   display: flex;
-  width: 100%;      
+  width: 100%;
   align-items: center; /* Alinha os itens verticalmente no centro */
   border: 1px solid;
   padding: 10px;
@@ -1543,14 +1479,13 @@
   margin-right: 10px;
 }
 
-.divResp1Comunicacao{;
+.divResp1Comunicacao {
   margin-top: 10px;
 }
 
-.spanResp1Comunicacao{;
+.spanResp1Comunicacao {
   margin-bottom: 10px;
 }
-
 
 /* Cadatrar Comunicação */
 .comunicacaoDetails ul {
@@ -1585,12 +1520,10 @@
 }
 
 .inputRespostaCheck {
-
   font-size: 12px;
   width: 330px;
   height: 20px;
   color: #e90808;
-
 }
 
 .labelEnquadramento {
@@ -1598,7 +1531,6 @@
   height: 40px;
   font-size: 12px;
   color: #e90808;
-
 }
 
 .inputRespostaH1 {
@@ -1657,8 +1589,6 @@
   margin-top: 4px;
 }
 
-
-
 .comunicacaoSalvarButton {
   width: 100%;
   height: 30px;
@@ -1684,9 +1614,6 @@
   margin-bottom: 5px;
 }
 
-
-
-
 .modalContent {
   background: #fff;
   padding: 20px 30px;
@@ -1704,7 +1631,7 @@
 }
 
 .modalInputs {
-  display:flex;
+  display: flex;
 }
 
 .enviarRespBtn {
@@ -1756,7 +1683,6 @@
   color: white;
 }
 
-
 .navLogoHeader {
   display: none;
 }
@@ -1765,15 +1691,13 @@
   display: none;
 }
 
-
 .divPrincialTelaComunicacao {
   width: 100%;
   height: 100px;
   padding: 5px;
 }
 
-
-.divBotoesCia{
+.divBotoesCia {
   background: #174ea6;
   width: 30%;
   text-align: center;
@@ -1785,11 +1709,10 @@
 }
 
 .divTotal {
-  font-size:14px;
+  font-size: 14px;
   padding-left: 20px;
   font-weight: bold;
   color: #ffffff;
-
 }
 
 .divTextoTotais {
@@ -1806,17 +1729,14 @@
 }
 
 .thDivTituloTabelaComunicacao {
-  display:flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
 }
 
-
-
-
 .tdDivTitleComunicacaoAluno {
-  font-weight:bold;
+  font-weight: bold;
   font-size: 15px;
   padding-top: 20px;
   padding-bottom: 1px;
@@ -1824,17 +1744,15 @@
 }
 
 .tdDivIdComunicacao {
-  display:flex;
+  display: flex;
   justify-content: center;
   align-items: center;
   height: 100%;
   font-size: 14px;
   font-weight: bold;
   color: #ffffff;
-  width:100%;
+  width: 100%;
 }
-
-
 
 .tabelaComunicacao td {
   vertical-align: middle;
@@ -1844,7 +1762,6 @@
   text-align: left;
   border: 1px solid #d2d4d7;
   vertical-align: top;
-  
 }
 
 .tabelaComunicacao td img {
@@ -1852,8 +1769,6 @@
   margin-left: auto;
   margin-right: auto;
 }
-
-
 
 .pComunicacao {
   text-align: center; /* Centraliza o texto */
@@ -1864,7 +1779,6 @@
 .tabelaComunicacao td p strong {
   font-weight: bold; /* Aplica o negrito */
 }
-
 
 .tabelaComunicacao {
   width: 100%;
@@ -1898,14 +1812,14 @@
 
 .tabelaComunicacao thead {
   background-color: #1153ae;
-  color:#ffffff;
+  color: #ffffff;
 }
 
 .divtabelaComunicacao {
-  display:flex;
+  display: flex;
   align-items: center;
   padding: 5px;
-  border-bottom:1px solid #e1dada;
+  border-bottom: 1px solid #e1dada;
   width: 100%;
   gap: 8px;
 }
@@ -1920,7 +1834,7 @@
 /* Cada bloco de CIA */
 .ciaBox {
   flex: 1;
-  min-width: 280px;   /* evita encolher demais */
+  min-width: 280px; /* evita encolher demais */
 }
 
 @media (max-width: 768px) {
@@ -1935,14 +1849,13 @@
 
   .divBotoesSuperiores {
     flex-direction: column;
-
   }
 }
 
-.divBotoesPrincipal  {
-   display: flex;
-    flex: 1;
-    text-align: center;
+.divBotoesPrincipal {
+  display: flex;
+  flex: 1;
+  text-align: center;
 }
 
 .divBotoesSuperiores {
@@ -1951,11 +1864,9 @@
   text-align: center;
   align-items: center;
   background-color: #f5f3f38e;
-  border:1px solid #ece5e5;
+  border: 1px solid #ece5e5;
   padding: 5px;
 }
-
-
 
 .navIconComunicacaoHeader {
   width: 18px;
@@ -1981,14 +1892,12 @@
 .centralizaricons {
   text-align: center;
   width: 100%;
-
 }
 
 .navIconComunicacaoStatus {
   color: #4753ba;
   font-size: 20px;
   text-align: justify;
-
 }
 
 .menuBotoesComunicacaoVer {
@@ -2004,7 +1913,6 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-
 .botoesComunicacaoVer {
   font-size: 10px;
   width: 80px;
@@ -2018,7 +1926,6 @@
 .menuIconsComunicacaoVer {
   font-size: 20px;
   text-align: justify;
-
 }
 
 .menuIconsComunicacaoVer:hover {
@@ -2031,7 +1938,6 @@
   border-radius: 12px;
   border: 1px solid #d8d8d8;
 }
-
 
 .textoComunicacaoNotificarAluno {
   color: #1e76d5;
@@ -2123,14 +2029,11 @@
   position: relative;
 }
 
-
-
 .tabelaComunicacao thead th {
   position: sticky;
   top: 0;
   z-index: 1;
 }
-
 
 .tabelaComunicacao th {
   padding: 10px 10px;
@@ -2138,7 +2041,6 @@
   border: 1px solid #d2d4d7;
   vertical-align: top;
 }
-
 
 .tabelaComunicacao tr:hover {
   background-color: #e2e1f4;
@@ -2152,9 +2054,9 @@
   border-radius: 20px;
   color: #ccc;
   border: 1px solid;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .iconeAddUsuario {
   width: 10%;
@@ -2164,7 +2066,6 @@
   justify-content: center;
   cursor: pointer;
 }
-
 
 .menuBotoesUsuarios {
   display: flex;
@@ -2217,7 +2118,6 @@
   color: #757575;
   margin-right: 10px;
   border: 1px solid #757575;
-
 }
 
 .tabelaUsuarios th,
@@ -2232,7 +2132,6 @@
   font-size: 20px;
   text-align: justify;
   padding: 4px;
-
 }
 
 .iconsTabelaUsuarios:hover {
@@ -2253,7 +2152,7 @@
   border: 1px solid #ddd;
   border-radius: 10px;
   padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   width: 300px;
   transition: transform 0.2s ease;
 }
@@ -2290,43 +2189,24 @@
   align-items: center;
 }
 
-
 /*INICIO DETALHES DA COMUNICAÇÃO CLICADA*/
 
-
 .pRespostaAluno {
-  padding-left:5px;
+  padding-left: 5px;
   text-align: justify;
-  font-style:italic;
+  font-style: italic;
 }
 
 .divCienciaResponsavel {
-  font-size:14px;
+  font-size: 14px;
   color: #333;
-  display:flex;
+  display: flex;
   align-items: flex-end;
   justify-content: flex-end;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* Estilos específicos para mobile */
 @media (max-width: 768px) {
-
   .imgbackground {
     display: none; /* Esconde o menu completo na sidebar em telas pequenas */
   }
@@ -2337,19 +2217,19 @@
     height: 100vh;
     overflow: hidden;
     position: absolute;
-    content: '';
+    content: "";
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: url('../../../public/assets/images/logo.png');
+    background-image: url("../../../public/assets/images/logo.png");
     background-size: 80%; /* Ajuste o tamanho da imagem */
     background-position: center;
     background-repeat: no-repeat;
     opacity: 0.1;
     z-index: -1;
   }
-  
+
   .dashboardContainer {
     flex-direction: column;
     margin-top: 5px;
@@ -2403,9 +2283,8 @@
   }
 
   .icon {
-  margin: 0 auto; 
+    margin: 0 auto;
   }
-  
 
   .itemText {
     display: none;
@@ -2429,7 +2308,6 @@
 
   /* Estilo para a coluna de Ações */
 
-
   .acoesColuna button {
     font-size: 8px;
     padding: 2px;
@@ -2439,23 +2317,22 @@
     color: #007bff;
   }
 
-
   .tabelaUsuarios {
     width: 100%;
     border-collapse: collapse;
   }
-  
+
   .tabelaUsuarios th,
   .tabelaUsuarios td {
     font-size: 8px; /* Ajuste o tamanho da fonte do texto, se necessário */
     padding: 8px;
     text-align: left;
   }
-  
+
   .searchContainer {
     margin: 20px 0;
   }
-  
+
   .searchInput {
     padding: 8px;
     width: 100%;
@@ -2464,15 +2341,13 @@
     border-radius: 4px;
   }
 
-
   .scrollableTableWrapper {
-  padding-bottom: 40px;
+    padding-bottom: 40px;
   }
 
-  .divtabelaComunicacao{
+  .divtabelaComunicacao {
     height: 50px;
   }
-
 }
 
 /* INICIO TELA NOVA PERFIL DO USUARIO  */
@@ -2484,12 +2359,12 @@
   align-items: center;
   width: 100%;
   height: 50px;
-  padding:0 16px;
+  padding: 0 16px;
   border-bottom: 1px solid #ebf4f3;
 }
 
-.tituloPerfil{
-  position:absolute;
+.tituloPerfil {
+  position: absolute;
   left: 50%;
   font-size: 25px;
   transform: translateX(-50%);
@@ -2501,36 +2376,31 @@
   padding-bottom: 5px;
   align-items: center;
   border-bottom: 1px solid #ebf4f3;
-
 }
 
 .itemMenuPerfilSecundaria {
-  margin-left:20px;
-
+  margin-left: 20px;
 }
 
 .itemMenuPerfilIcone {
   margin-left: 20px;
   font-size: 20px;
-  color:#7e7b7b;
-
-  }
+  color: #7e7b7b;
+}
 
 .itemMenuPerfilLabel {
-  font-size:13px;
-  color:#7e7b7b;
-
+  font-size: 13px;
+  color: #7e7b7b;
 }
 
 .itemMenuPerfilNome {
-  font-size:14px;
+  font-size: 14px;
   color: #4f4c4c;
   font-weight: bold;
-
 }
 
-.divConteinerDadosUsuario{
-  position:relative;
+.divConteinerDadosUsuario {
+  position: relative;
   border-radius: 20px;
   border-bottom: 1px solid #ebf4f3;
   width: 100%;
@@ -2542,7 +2412,7 @@
   display: flex;
 }
 
-.imagUserFundoDireita{
+.imagUserFundoDireita {
   position: absolute;
   top: 0;
   right: 0;
@@ -2553,32 +2423,32 @@
   justify-content: center;
 }
 
-.imgUser{
+.imgUser {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 20px;
 }
 
-.divSobreposta{
+.divSobreposta {
   position: relative;
   z-index: 1;
   display: flex;
-  flex-direction:column;
+  flex-direction: column;
 }
 
-.divSobrepostaItens{
+.divSobrepostaItens {
   display: flex;
   font-size: 15px;
   color: #807979;
   align-items: center;
 }
-.divEnderecoPerfil{
-  margin-top:10px;
+.divEnderecoPerfil {
+  margin-top: 10px;
   background: #ebecf494;
   border-radius: 20px;
   border-bottom: 1px solid #ebf4f3;
-  padding:10px;
+  padding: 10px;
 }
 
 .divEnderecoPerfilTitulo {
@@ -2586,31 +2456,29 @@
   font-weight: bold;
 }
 
-.divPrincipalDependentesPerfil{
-  margin-top:10px;
+.divPrincipalDependentesPerfil {
+  margin-top: 10px;
   background: #ebecf494;
   border-radius: 20px;
   border-bottom: 1px solid #ebf4f3;
-  padding:10px;
-
-}
-
-.divimgResponsaveisPrincipal {
-  display:flex;
   padding: 10px;
 }
 
+.divimgResponsaveisPrincipal {
+  display: flex;
+  padding: 10px;
+}
 
 .divimgDependentesPrincipal {
-  display:flex;
+  display: flex;
   padding: 10px;
   border-bottom: 1px solid #ccd1d0;
   margin-bottom: 10px;
   margin-top: 10px;
 }
 
-.imagemUsuario{
-  border-radius:50%;
+.imagemUsuario {
+  border-radius: 50%;
   width: 40px;
   height: 40px;
   padding: 3px;
@@ -2618,8 +2486,8 @@
   border: 1px solid #757575;
 }
 
-.imagemUsuarioPerfilDependente{
-  border-radius:50%;
+.imagemUsuarioPerfilDependente {
+  border-radius: 50%;
   width: 50px;
   height: 50px;
   padding: 3px;
@@ -2627,15 +2495,14 @@
   border: 1px solid #757575;
 }
 
-.semImagemUsuarioPerfilDependente{
-  border-radius:50%;
+.semImagemUsuarioPerfilDependente {
+  border-radius: 50%;
   width: 50px;
   height: 50px;
   padding: 3px;
   color: #757575;
   border: 1px solid #757575;
 }
-
 
 .divBotoesDependentesPrincipal {
   display: flex;
@@ -2651,21 +2518,21 @@
 }
 
 .divGrupoBotaoDependentes {
-  cursor:pointer;
+  cursor: pointer;
   padding: 5px;
   font-size: 11px;
   color: #ffffff;
   background: #1ba494;
-  border-radius:5px;
+  border-radius: 5px;
 }
 
 .divGrupoBotaoDependentesDesativado {
-  cursor:pointer;
+  cursor: pointer;
   padding: 5px;
   font-size: 11px;
   color: #ffffff;
   background: #b0b0b0;
-  border-radius:5px;
+  border-radius: 5px;
 }
 
 .divDadosAcademicosPrincipal {
@@ -2694,16 +2561,12 @@
   font-size: 12px;
 }
 
-
-
-
 /* FIM TELA NOVA PERFIL DO USUARIO  */
-
 
 /* INICIO TELA AUTORIZAÇÃO  */
 
 .divNumeroAutorizacao {
-  text-align:center;
+  text-align: center;
   margin-top: 5px;
   font-size: 12px;
   font-weight: bold;
@@ -2724,7 +2587,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2734,36 +2597,29 @@
 }
 
 .divModalAutorizacaoSecundaria {
-  background:#fff;
+  background: #fff;
   max-width: 420px;
   width: 90%;
   color: #333;
   text-align: center;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
   animation: slideUp 0.4s ease;
   position: relative;
-  
 }
 
 .divModalAutorizacaoFechar {
   position: absolute;
   top: 10px;
-  right:10px;
+  right: 10px;
   cursor: pointer;
   color: #888;
   font-size: 18px;
   transition: 0.2s;
 }
 
-
 /* FIM TELA AUTORIZAÇÃO  */
 
-
 /* INICIO TELA DASHBOARD  */
-
-
-
-
 
 .iconGrid {
   display: flex;

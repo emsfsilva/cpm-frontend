@@ -4,13 +4,15 @@ import styles from "../../../privateLayout.module.css";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
-import { FaThumbsUp } from "react-icons/fa";
+import { FaThumbsUp, FaWhatsapp } from "react-icons/fa";
 import ModalResponder from "@/components/ModalResponder";
 import ModalEnquadramento from "@/components/ModalEnquadramento";
+import ModalParecerResponsavel from "@/components/ModalParecerResponsavel";
 import ModalParecerCmtCia from "@/components/ModalParecerCmtCia";
 import ModalParecerCmtCa from "@/components/ModalParecerCmtCa";
 import ModalParecerSubComando from "@/components/ModalParecerSubComando";
 import ModalArquivamento from "@/components/ModalArquivamento";
+import ModalPublicacao from "@/components/ModalPublicacao";
 import { useRef } from "react";
 
 interface ComunicacaoResp {
@@ -21,10 +23,15 @@ interface ComunicacaoResp {
   natureza: string | null;
   grauMotivo: number;
   enquadramento: string | null;
-  dataCom: string;
+  dataInicio: string;
+  horaInicio: string;
 
   userIdArquivamento: number | null;
   motivoArquivamento: string | null;
+
+  userIdPublicacao: number | null;
+  observacaoPublicacao: string | null;
+  dataPublicacao: string | null;
 
   userIdAl: number;
   resposta: string | null;
@@ -44,6 +51,13 @@ interface ComunicacaoResp {
   userIdSubcom: number | null;
   parecerSubcom: string | null;
   dataParecerSubcom: string | null;
+
+  parecerResponsavel1: string | null;
+  dataParecerResponsavel1: string | null;
+  parecerResponsavel2: string | null;
+  dataParecerResponsavel2: string | null;
+
+  nomeCmtCpm: string | null;
 
   status: string;
   dtAtualizacaoStatus: string | null;
@@ -76,11 +90,13 @@ interface ComunicacaoResp {
         };
       };
       responsavel1: {
+        id: number;
         pg: string;
         name: string;
         phone: string;
       };
       responsavel2: {
+        id: number;
         pg: string;
         name: string;
         phone: string;
@@ -148,6 +164,15 @@ interface ComunicacaoResp {
     nomeGuerra: string;
     funcao: string;
   };
+
+  userpublicador?: {
+    id: number;
+    name: string;
+    seduc: string;
+    pg: string;
+    nomeGuerra: string;
+    funcao: string;
+  };
 }
 
 interface UserLogin {
@@ -181,6 +206,10 @@ const ComunicacaoRespPage = () => {
   const [enquadramento, setenquadramento] = useState("");
   const [natureza, setnatureza] = useState("");
 
+  const [isModalOpenParecerResponsavel, setIsModalOpenParecerResponsavel] =
+    useState(false);
+  const [parecerResponsavel, setparecerResponsavel] = useState("");
+
   const [isModalOpenParecerCia, setIsModalOpenParecerCia] = useState(false);
   const [parecerCmtCia, setparecerCmtCia] = useState("");
 
@@ -193,6 +222,9 @@ const ComunicacaoRespPage = () => {
 
   const [isModalOpenArquivamento, setIsModalOpenArquivamento] = useState(false);
   const [motivoArquivamento, setmotivoArquivamento] = useState("");
+
+  const [isModalOpenPublicacao, setIsModalOpenPublicacao] = useState(false);
+  const [observacaoPublicacao, setobservacaoPublicacao] = useState("");
 
   const [gerandoPdf, setGerandoPdf] = useState(false);
 
@@ -443,6 +475,45 @@ const ComunicacaoRespPage = () => {
     }
   };
 
+  const handleSubmitparecerResponsavel = async () => {
+    if (!comunicacao) return alert("Comunicação não encontrada.");
+    if (!userLogin) return alert("Usuário logado não identificado.");
+    if (!parecerResponsavel.trim())
+      return alert("O comentário não pode estar vazio.");
+
+    try {
+      const response = await fetch(
+        `/api/comunicacao/${comunicacao.id}/parecer-responsavel`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ parecerResponsavel }),
+        },
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        alert(
+          `Erro ao enviar comentário. Código: ${response.status}${
+            errorData?.error ? " - " + errorData.error : ""
+          }`,
+        );
+        return;
+      }
+
+      const data = await response.json();
+      alert("Comentário enviado com sucesso!");
+      setIsModalOpenParecerResponsavel(false);
+      setparecerResponsavel("");
+      setComunicacao(data);
+    } catch (error) {
+      console.error("Erro ao enviar comentário do responsável:", error);
+      alert("Erro ao conectar com o servidor.");
+    }
+  };
+
   //Inicio parecer subcomando
   const handleSubmitparecerSubcom = async () => {
     if (!comunicacao) {
@@ -494,48 +565,50 @@ const ComunicacaoRespPage = () => {
   //Inicio parecer subcomando
 
   // inicio função publicação
-  const handleViewPublicarComunicacao = async (id: number) => {
+  const handleSubmitPublicacao = async () => {
     if (!comunicacao) {
       alert("Comunicação não encontrada.");
       return;
     }
 
-    const confirmarPublicacao = window.confirm(
-      "Deseja realmente publicar essa comunicação?",
-    );
-    if (!confirmarPublicacao) {
+    if (!userLogin) {
+      alert("Usuário logado não identificado.");
       return;
     }
 
     try {
-      const response = await fetch(`/api/comunicacao/${id}/publicacao`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `/api/comunicacao/${comunicacao.id}/publicacao`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userIdPublicacao: userLogin.id,
+            observacaoPublicacao: observacaoPublicacao.trim() || null,
+          }),
         },
-      });
+      );
 
       if (!response.ok) {
-        const errorData = await response.json();
-        alert(`Erro ao publicar: ${errorData.error}`);
+        const errorData = await response.json().catch(() => null);
+        alert(`Erro ao publicar: ${errorData?.error || response.status}`);
         return;
       }
 
       const data = await response.json();
 
       alert("Comunicação publicada com sucesso!");
-
-      setComunicacao({
-        ...comunicacao,
-        status: data.status,
-        dtAtualizacaoStatus: data.dtAtualizacaoStatus,
-      });
+      setComunicacao(data);
+      setIsModalOpenPublicacao(false);
+      setobservacaoPublicacao("");
     } catch (error) {
       console.error("Erro ao publicar:", error);
-      alert("Erro ao atualizar status da comunicação.");
+      alert("Erro ao conectar com o servidor.");
     }
   };
-  // inicio função publicação
+  // fim função publicação
 
   //Inicio função Arquivamenteo
   const handleViewArquivarComunicacao = async (id: number) => {
@@ -594,6 +667,7 @@ const ComunicacaoRespPage = () => {
     const statusPermitidos = [
       "Aguardando notificar aluno",
       "Aguardando resposta do aluno",
+      "Aguardando comentário do Responsável", // <- novo
       "Aguardando enviar ao Cmt da Cia",
       "Aguardando parecer do Cmt da Cia",
       "Aguardando parecer do Cmt do CA",
@@ -675,6 +749,89 @@ const ComunicacaoRespPage = () => {
     }
   };
 
+  // Normaliza o telefone para o formato exigido pelo wa.me (só dígitos, com DDI 55)
+  const formatarTelefoneWhats = (telefone?: string | null): string | null => {
+    if (!telefone) return null;
+
+    const apenasDigitos = telefone.replace(/\D/g, "");
+
+    if (!apenasDigitos) return null;
+
+    // Se já começar com 55 e tiver tamanho de celular com DDD + DDI (12 ou 13 dígitos), mantém
+    if (apenasDigitos.startsWith("55") && apenasDigitos.length >= 12) {
+      return apenasDigitos;
+    }
+
+    // Caso contrário, assume que é um número nacional (DDD + número) e prefixa o DDI
+    return `55${apenasDigitos}`;
+  };
+
+  const abrirWhatsapp = (telefone: string | null, mensagem: string) => {
+    if (!telefone) {
+      alert("Nenhum telefone cadastrado para este contato.");
+      return;
+    }
+
+    const url = `https://wa.me/${telefone}?text=${encodeURIComponent(
+      mensagem,
+    )}`;
+    const novaAba = window.open(url, "_blank");
+
+    if (!novaAba) {
+      alert(
+        "O navegador bloqueou a abertura do WhatsApp. Permita pop-ups para este site e tente novamente.",
+      );
+    }
+  };
+
+  const handleEnviarWhatsappAluno = () => {
+    if (!comunicacao) {
+      alert("Comunicação não encontrada.");
+      return;
+    }
+
+    const nomeAluno = comunicacao.useral?.name || "aluno";
+    const mensagem =
+      `Olá. Sou o Corpo de Alunos do CPM e informo que você ${nomeAluno} tem uma comunicação para responder. ` +
+      `Entre nesse link e responda: https://atoshomolog.sistemas.pm.pe.gov.br/login`;
+
+    abrirWhatsapp(formatarTelefoneWhats(comunicacao.useral?.phone), mensagem);
+  };
+
+  const handleEnviarWhatsappResponsavel1 = () => {
+    if (!comunicacao) {
+      alert("Comunicação não encontrada.");
+      return;
+    }
+
+    const nomeAluno = comunicacao.useral?.name || "aluno";
+    const mensagem =
+      `Olá. Sou o Corpo de Alunos do CPM e informo que seu dependente ${nomeAluno} tem uma comunicação para responder. ` +
+      `Voce pode complementar a resposta do seu dependente logo apos ele enviar a resposta. https://atoshomolog.sistemas.pm.pe.gov.br/login`;
+
+    abrirWhatsapp(
+      formatarTelefoneWhats(comunicacao.useral?.aluno?.responsavel1?.phone),
+      mensagem,
+    );
+  };
+
+  const handleEnviarWhatsappResponsavel2 = () => {
+    if (!comunicacao) {
+      alert("Comunicação não encontrada.");
+      return;
+    }
+
+    const nomeAluno = comunicacao.useral?.name || "aluno";
+    const mensagem =
+      `Olá. Sou o Corpo de Alunos do CPM e informo que seu dependente ${nomeAluno} tem uma comunicação para responder. ` +
+      `Voce pode complementar a resposta do seu dependente logo apos ele enviar a resposta. https://atoshomolog.sistemas.pm.pe.gov.br/login`;
+
+    abrirWhatsapp(
+      formatarTelefoneWhats(comunicacao.useral?.aluno?.responsavel2?.phone),
+      mensagem,
+    );
+  };
+
   if (!comunicacao) return <div>Carregando...</div>;
   return (
     <div style={{ maxHeight: "900px", overflowY: "auto" }}>
@@ -734,20 +891,20 @@ const ComunicacaoRespPage = () => {
             className={styles.botoesComunicacaoVer}
             onClick={() =>
               comunicacao &&
-              (comunicacao.status === "Aguardando resposta do aluno" ||
+              (comunicacao.status === "Aguardando comentário do Responsável" ||
                 comunicacao.status === "Aguardando enviar ao Cmt da Cia")
                 ? handleViewEnviarCmtCia(comunicacao.id)
                 : null
             }
             style={{
               cursor:
-                comunicacao.status === "Aguardando resposta do aluno" ||
+                comunicacao.status === "Aguardando comentário do Responsável" ||
                 comunicacao.status === "Aguardando enviar ao Cmt da Cia"
                   ? "pointer"
                   : "not-allowed",
             }}
             disabled={
-              comunicacao.status !== "Aguardando resposta do aluno" &&
+              comunicacao.status !== "Aguardando comentário do Responsável" &&
               comunicacao.status !== "Aguardando enviar ao Cmt da Cia"
             }
           >
@@ -855,9 +1012,14 @@ const ComunicacaoRespPage = () => {
           {/* inicio Aguardando parecer do Subcomando */}
 
           {/* inicio publicar comunicação */}
+          {/* inicio publicar comunicação */}
           <button
             className={styles.botoesComunicacaoVer}
-            onClick={() => handleViewPublicarComunicacao(comunicacao.id)}
+            onClick={() =>
+              comunicacao.status === "Aguardando publicação"
+                ? setIsModalOpenPublicacao(true)
+                : null
+            }
             style={{
               cursor:
                 comunicacao.status === "Aguardando publicação"
@@ -984,8 +1146,8 @@ const ComunicacaoRespPage = () => {
           <div style={{ paddingLeft: "20px" }}>
             <i className={`fa fa-cube ${styles.navIcon}`}></i> Turma:
             <strong>
-              {comunicacao.useral?.aluno?.turma.name} |{" "}
-              {comunicacao.useral?.aluno?.turma.cia.name}
+              {comunicacao.useral?.aluno?.turma?.name} |{" "}
+              {comunicacao.useral?.aluno?.turma?.cia?.name}
             </strong>
           </div>
         </div>
@@ -1006,9 +1168,10 @@ const ComunicacaoRespPage = () => {
                 {comunicacao.usercom?.pg} {comunicacao.usercom?.nomeGuerra} |{" "}
                 {comunicacao.usercom?.funcao}
                 <i className={`${styles.rightIcon}`}></i>
-                {comunicacao.dataCom
-                  ? new Date(comunicacao.dataCom).toLocaleString()
-                  : "Nenhuma data informada"}
+                {comunicacao.dataInicio
+                  ? new Date(comunicacao.dataInicio).toLocaleDateString("pt-BR")
+                  : ""}
+                , {comunicacao.horaInicio}
               </div>
               <div className={styles.divConteudoComunicacao}>
                 <div className={styles.enquadramento}>
@@ -1050,10 +1213,37 @@ const ComunicacaoRespPage = () => {
             <div>
               <li>
                 <i className={`fa fa-user ${styles.navIcon}`}></i>{" "}
-                <strong>
-                  {comunicacao.useral?.pg} {comunicacao.useral?.nomeGuerra} |{" "}
-                  {comunicacao.useral?.funcao}
-                </strong>
+                <div style={{ display: "flex" }}>
+                  <div>
+                    <strong>
+                      {comunicacao.useral?.pg} {comunicacao.useral?.nomeGuerra}{" "}
+                      | {comunicacao.useral?.funcao}
+                    </strong>
+                  </div>
+
+                  <div>
+                    {comunicacao.status === "Aguardando resposta do aluno" &&
+                      (userLogin?.funcao === "Adm" ||
+                        userLogin?.funcao === "Master") && (
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: "12px",
+                            alignItems: "center",
+                            marginLeft: "10px",
+                          }}
+                        >
+                          <span
+                            onClick={handleEnviarWhatsappAluno}
+                            style={{ cursor: "pointer" }}
+                            title={`Avisar ${comunicacao.useral?.name || "aluno"} no WhatsApp`}
+                          >
+                            <FaWhatsapp size={20} color="#1a9e50" />
+                          </span>
+                        </div>
+                      )}
+                  </div>
+                </div>
                 <i className={`${styles.rightIcon}`}></i>
                 {comunicacao.dataResp
                   ? new Date(comunicacao.dataResp).toLocaleString()
@@ -1064,7 +1254,7 @@ const ComunicacaoRespPage = () => {
                   <div>
                     <div>
                       <span>
-                        <strong>Resposta: </strong>
+                        <strong>Resposta do Aluno: </strong>
                       </span>
                       <span>
                         {" "}
@@ -1079,67 +1269,221 @@ const ComunicacaoRespPage = () => {
                         )}
                       </span>
 
-                      {/* Inicio Responsalvel 1 */}
-                      <div className={styles.divCienciaResponsavel}>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                          }}
-                        >
-                          <i className={`fa fa-user ${styles.navIcon}`}></i>{" "}
-                          <span style={{ paddingRight: "10px" }}>
-                            {comunicacao.useral?.aluno?.responsavel1?.name}
-                          </span>
-                          <FaThumbsUp
-                            fontSize={12}
-                            color={
-                              comunicacao.dataCienciaResponsavel1
-                                ? "green"
-                                : "gray"
-                            }
-                            title={
-                              comunicacao.dataCienciaResponsavel1
-                                ? `Visualizado em: ${new Date(
-                                    comunicacao.dataCienciaResponsavel1,
-                                  ).toLocaleString("pt-BR")}`
-                                : "Ainda não visualizado"
-                            }
-                          />
-                        </div>
-                      </div>
-                      {/* Fim Responsalvel 1 */}
+                      <div style={{ marginTop: "20px" }}>
+                        <span>
+                          <strong>Comentário dos responsaveis: </strong>
+                        </span>
+                        {/* Inicio Responsalvel 1 */}
+                        <div>
+                          <div style={{ display: "flex" }}>
+                            <div>
+                              <i
+                                className={`fa fa-user ${styles.navIcon}`}
+                              ></i>{" "}
+                            </div>
 
-                      {/* Inicio Responsalvel 2 */}
-                      <div className={styles.divCienciaResponsavel}>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                          }}
-                        >
-                          <i className={`fa fa-user ${styles.navIcon}`}></i>{" "}
-                          <span style={{ paddingRight: "10px" }}>
-                            {comunicacao.useral?.aluno?.responsavel2?.name}
-                          </span>
-                          <FaThumbsUp
-                            fontSize={12}
-                            color={
-                              comunicacao.dataCienciaResponsavel2
-                                ? "green"
-                                : "gray"
-                            }
-                            title={
-                              comunicacao.dataCienciaResponsavel2
-                                ? `Visualizado em: ${new Date(
-                                    comunicacao.dataCienciaResponsavel2,
-                                  ).toLocaleString("pt-BR")}`
-                                : "Ainda não visualizado"
-                            }
-                          />
+                            <div>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignContent: "center",
+                                }}
+                              >
+                                <span
+                                  style={{
+                                    paddingRight: "10px",
+                                    fontWeight: "bold",
+                                  }}
+                                >
+                                  {
+                                    comunicacao.useral?.aluno?.responsavel1
+                                      ?.name
+                                  }
+                                </span>
+                                <FaThumbsUp
+                                  fontSize={18}
+                                  color={
+                                    comunicacao.dataCienciaResponsavel1
+                                      ? "green"
+                                      : "gray"
+                                  }
+                                  title={
+                                    comunicacao.dataCienciaResponsavel1
+                                      ? `Visualizado em: ${new Date(
+                                          comunicacao.dataCienciaResponsavel1,
+                                        ).toLocaleString("pt-BR")}`
+                                      : "Ainda não visualizado"
+                                  }
+                                />
+
+                                {comunicacao.status ===
+                                  "Aguardando resposta do aluno" &&
+                                  (userLogin?.funcao === "Adm" ||
+                                    userLogin?.funcao === "Master") && (
+                                    <span
+                                      onClick={handleEnviarWhatsappResponsavel1}
+                                      style={{ cursor: "pointer" }}
+                                      title={`Avisar ${
+                                        comunicacao.useral?.aluno?.responsavel1
+                                          ?.name || "Responsável 1"
+                                      } no WhatsApp`}
+                                    >
+                                      <FaWhatsapp size={20} color="#1a9e50" />
+                                    </span>
+                                  )}
+                              </div>
+                              {comunicacao.parecerResponsavel1 ? (
+                                <div className={styles.divConteudoComunicacao}>
+                                  <div className={styles.enquadramento}>
+                                    <div>
+                                      <p style={{ fontStyle: "normal" }}>
+                                        {comunicacao.parecerResponsavel1}
+                                      </p>
+
+                                      <span
+                                        style={{
+                                          fontSize: "11px",
+                                          color: "#8d8d96",
+                                        }}
+                                      >
+                                        {comunicacao.dataParecerResponsavel1
+                                          ? new Date(
+                                              comunicacao.dataParecerResponsavel1,
+                                            ).toLocaleString("pt-BR")
+                                          : ""}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : comunicacao.status ===
+                                  "Aguardando comentário do Responsável" &&
+                                userLogin?.id ===
+                                  comunicacao.useral?.aluno?.responsavel1
+                                    ?.id ? (
+                                <button
+                                  className={styles.comunicacaoResp}
+                                  onClick={() =>
+                                    setIsModalOpenParecerResponsavel(true)
+                                  }
+                                  style={{ marginTop: "6px" }}
+                                >
+                                  Comentar
+                                </button>
+                              ) : (
+                                <span style={{ color: "#979494" }}>
+                                  Responda após o aluno enviar
+                                </span>
+                              )}
+                            </div>
+                          </div>
                         </div>
+                        {/* Fim Responsalvel 1 */}
+                        {/* Inicio Responsalvel 2 */}
+                        <div>
+                          <div style={{ display: "flex" }}>
+                            <div>
+                              <i
+                                className={`fa fa-user ${styles.navIcon}`}
+                              ></i>{" "}
+                            </div>
+
+                            <div>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignContent: "center",
+                                }}
+                              >
+                                <span
+                                  style={{
+                                    paddingRight: "10px",
+                                    fontWeight: "bold",
+                                  }}
+                                >
+                                  {
+                                    comunicacao.useral?.aluno?.responsavel2
+                                      ?.name
+                                  }
+                                </span>
+                                <FaThumbsUp
+                                  fontSize={18}
+                                  color={
+                                    comunicacao.dataCienciaResponsavel2
+                                      ? "green"
+                                      : "gray"
+                                  }
+                                  title={
+                                    comunicacao.dataCienciaResponsavel2
+                                      ? `Visualizado em: ${new Date(
+                                          comunicacao.dataCienciaResponsavel2,
+                                        ).toLocaleString("pt-BR")}`
+                                      : "Ainda não visualizado"
+                                  }
+                                />
+
+                                {comunicacao.status ===
+                                  "Aguardando resposta do aluno" &&
+                                  (userLogin?.funcao === "Adm" ||
+                                    userLogin?.funcao === "Master") && (
+                                    <span
+                                      onClick={handleEnviarWhatsappResponsavel2}
+                                      style={{ cursor: "pointer" }}
+                                      title={`Avisar ${
+                                        comunicacao.useral?.aluno?.responsavel2
+                                          ?.name || "Responsável 2"
+                                      } no WhatsApp`}
+                                    >
+                                      <FaWhatsapp size={20} color="#1a9e50" />
+                                    </span>
+                                  )}
+                              </div>
+                              {comunicacao.parecerResponsavel2 ? (
+                                <div className={styles.divConteudoComunicacao}>
+                                  <div className={styles.enquadramento}>
+                                    <div>
+                                      <p style={{ fontStyle: "normal" }}>
+                                        {comunicacao.parecerResponsavel2}
+                                      </p>
+
+                                      <span
+                                        style={{
+                                          fontSize: "11px",
+                                          color: "#8d8d96",
+                                        }}
+                                      >
+                                        {comunicacao.dataParecerResponsavel2
+                                          ? new Date(
+                                              comunicacao.dataParecerResponsavel2,
+                                            ).toLocaleString("pt-BR")
+                                          : ""}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : comunicacao.status ===
+                                  "Aguardando comentário do Responsável" &&
+                                userLogin?.id ===
+                                  comunicacao.useral?.aluno?.responsavel2
+                                    ?.id ? (
+                                <button
+                                  className={styles.comunicacaoResp}
+                                  onClick={() =>
+                                    setIsModalOpenParecerResponsavel(true)
+                                  }
+                                  style={{ marginTop: "6px" }}
+                                >
+                                  Comentar
+                                </button>
+                              ) : (
+                                <span style={{ color: "#979494" }}>
+                                  Responda após o aluno enviar
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        {/* Fim Responsalvel 2 */}
                       </div>
-                      {/* Fim Responsalvel 2 */}
                     </div>
                   </div>
                 </div>
@@ -1341,7 +1685,7 @@ const ComunicacaoRespPage = () => {
                     color: "#000000",
                   }}
                 >
-                  VALDECLEYTON CAVALCANTE MENDES - TEN CEL QOPM <br></br>
+                  {comunicacao.nomeCmtCpm} <br></br>
                   Comandante do Colegio da Policia Militar - CPM
                 </p>
               </div>
@@ -1358,33 +1702,70 @@ const ComunicacaoRespPage = () => {
           {/* Blococomunicação arquivada */}
           <div style={{ marginBottom: "100px" }}>
             <div>
-              {comunicacao.status === "Comunicação arquivada" && (
-                <li
+              {comunicacao.userpublicador && (
+                <div
                   style={{
-                    display: "flex",
+                    marginBottom: "10px",
                     textAlign: "right",
-                    gap: "5px",
-                    flexWrap: "wrap", // permite quebra de linha quando necessário
                   }}
                 >
-                  <span>
-                    Comunicação arquivada por{" "}
-                    <span style={{ whiteSpace: "nowrap" }}>
-                      <strong>{comunicacao.userarquivador?.seduc}</strong>
-                    </span>{" "}
-                    em{" "}
-                    <span style={{ whiteSpace: "nowrap" }}>
-                      <strong>
-                        {comunicacao.dtAtualizacaoStatus
-                          ? new Date(
-                              comunicacao.dtAtualizacaoStatus,
-                            ).toLocaleString()
-                          : "Nenhuma data informada"}
-                      </strong>
-                    </span>
-                  </span>
-                </li>
+                  <div>
+                    Comunicação publicada por{" "}
+                    <strong>{comunicacao.userpublicador?.seduc}</strong> em{" "}
+                    <strong>
+                      {comunicacao.dataPublicacao
+                        ? new Date(comunicacao.dataPublicacao).toLocaleString()
+                        : "Nenhuma data informada"}
+                    </strong>
+                  </div>
+                  {comunicacao.observacaoPublicacao && (
+                    <div
+                      style={{
+                        fontSize: "13px",
+                        color: "#555",
+                        marginTop: "4px",
+                      }}
+                    >
+                      <strong>Observação: </strong>
+                      {comunicacao.observacaoPublicacao}
+                    </div>
+                  )}
+                </div>
               )}
+
+              {comunicacao.status === "Comunicação arquivada" && (
+                <div
+                  style={{
+                    marginBottom: "10px",
+                    textAlign: "right",
+                  }}
+                >
+                  <div>
+                    Comunicação arquivada por{" "}
+                    <strong>{comunicacao.userarquivador?.seduc}</strong> em{" "}
+                    <strong>
+                      {comunicacao.dtAtualizacaoStatus
+                        ? new Date(
+                            comunicacao.dtAtualizacaoStatus,
+                          ).toLocaleString()
+                        : "Nenhuma data informada"}
+                    </strong>
+                  </div>
+                  {comunicacao.motivoArquivamento && (
+                    <div
+                      style={{
+                        fontSize: "13px",
+                        color: "#555",
+                        marginTop: "4px",
+                      }}
+                    >
+                      <strong>Motivo: </strong>
+                      {comunicacao.motivoArquivamento}
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div
                 style={{
                   display: "flex",
@@ -1493,6 +1874,26 @@ const ComunicacaoRespPage = () => {
           onChange={setmotivoArquivamento}
           onSubmit={() => handleViewArquivarComunicacao(comunicacao.id)}
           onClose={() => setIsModalOpenArquivamento(false)}
+        />
+      )}
+
+      {isModalOpenParecerResponsavel && (
+        <ModalParecerResponsavel
+          isOpen={isModalOpenParecerResponsavel}
+          parecer={parecerResponsavel}
+          onChange={setparecerResponsavel}
+          onSubmit={handleSubmitparecerResponsavel}
+          onClose={() => setIsModalOpenParecerResponsavel(false)}
+        />
+      )}
+
+      {isModalOpenPublicacao && (
+        <ModalPublicacao
+          isOpen={isModalOpenPublicacao}
+          observacao={observacaoPublicacao}
+          onChange={setobservacaoPublicacao}
+          onSubmit={handleSubmitPublicacao}
+          onClose={() => setIsModalOpenPublicacao(false)}
         />
       )}
     </div>
