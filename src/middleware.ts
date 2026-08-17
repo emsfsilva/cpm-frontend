@@ -14,12 +14,15 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Libera arquivos estáticos
+  // Libera arquivos estáticos e arquivos do PWA
   if (
     path.startsWith("/assets/images/") ||
     path.startsWith("/_next/static/") ||
+    path.startsWith("/icons/") ||
     path === "/favicon.ico" ||
-    path === "/robots.txt"
+    path === "/robots.txt" ||
+    path === "/manifest.json" ||
+    path === "/sw.js"
   ) {
     return NextResponse.next();
   }
@@ -44,5 +47,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next|favicon.ico|robots.txt|_next/static|_next/image).*)"],
+  matcher: [
+    "/((?!_next|favicon.ico|robots.txt|manifest.json|sw.js|icons|_next/static|_next/image).*)",
+  ],
 };
