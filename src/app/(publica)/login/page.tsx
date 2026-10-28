@@ -1,41 +1,99 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import styles from "./login.module.css";
 import Image from "next/image";
+import dynamic from "next/dynamic";
+import styles from "./login.module.css";
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import dynamic from "next/dynamic";
+
+// Importado uma única vez, fora do componente.
+// Antes estava dentro do componente e era recriado a cada render,
+// causando remount do carrossel (perda de estado, piscar de tela).
+const Slider = dynamic(() => import("react-slick"), { ssr: false });
+
+const CAROUSEL_IMAGES = [
+  "/assets/images/site/carrossel/carrossel_foto_01.jpeg",
+  "/assets/images/site/carrossel/carrossel_foto_02.jpeg",
+  "/assets/images/site/carrossel/carrossel_foto_03.jpeg",
+  "/assets/images/site/carrossel/carrossel_foto_04.jpeg",
+  "/assets/images/site/carrossel/carrossel_foto_05.jpeg",
+];
+
+const PHASES = [
+  {
+    img: "/assets/images/site/slide/slide_foto_01.jpeg",
+    label: ["EDUCAÇÃO", "INFANTIL"],
+    bg: "#6984d4",
+  },
+  {
+    img: "/assets/images/site/slide/slide_foto_02.jpeg",
+    label: ["ENSINO", "FUNDAMENTAL 1"],
+    bg: "#5976d3",
+  },
+  {
+    img: "/assets/images/site/slide/slide_foto_03.jpeg",
+    label: ["ENSINO", "FUNDAMENTAL 2"],
+    bg: "#3957bb",
+  },
+  {
+    img: "/assets/images/site/slide/slide_foto_04.jpeg",
+    label: ["NOVO", "ENSINO MEDIO"],
+    bg: "#2f4794",
+  },
+  {
+    img: "/assets/images/site/slide/slide_foto_10.jpeg",
+    label: ["TURNO", "COMPLEMENTAR"],
+    bg: "#14308d",
+  },
+];
 
 export default function Login() {
   const [seduc, setSeduc] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
+  // Fecha com ESC e trava o scroll da página enquanto a modal está aberta
+  useEffect(() => {
+    if (!showModal) return;
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShowModal(false);
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [showModal]);
+
+  const closeModal = useCallback(() => {
+    setShowModal(false);
+    setErrorMessage("");
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log("HANDLE SUBMIT DISPAROU");
     e.preventDefault();
     setErrorMessage("");
+    setIsSubmitting(true);
 
     try {
       const response = await fetch("/api/auth/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ seduc, password }),
       });
 
-      console.log("STATUS =", response.status);
-      console.log("OK =", response.ok);
-
       const data = await response.json();
-
-      console.log("DATA =", data);
 
       if (response.ok) {
         router.push("/dashboard");
@@ -45,73 +103,59 @@ export default function Login() {
       }
     } catch (error) {
       console.error("Erro ao enviar login:", error);
-      setErrorMessage("Erro na requisição de login");
+      setErrorMessage("Erro na requisição de login. Tente novamente.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const Slider = dynamic(() => import("react-slick"), {
-    ssr: false,
-  });
-
-  const images = [
-    "/assets/images/site/carrossel/carrossel_foto_01.jpeg",
-    "/assets/images/site/carrossel/carrossel_foto_02.jpeg",
-    "/assets/images/site/carrossel/carrossel_foto_03.jpeg",
-    "/assets/images/site/carrossel/carrossel_foto_04.jpeg",
-    "/assets/images/site/carrossel/carrossel_foto_05.jpeg",
-  ];
-
   return (
     <div>
-      <div
-        style={{ width: "100%", height: "30px", backgroundColor: "#141a28" }}
-      ></div>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          marginTop: "10px",
-          marginBottom: "10px",
-        }}
-      >
-        <div>
-          <Image
-            src="/assets/images/logo.png"
-            alt="Logo"
-            width={90}
-            height={90}
-            className={styles.imglogo}
-          />
-        </div>
+      <div className={styles.topBar} />
 
-        <div style={{ marginLeft: "10px" }}>
+      <header className={styles.header}>
+        <Image
+          src="/assets/images/logo.png"
+          alt="Logo do Colégio da Polícia Militar"
+          width={90}
+          height={90}
+          className={styles.imglogo}
+          priority
+        />
+        <div>
           <h1 className={styles.textoDesktop}>
             COLÉGIO DA POLÍCIA MILITAR - CPM
           </h1>
           <h1 className={styles.textoMobile}>CPM - PE</h1>
         </div>
-      </div>
+      </header>
 
       <div className={styles.divBotao}>
-        <button className={styles.botao} onClick={() => setShowModal(true)}>
+        <button
+          type="button"
+          className={styles.botao}
+          onClick={() => setShowModal(true)}
+        >
           Login
         </button>
-        <button className={styles.botao}>Fale Conosco</button>
+        <button type="button" className={styles.botao}>
+          Fale Conosco
+        </button>
       </div>
 
-      <div style={{ width: "100%", overflow: "hidden" }}>
+      <div className={styles.carouselWrapper}>
         <Slider
-          dots={true}
-          infinite={true}
+          dots
+          infinite
           speed={500}
           slidesToShow={1}
           slidesToScroll={1}
-          autoplay={true}
+          autoplay
           autoplaySpeed={4000}
           arrows={false}
         >
-          {images.map((src, index) => (
-            <div key={index}>
+          {CAROUSEL_IMAGES.map((src, index) => (
+            <div key={src}>
               <div className={styles.carouselAspect}>
                 <Image
                   src={src}
@@ -127,126 +171,81 @@ export default function Login() {
         </Slider>
       </div>
 
-      <div className={styles.divTextoCpm}>
+      <section className={styles.divTextoCpm}>
         <div className={styles.divTextoCpmSecundario}>
-          <div
-            style={{
-              borderLeft: "3px solid #304486",
-            }}
-          >
-            <h1 className={styles.h1Cpm}>O CPM EM CADA FASE DO SEU FILHO</h1>
+          <div className={styles.tituloBorda}>
+            <h2 className={styles.h1Cpm}>O CPM EM CADA FASE DO SEU FILHO</h2>
           </div>
         </div>
 
         <div className={styles.divSlidPrincipal}>
-          <div className={styles.divItemSlid}>
-            <div style={{ height: "60%" }}>
-              <Image
-                src="/assets/images/site/slide/slide_foto_01.jpeg"
-                alt="Logo"
-                width={800}
-                height={880}
-              />
-            </div>
-            <div
-              style={{ background: "#6984d4", height: "40%" }}
-              className={styles.divTextoSlid}
-            >
-              EDUCAÇÃO <br></br>INFANTIL
-            </div>
-          </div>
-
-          <div className={styles.divItemSlid}>
-            <div style={{ height: "60%" }}>
-              <Image
-                src="/assets/images/site/slide/slide_foto_02.jpeg"
-                alt="Logo"
-                width={800}
-                height={880}
-              />
-            </div>
-            <div
-              style={{ background: "#5976d3", height: "40%" }}
-              className={styles.divTextoSlid}
-            >
-              ENSINO <br></br>FUNDAMENTAL 1
-            </div>
-          </div>
-
-          <div className={styles.divItemSlid}>
-            <div style={{ height: "60%" }}>
-              <Image
-                src="/assets/images/site/slide/slide_foto_03.jpeg"
-                alt="Logo"
-                width={800}
-                height={880}
-              />
-            </div>
-            <div
-              style={{ background: "#3957bb", height: "40%" }}
-              className={styles.divTextoSlid}
-            >
-              ENSINO <br></br>FUNDAMENTAL 2
-            </div>
-          </div>
-
-          <div className={styles.divItemSlid}>
-            <div style={{ height: "60%" }}>
-              <Image
-                src="/assets/images/site/slide/slide_foto_04.jpeg"
-                alt="Logo"
-                width={800}
-                height={880}
-              />
-            </div>
-            <div
-              style={{ background: "#2f4794", height: "40%" }}
-              className={styles.divTextoSlid}
-            >
-              NOVO <br></br>ENSINO MEDIO
-            </div>
-          </div>
-
-          <div className={styles.divItemSlid}>
-            <div style={{ height: "60%" }}>
-              <Image
-                src="/assets/images/site/slide/slide_foto_10.jpeg"
-                alt="Logo"
-                width={800}
-                height={880}
-              />
-            </div>
-            <div
-              style={{ background: "#14308d", height: "40%" }}
-              className={styles.divTextoSlid}
-            >
-              TURNO <br></br>COMPLEMENTAR
-            </div>
-          </div>
-        </div>
-      </div>
-      {showModal && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modalContent}>
-            <form onSubmit={handleSubmit} className={styles.formContainer}>
+          {PHASES.map((phase) => (
+            <div className={styles.divItemSlid} key={phase.img}>
+              <div className={styles.slidImageWrapper}>
+                <Image
+                  src={phase.img}
+                  alt=""
+                  fill
+                  style={{ objectFit: "cover" }}
+                  sizes="(max-width: 768px) 90vw, 20vw"
+                />
+              </div>
               <div
-                style={{
-                  justifyContent: "center",
-                  justifyItems: "center",
-                  marginTop: "200px",
-                }}
+                className={styles.divTextoSlid}
+                style={{ background: phase.bg }}
               >
+                {phase.label[0]}
+                <br />
+                {phase.label[1]}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {showModal && (
+        <div
+          className={styles.modalOverlay}
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) closeModal();
+          }}
+        >
+          <div
+            className={styles.modalContent}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="login-modal-title"
+          >
+            <button
+              type="button"
+              className={styles.closeButton}
+              onClick={closeModal}
+              aria-label="Fechar"
+            >
+              ✕
+            </button>
+
+            <form onSubmit={handleSubmit} className={styles.formContainer}>
+              <div className={styles.modalLogoWrapper}>
                 <Image
                   src="/assets/images/logo.png"
                   alt="Logo"
-                  width={130}
-                  height={130}
+                  width={110}
+                  height={110}
                 />
               </div>
+
+              <h2 id="login-modal-title" className={styles.srOnly}>
+                Login
+              </h2>
+
               <div className={styles.inputGroup}>
-                <label>Login</label>
+                <label htmlFor="seduc">Login</label>
                 <input
+                  id="seduc"
+                  name="seduc"
                   type="text"
+                  autoComplete="username"
                   value={seduc}
                   onChange={(e) => setSeduc(e.target.value)}
                   required
@@ -255,9 +254,12 @@ export default function Login() {
               </div>
 
               <div className={styles.inputGroup}>
-                <label>Senha</label>
+                <label htmlFor="password">Senha</label>
                 <input
+                  id="password"
+                  name="password"
                   type="password"
+                  autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -265,16 +267,24 @@ export default function Login() {
                 />
               </div>
 
-              {errorMessage && <p className={styles.error}>{errorMessage}</p>}
+              {errorMessage && (
+                <p className={styles.error} role="alert">
+                  {errorMessage}
+                </p>
+              )}
 
-              <button type="submit" className={styles.button}>
-                Entrar
+              <button
+                type="submit"
+                className={styles.button}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Entrando..." : "Entrar"}
               </button>
 
               <button
                 type="button"
-                onClick={() => setShowModal(false)}
-                className={styles.button}
+                onClick={closeModal}
+                className={styles.buttonSecondary}
               >
                 Cancelar
               </button>

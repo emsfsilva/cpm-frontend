@@ -182,14 +182,31 @@ const UsuariosPage = () => {
 
   // ✅👇 ESTE É O NOVO: atualiza os usuários filtrados com base na busca
   useEffect(() => {
-    const termoBusca = searchTerm.toLowerCase();
+    // remove acentos e deixa minúsculo, para "joao" achar "João"
+    const normalizar = (s?: string | number | null) =>
+      String(s ?? "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase();
+
+    // cada palavra digitada precisa aparecer em algum lugar do usuário
+    const termos = normalizar(searchTerm).split(/\s+/).filter(Boolean);
 
     const filtrados = users.filter((user) => {
-      const nomeMatch =
-        user.name.toLowerCase().includes(termoBusca) ||
-        user.pg.toLowerCase().includes(termoBusca) ||
-        user.orgao.toLowerCase().includes(termoBusca) ||
-        user.seduc.toLowerCase().includes(termoBusca);
+      const textoBusca = normalizar(
+        [
+          user.name,
+          user.nomeGuerra,
+          user.pg,
+          user.orgao,
+          user.seduc,
+          user.funcao,
+          user.aluno?.turma?.name,
+          user.aluno?.turma?.cia?.name,
+        ].join(" "),
+      );
+
+      const nomeMatch = termos.every((t) => textoBusca.includes(t));
 
       const funcaoMatch =
         filtroFuncao === "Todos"
@@ -339,6 +356,8 @@ const UsuariosPage = () => {
     motivo: string;
     descricaoMotivo: string;
     userIdAl: number;
+    dataInicio: string;
+    horaInicio: string;
   }) => {
     try {
       const userIdCom = userLogin?.id; // quem está enviando
@@ -485,7 +504,7 @@ const UsuariosPage = () => {
 
                     {/* inicio detalhes do usuario */}
                     <div>
-                      <div style={{ fontSize: "12px" }}>
+                      <div style={{ fontSize: "11px" }}>
                         <strong>
                           {user.pg} {user.nomeGuerra} {user.aluno?.turma?.name}{" "}
                           {user.aluno?.turma?.cia?.name}
@@ -512,6 +531,16 @@ const UsuariosPage = () => {
                         </div>
                       </div>
                       <div>
+                        <span
+                          style={{
+                            fontWeight: "bold",
+                            fontSize: "10px",
+                            color: "#135886",
+                          }}
+                        >
+                          {user.name}
+                        </span>{" "}
+                        <br></br>
                         <span
                           style={{
                             fontWeight: "bold",
@@ -1262,7 +1291,7 @@ const UsuariosPage = () => {
               )}
 
               {/* COMUNICAÇÃO */}
-              {[10, 5, 3].includes(userLogin?.typeUser ?? 0) && (
+              {[10, 8, 7, 6, 5, 4, 3].includes(userLogin?.typeUser ?? 0) && (
                 <li
                   style={{
                     padding: "10px",
@@ -1289,7 +1318,9 @@ const UsuariosPage = () => {
               )}
 
               {/* AUTORIZAÇÃO */}
-              {[10, 5, 3, 1].includes(userLogin?.typeUser ?? 0) && (
+              {[10, 8, 7, 6, 5, 4, 3, 2, 1].includes(
+                userLogin?.typeUser ?? 0,
+              ) && (
                 <li
                   style={{
                     padding: "10px",

@@ -55,7 +55,7 @@ export default function ComunicacaoModal({
       return;
     }
 
-    if (!isOpen || !userAlvo) return null;
+    if (!userAlvo) return;
 
     onSubmit({
       motivo: motivoSelecionado,
@@ -73,11 +73,34 @@ export default function ComunicacaoModal({
     setHoraInicioSelecionado("");
   };
 
+  if (!isOpen || !userAlvo) return null;
+
   return (
-    <div className={styles.modalOverlayCadComunicacao} onClick={onClose}>
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed",
+        inset: 0,
+        backgroundColor: "rgba(0,0,0,0.5)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center", // centraliza vertical e horizontal
+        padding: "16px",
+        zIndex: 3000,
+      }}
+    >
       <div
-        className={styles.cadComunicacaoModal}
         onClick={(e) => e.stopPropagation()}
+        style={{
+          background: "#fff",
+          borderRadius: "8px",
+          width: "100%",
+          maxWidth: "520px",
+          maxHeight: "90vh", // nunca passa da tela
+          overflowY: "auto", // barra de rolagem se o conteúdo for maior
+          WebkitOverflowScrolling: "touch",
+          boxShadow: "0 4px 14px rgba(0,0,0,0.25)",
+        }}
       >
         <div className={styles.modalRightCadAluno}>
           <h3 style={{ fontSize: "15px", paddingBottom: "10px" }}>
